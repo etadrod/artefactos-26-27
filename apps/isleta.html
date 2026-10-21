@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><script>(function(){var K=["evb:AEV2.1"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});if(K.length&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p></main>";show()})})()</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<!doctype html><html lang="es"><head><script>(function(){var K=["evb:AEV2.1"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});if(K.length&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p></main>";show()})})()</script><script>window.RUBRICAS={"evb:AEV2.1": {"titulo": "Reto ABR (con GE6): mapa SIG de riesgos y flujos de mercancías peligrosas de La Isleta", "ra_ce": "RA2: e, f", "peso": "7,50%", "rub": [["Identificación de actividades y modalidades de transporte", "RA2 e", 2, ["Identifica muy pocas actividades y no distingue modalidades.", "Identifica las actividades principales y una sola modalidad de transporte.", "Identifica las actividades principales y las modalidades terrestre y marítima.", "Identificación completa, con fuentes y todas las modalidades que aplican."]], ["Representación SIG de los flujos", "RA2 e", 3, ["Mapa incompleto o sin georreferenciar; los flujos no se distinguen.", "Representa flujos básicos con errores de escala o de simbología.", "Flujos bien representados, con simbología, leyenda y escala correctas.", "Mapa profesional: flujos jerarquizados, capas ordenadas y lectura inmediata."]], ["Tabla de datos asociada", "RA2 e, f", 2, ["No hay tabla o no se corresponde con el mapa.", "Tabla incompleta o sin fuentes.", "Tabla completa y coherente con el mapa, con fuentes.", "Tabla completa, con fuentes y fecha de cada dato, lista para actualizar."]], ["Mantenimiento de la base de datos y del mapa", "RA2 f", 3, ["No plantea cómo actualizar el mapa.", "Plantea la actualización de forma genérica, sin responsable ni periodicidad.", "Define responsable, periodicidad y fuentes de actualización.", "Plan de mantenimiento completo que incluye nuevos asentamientos, cambios de rutas y crecimiento urbano."]]], "art": "Visor web del mapa de La Isleta con capas activables (riesgos de EVB y recursos de GE6) para presentar el reto conjunto.", "aev": "AEV2.1", "mod": "EVB 1502 · Evaluación de riesgos y medidas preventivas"}}</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
 <title>Mapa de Riesgos de La Isleta</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -85,6 +85,16 @@ th.num{text-align:right}
 .stat span{font-size:.82rem;color:var(--muted)}
 @media (max-width:600px){.top{position:static}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.rubfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:999px;padding:.7rem 1.1rem;background:var(--signal);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+.rubdlg{width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--ink);padding:1rem}
+.rubdlg::backdrop{background:rgba(10,20,40,.55)}
+.rubdlg .rub-h{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.rubdlg .rub-x{border:0;background:none;color:inherit;font-size:1.6rem;cursor:pointer;line-height:1}
+.rubdlg textarea,.rubdlg select{width:100%;margin-top:.3rem;font:inherit;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);padding:.35rem}
+.rubdlg .rub-t{display:flex;justify-content:space-between;align-items:center;margin:.8rem 0;padding:.6rem .8rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.rubdlg .rub-t b{font-size:1.4rem}
+.rubdlg .row-btn{display:flex;justify-content:flex-end}
+@media print{.rubfab{display:none}}
 
 .mk-tools{display:flex;flex-wrap:wrap;gap:.4rem}
 .mk-t{display:inline-flex;gap:.4rem;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.25rem .7rem .25rem .3rem;cursor:pointer;font-weight:600;font-size:.88rem}
@@ -202,6 +212,60 @@ const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){l
    ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
    ["word/document.xml",doc],["word/styles.xml",styles]])}
  return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+/* Rúbrica de la AEV + informe PDF. Solo se activa en la web, donde site.py inyecta window.RUBRICAS.
+   auto(key) devuelve, por criterio, [r 0..1, evidencia] o null (lo autoevalúa el alumno con justificación). */
+const words=s=>String(s??"").trim().split(/\s+/).filter(Boolean).length;
+const clamp01=x=>Math.max(0,Math.min(1,x||0));
+function rubrica(o){const R=window.RUBRICAS;if(!R)return;
+ const keys=Object.keys(R),q=new URLSearchParams(location.search).get("aev"),key=keys.includes(q)?q:keys[0],RB=R[key];
+ const NIV=["Insuficiente","Suficiente","Notable","Sobresaliente"],F=[.25,.5,.75,1],lv=r=>r<.35?0:r<.6?1:r<.85?2:3;
+ const SK="rub_"+key;let st=store.get(SK,{al:"",gr:"",self:{}});const sv=()=>store.set(SK,st);
+ function calc(){const A=o.auto(key)||[];return RB.rub.map(([t,ce,max,d],i)=>{const a=A[i];
+  if(a){const n=lv(clamp01(a[0]));return{t,ce,max,d,n,auto:true,ev:a[1]||"",pts:max*F[n]}}
+  const s=st.self[i]||{},ok=s.n!=null&&words(s.j)>=12,n=ok?s.n:0;
+  return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
+ const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
+ const b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b);
+ const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
+ function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
+  dl.innerHTML=`<div class="rub-h"><div><p class="eyebrow">${esc(RB.aev)} · ${esc(RB.mod)}</p><h3>${esc(RB.titulo)}</h3><p class="small muted">${esc(RB.ra_ce)}</p></div><button type="button" class="rub-x" aria-label="Cerrar">×</button></div>
+  <div class="grid2"><label class="f">Nombre y apellidos<input type="text" id="rubAl" value="${esc(st.al)}"></label><label class="f">Grupo<input type="text" id="rubGr" value="${esc(st.gr)}"></label></div>
+  <p class="small muted">«Auto» = lo calcula la herramienta con tu trabajo. En el resto elige tu nivel y justifícalo (mínimo 12 palabras); sin justificación cuenta como Insuficiente. El docente valida la nota final.</p>
+  <div class="tbl"><table><thead><tr><th>Criterio</th><th>Nivel</th><th class="num">Puntos</th></tr></thead><tbody>${C.map((c,i)=>`<tr><td><b>${esc(c.t)}</b><div class="small muted">${esc(c.ce)} · máx. ${fmt(c.max)}</div>
+   ${c.auto?`<div class="small">${esc(c.ev)}</div>`:`<textarea rows="2" data-j="${i}" placeholder="Justifica tu nivel con lo que has hecho">${esc(c.ev)}</textarea>`}<div class="small muted">${esc(c.d[c.n])}</div></td>
+   <td>${c.auto?`<span class="pill">Auto</span> ${NIV[c.n]}`:`<select data-n="${i}" aria-label="Nivel"><option value="">Elige…</option>${NIV.map((n,k)=>`<option value="${k}" ${c.sel===k?"selected":""}>${n}</option>`).join("")}</select>${c.sel!=null&&!c.ok?'<div class="small" style="color:var(--ko)">Falta justificar</div>':""}`}</td>
+   <td class="num">${fmt(c.pts)}</td></tr>`).join("")}</tbody></table></div>
+  <div class="rub-t"><span>Nota propuesta</span><b>${fmt(tot)} / 10</b></div>
+  <div class="row-btn"><button type="button" class="btn" id="rubPdf">Descargar informe PDF</button></div>`;
+  dl.querySelector(".rub-x").onclick=()=>dl.close();
+  dl.querySelector("#rubAl").oninput=e=>{st.al=e.target.value;sv()};dl.querySelector("#rubGr").oninput=e=>{st.gr=e.target.value;sv()};
+  dl.querySelectorAll("[data-n]").forEach(s=>s.onchange=()=>{const i=s.dataset.n;st.self[i]={...(st.self[i]||{}),n:s.value===""?null:+s.value};sv();draw()});
+  dl.querySelectorAll("[data-j]").forEach(t=>{t.oninput=()=>{const i=t.dataset.j;st.self[i]={...(st.self[i]||{}),j:t.value};sv()};t.onchange=draw});
+  dl.querySelector("#rubPdf").onclick=()=>pdf(calc())}
+ b.onclick=()=>{draw();dl.showModal?dl.showModal():dl.setAttribute("open","")};
+ const load=src=>new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
+ async function libs(){if(window.jspdf?.jsPDF?.API?.autoTable)return;
+  try{await load("../vendor/jspdf.umd.min.js");await load("../vendor/jspdf.plugin.autotable.min.js")}
+  catch(e){await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js")}}
+ // helvetica de jsPDF solo trae Latin-1/WinAnsi
+ const T=s=>String(s??"").replace(/[≥]/g,">=").replace(/[≤]/g,"<=").replace(/[→]/g,"->").replace(/[✓]/g,"OK").replace(/[✗]/g,"X").replace(/[‑‒]/g,"-").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
+ async function pdf(C){if(!st.al.trim()){toast("Escribe tu nombre antes de descargar el informe");dl.querySelector("#rubAl").focus();return}
+  try{await libs()}catch(e){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"}),M=16,W=210,tot=C.reduce((a,c)=>a+c.pts,0);let y=0;
+  doc.setFillColor(31,58,104);doc.rect(0,0,W,24,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text(T("Informe de evaluación · "+RB.aev),M,11);
+  doc.setFont("helvetica","normal");doc.setFontSize(9);doc.text(T(RB.mod),M,18);y=32;doc.setTextColor(20,32,51);
+  doc.setFont("helvetica","bold");doc.setFontSize(12);doc.splitTextToSize(T(RB.titulo),W-2*M).forEach(l=>{doc.text(l,M,y);y+=5.5});
+  const tb=o2=>{doc.autoTable(Object.assign({startY:y,margin:{left:M,right:M},theme:"grid",styles:{font:"helvetica",fontSize:8.5,cellPadding:1.8,textColor:[20,32,51],lineColor:[211,218,228],lineWidth:.2},headStyles:{fillColor:[31,58,104],textColor:255}},o2));y=doc.lastAutoTable.finalY+6};
+  y+=2;tb({body:[["Alumno/a",T(st.al)],["Grupo",T(st.gr||"—")],["Fecha",new Date().toLocaleDateString("es-ES")],["Herramienta",T(document.title)],["RA y CE",T(RB.ra_ce)]],columnStyles:{0:{fontStyle:"bold",cellWidth:35}}});
+  tb({head:[["Criterio (RA · CE)","Nivel","Origen","Puntos"]],body:C.map(c=>[T(c.t+"\n"+c.ce),NIV[c.n],c.auto?"Herramienta":c.ok?"Autoevaluación":"Sin justificar",fmt(c.pts)+" / "+fmt(c.max)]).concat([[{content:"Nota propuesta",colSpan:3,styles:{fontStyle:"bold",halign:"right"}},{content:fmt(tot)+" / 10",styles:{fontStyle:"bold"}}]]),columnStyles:{3:{halign:"right",cellWidth:24},1:{cellWidth:26},2:{cellWidth:28}}});
+  tb({head:[["Criterio","Evidencia o justificación","Descriptor del nivel alcanzado"]],body:C.map(c=>[T(c.t),T(c.ev||"—"),T(c.d[c.n])]),columnStyles:{0:{cellWidth:38}}});
+  const rs=o.resumen?o.resumen(key):[];if(rs.length)tb({head:[["Resumen del trabajo en la herramienta",""]],body:rs.map(r=>[T(r[0]),T(r[1])]),columnStyles:{0:{fontStyle:"bold",cellWidth:55}}});
+  if(y>250){doc.addPage();y=20}
+  doc.setFontSize(8.5);doc.setFont("helvetica","normal");doc.splitTextToSize(T("Nota propuesta por la herramienta según la rúbrica de la AEV (cada criterio suma el 25 %, 50 %, 75 % o 100 % de su valor). Los criterios autoevaluados y la calificación final los valida el docente."),W-2*M).forEach(l=>{doc.text(l,M,y);y+=4});
+  y+=8;doc.text("Calificación final del docente: ________ / 10",M,y);doc.text("Firma: ______________________",W-M-60,y);
+  const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
+  const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
+  saveFile(fn,doc.output("blob"))}}
 
 "use strict";
 const CFG={key:"isl_v1",file:"mapa_isleta",
@@ -292,6 +356,15 @@ $("#docB").onclick=async()=>{const M=MK.M,D=DOCX,img=await MK.png(),d=M.d||{};
  b+=D.H1("Mantenimiento")+D.tbl(null,[["Responsable",d.resp||""],["Periodicidad",d.per||""],["Última revisión",fmtD(d.fec)],["Fuentes de datos",d.fue||""],["Cambios a vigilar",d.cam||""]]);
  saveFile("Mapa_riesgos_La_Isleta.docx",D.build(b,false,img?[img]:[]))};
 MK.init();
+rubrica({auto(){const M=MK.M,d=M.d||{},n=ids=>M.f.filter(f=>ids.includes(f.l)).length,has=l=>n([l])?1:0;
+ if(M.ej)return Array(4).fill([0,"Sigue cargado el ejemplo: crea tu propio mapa."]);
+ const nf=M.f.length,nom=nf?M.f.filter(f=>words(f.n)>=2).length/nf:0,fu=nf?M.f.filter(f=>(f.o||"").trim().length>=10).length/nf:0,capas=new Set(M.f.map(f=>f.l)).size;
+ const mf=["resp","per","fec","fue"].filter(k=>(d[k]||"").trim()).length;
+ return[[(clamp01(n(["rt"])/3)+has("mt")+has("mm"))/3,`${n(["rt"])} riesgos tecnológicos; flujo terrestre ${has("mt")?"sí":"no"}, marítimo ${has("mm")?"sí":"no"}.`],
+  [(clamp01(n(["mt","mm"])/3)+nom+clamp01(capas/5))/3,`${n(["mt","mm"])} flujos de MMPP, ${capas} capas usadas, ${Math.round(nom*100)} % de elementos con nombre descriptivo.`],
+  [fu,`${Math.round(fu*100)} % de los elementos con fuente y fecha anotadas.`],
+  [(mf/4+clamp01(words(d.cam)/15))/2,`Plan de mantenimiento: ${mf} de 4 datos completados; cambios a vigilar en ${words(d.cam)} palabras.`]]},
+ resumen(){const M=MK.M;return[["Elementos del mapa",String(M.f.length)],["Riesgos",String(M.f.filter(f=>["rt","rn","ra"].includes(f.l)).length)],["Recursos GE6",String(M.f.filter(f=>["hi","bs","pr"].includes(f.l)).length)]]}});
 </script>
 
 </body></html>

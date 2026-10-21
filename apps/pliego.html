@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><script>(function(){var K=["evb:AEV6.1"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});if(K.length&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p></main>";show()})})()</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<!doctype html><html lang="es"><head><script>(function(){var K=["evb:AEV6.1"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});if(K.length&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p></main>";show()})})()</script><script>window.RUBRICAS={"evb:AEV6.1": {"titulo": "Reto ABR (con GE6): pliego de prescripciones técnicas de un estudio de riesgos y acta de recepción", "ra_ce": "RA1: g, h, i · RA2: g, h, i · RA3: f, g, h · RA4: i", "peso": "9,00%", "rub": [["Organismos y empresas especializadas: solvencia", "RA1 g · RA2 g · RA3 f", 2, ["No identifica organismos ni requisitos de solvencia.", "Cita organismos sin requisitos de solvencia concretos.", "Identifica organismos y requisitos de solvencia legal y técnica.", "Requisitos proporcionados al objeto y bien justificados."]], ["Pliego de prescripciones técnicas y cláusulas", "RA1 h · RA2 h · RA3 g", 4, ["Pliego incompleto, sin metodología ni entregables.", "Pliego con apartados básicos pero metodología o precisión poco definidas.", "Pliego completo con metodología, precisión, plazos, presupuesto y cláusulas principales.", "Pliego de calidad profesional, coherente con pliegos reales y con criterios de adjudicación medibles."]], ["Supervisión y acta de recepción", "RA1 i · RA2 i · RA3 h", 2, ["No hay supervisión ni acta.", "Acta sin comprobación de las condiciones del pliego.", "Lista de supervisión y acta que comprueban el pliego.", "Supervisión por hitos y acta con reparos razonados y plazos de subsanación."]], ["Coste-beneficio de las medidas", "RA4 i", 2, ["No evalúa el coste-beneficio.", "Compara costes sin valorar beneficios.", "Compara costes y beneficios de dos medidas.", "Análisis cuantificado que justifica la medida más eficiente."]]], "art": "Generador guiado de pliego técnico (formulario paso a paso que produce el documento en Word) y lista de supervisión enlazada.", "aev": "AEV6.1", "mod": "EVB 1502 · Evaluación de riesgos y medidas preventivas"}}</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
 <title>Generador de Pliego Técnico</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -85,6 +85,16 @@ th.num{text-align:right}
 .stat span{font-size:.82rem;color:var(--muted)}
 @media (max-width:600px){.top{position:static}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.rubfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:999px;padding:.7rem 1.1rem;background:var(--signal);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+.rubdlg{width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--ink);padding:1rem}
+.rubdlg::backdrop{background:rgba(10,20,40,.55)}
+.rubdlg .rub-h{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.rubdlg .rub-x{border:0;background:none;color:inherit;font-size:1.6rem;cursor:pointer;line-height:1}
+.rubdlg textarea,.rubdlg select{width:100%;margin-top:.3rem;font:inherit;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);padding:.35rem}
+.rubdlg .rub-t{display:flex;justify-content:space-between;align-items:center;margin:.8rem 0;padding:.6rem .8rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.rubdlg .rub-t b{font-size:1.4rem}
+.rubdlg .row-btn{display:flex;justify-content:flex-end}
+@media print{.rubfab{display:none}}
 
 .rows{display:grid;gap:.4rem}
 .row{display:grid;gap:.4rem;align-items:center}
@@ -246,6 +256,60 @@ const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){l
    ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
    ["word/document.xml",doc],["word/styles.xml",styles]])}
  return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+/* Rúbrica de la AEV + informe PDF. Solo se activa en la web, donde site.py inyecta window.RUBRICAS.
+   auto(key) devuelve, por criterio, [r 0..1, evidencia] o null (lo autoevalúa el alumno con justificación). */
+const words=s=>String(s??"").trim().split(/\s+/).filter(Boolean).length;
+const clamp01=x=>Math.max(0,Math.min(1,x||0));
+function rubrica(o){const R=window.RUBRICAS;if(!R)return;
+ const keys=Object.keys(R),q=new URLSearchParams(location.search).get("aev"),key=keys.includes(q)?q:keys[0],RB=R[key];
+ const NIV=["Insuficiente","Suficiente","Notable","Sobresaliente"],F=[.25,.5,.75,1],lv=r=>r<.35?0:r<.6?1:r<.85?2:3;
+ const SK="rub_"+key;let st=store.get(SK,{al:"",gr:"",self:{}});const sv=()=>store.set(SK,st);
+ function calc(){const A=o.auto(key)||[];return RB.rub.map(([t,ce,max,d],i)=>{const a=A[i];
+  if(a){const n=lv(clamp01(a[0]));return{t,ce,max,d,n,auto:true,ev:a[1]||"",pts:max*F[n]}}
+  const s=st.self[i]||{},ok=s.n!=null&&words(s.j)>=12,n=ok?s.n:0;
+  return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
+ const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
+ const b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b);
+ const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
+ function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
+  dl.innerHTML=`<div class="rub-h"><div><p class="eyebrow">${esc(RB.aev)} · ${esc(RB.mod)}</p><h3>${esc(RB.titulo)}</h3><p class="small muted">${esc(RB.ra_ce)}</p></div><button type="button" class="rub-x" aria-label="Cerrar">×</button></div>
+  <div class="grid2"><label class="f">Nombre y apellidos<input type="text" id="rubAl" value="${esc(st.al)}"></label><label class="f">Grupo<input type="text" id="rubGr" value="${esc(st.gr)}"></label></div>
+  <p class="small muted">«Auto» = lo calcula la herramienta con tu trabajo. En el resto elige tu nivel y justifícalo (mínimo 12 palabras); sin justificación cuenta como Insuficiente. El docente valida la nota final.</p>
+  <div class="tbl"><table><thead><tr><th>Criterio</th><th>Nivel</th><th class="num">Puntos</th></tr></thead><tbody>${C.map((c,i)=>`<tr><td><b>${esc(c.t)}</b><div class="small muted">${esc(c.ce)} · máx. ${fmt(c.max)}</div>
+   ${c.auto?`<div class="small">${esc(c.ev)}</div>`:`<textarea rows="2" data-j="${i}" placeholder="Justifica tu nivel con lo que has hecho">${esc(c.ev)}</textarea>`}<div class="small muted">${esc(c.d[c.n])}</div></td>
+   <td>${c.auto?`<span class="pill">Auto</span> ${NIV[c.n]}`:`<select data-n="${i}" aria-label="Nivel"><option value="">Elige…</option>${NIV.map((n,k)=>`<option value="${k}" ${c.sel===k?"selected":""}>${n}</option>`).join("")}</select>${c.sel!=null&&!c.ok?'<div class="small" style="color:var(--ko)">Falta justificar</div>':""}`}</td>
+   <td class="num">${fmt(c.pts)}</td></tr>`).join("")}</tbody></table></div>
+  <div class="rub-t"><span>Nota propuesta</span><b>${fmt(tot)} / 10</b></div>
+  <div class="row-btn"><button type="button" class="btn" id="rubPdf">Descargar informe PDF</button></div>`;
+  dl.querySelector(".rub-x").onclick=()=>dl.close();
+  dl.querySelector("#rubAl").oninput=e=>{st.al=e.target.value;sv()};dl.querySelector("#rubGr").oninput=e=>{st.gr=e.target.value;sv()};
+  dl.querySelectorAll("[data-n]").forEach(s=>s.onchange=()=>{const i=s.dataset.n;st.self[i]={...(st.self[i]||{}),n:s.value===""?null:+s.value};sv();draw()});
+  dl.querySelectorAll("[data-j]").forEach(t=>{t.oninput=()=>{const i=t.dataset.j;st.self[i]={...(st.self[i]||{}),j:t.value};sv()};t.onchange=draw});
+  dl.querySelector("#rubPdf").onclick=()=>pdf(calc())}
+ b.onclick=()=>{draw();dl.showModal?dl.showModal():dl.setAttribute("open","")};
+ const load=src=>new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
+ async function libs(){if(window.jspdf?.jsPDF?.API?.autoTable)return;
+  try{await load("../vendor/jspdf.umd.min.js");await load("../vendor/jspdf.plugin.autotable.min.js")}
+  catch(e){await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js")}}
+ // helvetica de jsPDF solo trae Latin-1/WinAnsi
+ const T=s=>String(s??"").replace(/[≥]/g,">=").replace(/[≤]/g,"<=").replace(/[→]/g,"->").replace(/[✓]/g,"OK").replace(/[✗]/g,"X").replace(/[‑‒]/g,"-").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
+ async function pdf(C){if(!st.al.trim()){toast("Escribe tu nombre antes de descargar el informe");dl.querySelector("#rubAl").focus();return}
+  try{await libs()}catch(e){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"}),M=16,W=210,tot=C.reduce((a,c)=>a+c.pts,0);let y=0;
+  doc.setFillColor(31,58,104);doc.rect(0,0,W,24,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text(T("Informe de evaluación · "+RB.aev),M,11);
+  doc.setFont("helvetica","normal");doc.setFontSize(9);doc.text(T(RB.mod),M,18);y=32;doc.setTextColor(20,32,51);
+  doc.setFont("helvetica","bold");doc.setFontSize(12);doc.splitTextToSize(T(RB.titulo),W-2*M).forEach(l=>{doc.text(l,M,y);y+=5.5});
+  const tb=o2=>{doc.autoTable(Object.assign({startY:y,margin:{left:M,right:M},theme:"grid",styles:{font:"helvetica",fontSize:8.5,cellPadding:1.8,textColor:[20,32,51],lineColor:[211,218,228],lineWidth:.2},headStyles:{fillColor:[31,58,104],textColor:255}},o2));y=doc.lastAutoTable.finalY+6};
+  y+=2;tb({body:[["Alumno/a",T(st.al)],["Grupo",T(st.gr||"—")],["Fecha",new Date().toLocaleDateString("es-ES")],["Herramienta",T(document.title)],["RA y CE",T(RB.ra_ce)]],columnStyles:{0:{fontStyle:"bold",cellWidth:35}}});
+  tb({head:[["Criterio (RA · CE)","Nivel","Origen","Puntos"]],body:C.map(c=>[T(c.t+"\n"+c.ce),NIV[c.n],c.auto?"Herramienta":c.ok?"Autoevaluación":"Sin justificar",fmt(c.pts)+" / "+fmt(c.max)]).concat([[{content:"Nota propuesta",colSpan:3,styles:{fontStyle:"bold",halign:"right"}},{content:fmt(tot)+" / 10",styles:{fontStyle:"bold"}}]]),columnStyles:{3:{halign:"right",cellWidth:24},1:{cellWidth:26},2:{cellWidth:28}}});
+  tb({head:[["Criterio","Evidencia o justificación","Descriptor del nivel alcanzado"]],body:C.map(c=>[T(c.t),T(c.ev||"—"),T(c.d[c.n])]),columnStyles:{0:{cellWidth:38}}});
+  const rs=o.resumen?o.resumen(key):[];if(rs.length)tb({head:[["Resumen del trabajo en la herramienta",""]],body:rs.map(r=>[T(r[0]),T(r[1])]),columnStyles:{0:{fontStyle:"bold",cellWidth:55}}});
+  if(y>250){doc.addPage();y=20}
+  doc.setFontSize(8.5);doc.setFont("helvetica","normal");doc.splitTextToSize(T("Nota propuesta por la herramienta según la rúbrica de la AEV (cada criterio suma el 25 %, 50 %, 75 % o 100 % de su valor). Los criterios autoevaluados y la calificación final los valida el docente."),W-2*M).forEach(l=>{doc.text(l,M,y);y+=4});
+  y+=8;doc.text("Calificación final del docente: ________ / 10",M,y);doc.text("Firma: ______________________",W-M-60,y);
+  const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
+  const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
+  saveFile(fn,doc.output("blob"))}}
 
 "use strict";
 const EMPTY=()=>({d:{igic:7},fases:[{n:"Recopilación de información",i:1,w:3},{n:"Trabajo de campo y encuesta",i:3,w:4},{n:"Análisis y cartografía",i:6,w:5},{n:"Redacción y entrega",i:11,w:2}],pres:[{n:"Técnico/a responsable (horas)",q:0,p:0}],cris:[{n:"Precio",t:"Automático (fórmula)",p:0}],hits:[{n:"Entrega del plan de trabajo",w:1}],chk:{}});
@@ -297,6 +361,14 @@ $("#docS").onclick=()=>{const D=DOCX,d=S.d;
  b+=D.H1("Coste-beneficio de medidas de reducción del riesgo")+D.H2("Medida A")+P(d.cbA)+D.H2("Medida B")+P(d.cbB)+D.H2("Conclusión")+P(d.cbC);
  saveFile("Supervision_y_acta_recepcion.docx",D.build(b,false))};
 tabs(["obj","sol","tec","pla","pre","cla","sup"],"pli_tab");all();
+rubrica({auto(){const d=S.d,w=k=>words(d[k]),t=totals(),E=ents(),sc=S.cris.reduce((a,c)=>a+num(c.p),0);
+ const ok=E.length?E.filter(e=>S.chk[e]).length/E.length:0;
+ return[[(clamp01(w("empresas")/30)+clamp01(w("solE")/20)+clamp01(w("solT")/20))/3,`Organismos y empresas ${w("empresas")} palabras; solvencia económica ${w("solE")} y técnica ${w("solT")}.`],
+  [[w("objeto")?1:0,clamp01(w("alcance")/40),clamp01(w("necesidad")/30),clamp01(w("metodo")/40),w("precision")?1:0,clamp01(E.length/3),t.total>0?1:0,sc===100&&S.cris.filter(c=>c.n).length>=2?1:0,w("penal")?1:0].reduce((a,b)=>a+b)/9,
+   `Objeto, alcance, metodología y entregables (${E.length}); presupuesto ${t.total>0?"calculado":"vacío"}; criterios de adjudicación ${sc}/100 puntos; penalidades ${w("penal")?"sí":"no"}.`],
+  [(clamp01(S.hits.filter(h=>h.n).length/3)+ok+(w("acta")?1:0)+(w("reparos")&&w("subs")?1:0))/4,`${S.hits.filter(h=>h.n).length} hitos de control; ${Math.round(ok*100)} % de entregables supervisados; acta ${w("acta")?"redactada":"vacía"}.`],
+  [(clamp01(w("cbA")/40)+clamp01(w("cbB")/40)+clamp01(w("cbC")/30))/3,`Medida A ${w("cbA")}, medida B ${w("cbB")} y conclusión ${w("cbC")} palabras.`]]},
+ resumen(){const t=totals();return[["Objeto",S.d.objeto||"—"],["Presupuesto (IGIC incl.)",eur(t.total)],["Plazo",$("#plazo").textContent||"—"]]}});
 </script>
 
 </body></html>
