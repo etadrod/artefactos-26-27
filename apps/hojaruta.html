@@ -334,9 +334,11 @@ const MK=(()=>{
   for(let i=0,x=0;x<=W;i++,x+=g){s+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="2"/>`;if(x+g/2<W)s+=`<text x="${x+g/2}" y="26" text-anchor="middle" font-size="22" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="4" paint-order="stroke" font-family="Arial,sans-serif">${String.fromCharCode(65+i)}</text>`}
   for(let j=0,y=0;y<=H;j++,y+=g){s+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="2"/>`;if(y+g/2<H)s+=`<text x="10" y="${y+g/2+8}" font-size="22" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="4" paint-order="stroke" font-family="Arial,sans-serif">${j+1}</text>`}
   return s+`<text x="10" y="${H-12}" font-size="16" fill="#1F3A68" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">Cuadrícula de ${o.grid} m</text>`}
- const vb=()=>{const d=dims();return V||{x:0,y:0,w:d.w,h:d.h}};
- function zoom(f,cx,cy){const d=dims(),v=vb(),w=Math.min(d.w,Math.max(d.w/8,v.w/f)),h=w*d.h/d.w;cx=cx??v.x+v.w/2;cy=cy??v.y+v.h/2;
-  const x=Math.min(d.w-w,Math.max(0,cx-(cx-v.x)*w/v.w)),y=Math.min(d.h-h,Math.max(0,cy-(cy-v.y)*h/v.h));V=w>=d.w?null:{x,y,w,h};$("#mk-svg").setAttribute("viewBox",`${vb().x} ${vb().y} ${vb().w} ${vb().h}`)}
+ // CFG.ar: max alto/ancho de la ventana; si el mapa es más alto se recorta y se desplaza arrastrando
+ const AR=()=>{const d=dims();return Math.min(d.h/d.w,CFG.ar||Infinity)};
+ const vb=()=>{const d=dims(),h=d.w*AR();return V||{x:0,y:0,w:d.w,h}};
+ function zoom(f,cx,cy){const d=dims(),v=vb(),w=Math.min(d.w,Math.max(d.w/8,v.w/f)),h=w*AR();cx=cx??v.x+v.w/2;cy=cy??v.y+v.h/2;
+  const x=Math.min(d.w-w,Math.max(0,cx-(cx-v.x)*w/v.w)),y=Math.min(d.h-h,Math.max(0,cy-(cy-v.y)*h/v.h));V=w>=d.w&&h>=d.h?null:{x,y,w,h};$("#mk-svg").setAttribute("viewBox",`${vb().x} ${vb().y} ${vb().w} ${vb().h}`)}
  const sv=()=>{try{localStorage.setItem(CFG.key,JSON.stringify(M))}catch(e){toast("Memoria llena: la imagen de fondo es muy grande. Guarda en .json.",5000)}};
  const L=id=>CFG.layers.find(l=>l.id===id);
  const dims=()=>M.bg?{w:M.bg.w,h:M.bg.h}:{w:W0,h:H0};
@@ -373,7 +375,7 @@ const MK=(()=>{
  function bind(){const s=$("#mk-svg");
  s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.1:1/1.1,p[0],p[1])},{passive:false});
   s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
-  s.addEventListener("pointermove",e=>{if(!drag||!V)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;s.classList.add("drag");
+  s.addEventListener("pointermove",e=>{if(!drag||(drag.v.w>=dims().w&&drag.v.h>=dims().h))return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;s.classList.add("drag");
    const r=s.getBoundingClientRect(),d=dims(),k=drag.v.w/r.width;V={...drag.v,x:Math.min(d.w-drag.v.w,Math.max(0,drag.v.x-dx*k)),y:Math.min(d.h-drag.v.h,Math.max(0,drag.v.y-dy*k))};s.setAttribute("viewBox",`${V.x} ${V.y} ${V.w} ${V.h}`)});
   addEventListener("pointerup",()=>{if(drag&&drag.m)noClick=true;drag=null;s.classList.remove("drag")});
   $("#mk-zin").onclick=()=>zoom(1.25);$("#mk-zout").onclick=()=>zoom(1/1.25);(CFG.hideBtns||[]).forEach(id=>{const e=$("#"+id);if(e)e.hidden=true});$("#mk-zfit").onclick=()=>{V=null;render()};
