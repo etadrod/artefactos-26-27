@@ -1,0 +1,255 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Puesto de Control de Accesos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,18rem);gap:1.1rem;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:1fr}}
+.desk{display:grid;gap:1rem}
+.docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:1rem}
+.card{border-radius:10px;padding:.9rem;display:grid;gap:.5rem;position:relative;min-height:12rem;border:1px solid var(--line);background:var(--surface)}
+.card.acr{border-top:6px solid var(--acr,var(--navy))}
+.card.dni{background:color-mix(in srgb,var(--r2) 8%,var(--surface))}
+.card .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.card .v{font-weight:700}
+.card .row{display:flex;gap:.8rem;align-items:center}
+.ava{width:3.4rem;height:4.2rem;border-radius:6px;display:grid;place-items:center;font-family:var(--f-display);font-size:1.5rem;font-weight:700;color:var(--on-l);flex:none}
+.holo{position:absolute;right:.7rem;bottom:.7rem;width:2.6rem;height:2.6rem;border-radius:50%;background:conic-gradient(from 30deg,var(--r1),var(--r2),var(--r3),var(--r4),var(--r1));opacity:.85}
+.holo.no{background:var(--sunk);opacity:1;border:1px dashed var(--muted)}
+.req{font-size:1.05rem;background:var(--sunk);border-radius:6px;padding:.7rem .9rem}
+.dec{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.5rem}
+.dec button{padding:.7rem .6rem;border-radius:6px;border:2px solid var(--line);background:var(--surface);font-weight:700;cursor:pointer;text-align:left}
+.dec button[aria-pressed="true"]{border-color:var(--navy);background:color-mix(in srgb,var(--navy) 10%,var(--surface))}
+.dec button:disabled{cursor:default;opacity:.7}
+.guest{max-height:22rem;overflow:auto;display:grid;gap:.2rem;font-size:.9rem}
+.guest div{display:flex;justify-content:space-between;gap:.5rem;padding:.2rem .3rem;border-bottom:1px solid var(--line)}
+.guest div.hit{background:color-mix(in srgb,var(--warn) 25%,var(--surface))}
+.prog{display:flex;gap:.25rem;flex-wrap:wrap}
+.prog i{width:1.4rem;height:.5rem;border-radius:2px;background:var(--sunk)}
+.prog i.ok{background:var(--ok)}.prog i.ko{background:var(--ko)}.prog i.cur{background:var(--navy)}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Puesto de Control de Accesos</b><span>Simulación de acreditaciones en un evento · Networking del CIFP · Curso 2026-2027</span></div>
+    <div class="chips"><em>VIB · AEV1.1</em><em>RA1 a, b, f</em></div>
+  </div>
+</header>
+
+<main>
+  <div class="intro"><p class="eyebrow">Turno de control · 20/11/2026</p><h2>Comprueba, decide y registra</h2>
+    <p class="muted">Llegan 10 personas al acceso principal. Compara la acreditación con el documento de identidad y la lista de invitados, revisa fecha, zona y elementos de seguridad, y decide. Cada decisión queda en el registro del puesto.</p></div>
+  <div class="prog" id="prog" aria-label="Progreso"></div>
+  <div class="stage">
+    <div class="desk">
+      <p class="req" id="req"></p>
+      <div class="docs" id="docs"></div>
+      <section class="panel" aria-labelledby="hDec">
+        <h3 id="hDec">Decisión</h3>
+        <div class="dec" id="dec"></div>
+        <label class="f">Motivo<select id="mot"></select></label>
+        <div class="btns"><button class="btn" id="ok" type="button">Registrar decisión</button><button class="btn ghost" id="nx" type="button" hidden>Siguiente persona →</button></div>
+        <div id="fb"></div>
+      </section>
+    </div>
+    <aside class="panel" aria-labelledby="hG">
+      <h3 id="hG">Lista de acreditados</h3>
+      <input type="text" id="gq" placeholder="Buscar por apellido o DNI" aria-label="Buscar en la lista">
+      <div class="guest" id="guest"></div>
+      <p class="small muted">Zonas: A = stands y hall · B = salón de actos · C = zona organización (restringida).</p>
+    </aside>
+  </div>
+  <section class="panel" aria-labelledby="hReg">
+    <h3 id="hReg">Registro del puesto</h3>
+    <div class="tbl"><table><thead><tr><th>Hora</th><th>Nombre</th><th>DNI</th><th>Tipo</th><th>Decisión</th><th>Motivo</th><th>Resultado</th></tr></thead><tbody id="reg"></tbody></table></div>
+    <div class="btns"><span id="score" class="pill"></span><span class="spacer"></span><button class="btn ghost" id="csvB" type="button">Registro (.csv)</button><button class="btn" id="docB" type="button">Parte de servicio (.docx)</button><button class="btn warn" id="newR" type="button">Nueva ronda</button></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+
+"use strict";
+const DAY="2026-11-20";
+const TIPOS={Expositor:["var(--r1)","A"],Visitante:["var(--r2)","A"],Ponente:["var(--r4)","A,B"],Organización:["var(--r3)","A,B,C"],Proveedor:["var(--warn)","A"]};
+const DEC=[["ok","Permitir acceso"],["no","Denegar acceso"],["sup","Avisar al supervisor / acreditaciones"],["part","Permitir solo a zona autorizada"]];
+const MOT={ok:["Acreditación y documento correctos"],no:["Acreditación caducada","El nombre no coincide con el documento","No figura en la lista de acreditados","Acreditación sin elementos de seguridad (posible falsificación)","Sin documento de identidad"],sup:["Acreditación sin elementos de seguridad (posible falsificación)","No figura en la lista de acreditados","El nombre no coincide con el documento","Situación no prevista"],part:["Pide acceder a una zona no autorizada"]};
+const NOM=["Lucía","Carmen","Ayoze","Nayra","Javier","Yeray","María","Dácil","Iván","Raquel","Tanausú","Elena","Óscar","Saúl","Idaira","Pablo","Marta","Airam","Sara","Héctor"],AP=["Santana","Rodríguez","Suárez","Hernández","Medina","Cabrera","Ojeda","Quintana","Déniz","Falcón","Perera","Trujillo","Melián","Betancor","Sosa","Vega","Alemán","Ramírez"];
+/* Caso: [acción correcta, motivo correcto, explicación] según el fallo introducido */
+const FALLOS=[
+ ["none","ok","Acreditación y documento correctos","Todo coincide: nombre, DNI, fecha de validez, zona solicitada y holograma. Se permite el acceso y se registra."],
+ ["none","ok","Acreditación y documento correctos","Todo coincide. Recuerda comprobar siempre la foto con la persona y que la acreditación quede visible dentro del recinto."],
+ ["none","ok","Acreditación y documento correctos","Correcto. La persona queda identificada en el interior por su acreditación visible."],
+ ["cad","no","Acreditación caducada","La validez de la acreditación terminó antes de hoy. No se permite el acceso; se le indica que pase por el punto de acreditaciones."],
+ ["nom","no","El nombre no coincide con el documento","El nombre de la acreditación no coincide con el del documento. Las acreditaciones son personales e intransferibles."],
+ ["lista","sup","No figura en la lista de acreditados","El DNI no aparece en la lista. Sin denegar de forma tajante, se avisa al supervisor o a acreditaciones para que lo verifiquen, y la persona espera fuera del control."],
+ ["holo","sup","Acreditación sin elementos de seguridad (posible falsificación)","Falta el holograma. Puede ser una falsificación: se retiene la acreditación según protocolo y se avisa al supervisor, sin confrontación."],
+ ["zona","part","Pide acceder a una zona no autorizada","Su acreditación no incluye la zona que solicita. Puede acceder solo a las zonas autorizadas; se le indica y se comunica al puesto de esa zona."],
+ ["sindni","no","Sin documento de identidad","Sin documento no se puede comprobar la identidad. No se permite el acceso hasta que se identifique."]];
+let seed=Date.now()%2147483647;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647,pick=a=>a[Math.floor(rnd()*a.length)];
+function dni(){const n=String(Math.floor(rnd()*1e8)).padStart(8,"0");return n+"TRWAGMYFPDXBNJZSQVHLCKE"[+n%23]}
+function persona(){const tipo=pick(Object.keys(TIPOS));return{n:pick(NOM),a:pick(AP)+" "+pick(AP),dni:dni(),tipo,zonas:TIPOS[tipo][1],val:DAY,holo:true}}
+function ronda(){const G=Array.from({length:22},persona);const order=[0,1,2,3,4,5,6,7,8].sort(()=>rnd()-.5).concat([pick([0,1,2])]).sort(()=>rnd()-.5);
+ const cases=order.map((fi,i)=>{const[f,act,mot,why]=FALLOS[fi];const p={...G[i]};const c={p,doc:{n:p.n,a:p.a,dni:p.dni},act,mot,why,want:"A",inList:true};
+  if(f==="cad")p.val="2026-11-1"+Math.floor(rnd()*9);
+  if(f==="nom"){let o;do{o=pick(NOM)}while(o===p.n);c.doc.n=o}
+  if(f==="lista"){p.dni=dni();c.doc.dni=p.dni;c.inList=false}
+  if(f==="holo")p.holo=false;
+  if(f==="zona"){c.want=p.zonas.includes("C")?"C":p.zonas.includes("B")?"C":"B";if(p.tipo==="Organización"){p.tipo="Visitante";p.zonas="A";c.want="B"}}
+  if(f==="sindni")c.doc=null;
+  return c});
+ return{G,cases,i:0,log:[],seed}}
+let R=store.get("acc_r",null)||ronda();let sel=null;
+const ZN={A:"stands y hall",B:"salón de actos",C:"zona de organización"};
+const sv=()=>store.set("acc_r",R);
+function hora(i){const m=9*60+i*7+3;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")}
+function render(){const done=R.i>=R.cases.length,c=R.cases[Math.min(R.i,R.cases.length-1)];
+ $("#prog").innerHTML=R.cases.map((_,k)=>`<i class="${k<R.log.length?(R.log[k].ok?"ok":"ko"):k===R.i?"cur":""}"></i>`).join("");
+ const p=c.p,col=TIPOS[p.tipo][0],ini=(p.n[0]+p.a[0]).toUpperCase();
+ $("#req").innerHTML=done?"Ronda terminada. Revisa el registro y genera el parte de servicio.":`<b>${hora(R.i)}</b> · «Buenos días, vengo al Networking. Quiero ir a ${esc(ZN[c.want])}${c.want==="A"?"":" (zona "+c.want+")"}».`;
+ $("#docs").innerHTML=`<div class="card acr" style="--acr:${col}"><div class="k">Acreditación · Networking CIFP 2026</div><div class="row"><div class="ava" style="background:${col}">${ini}</div><div><div class="v">${esc(p.n+" "+p.a)}</div><div class="small">${esc(p.tipo)}</div><div class="small mono">DNI ${esc(p.dni)}</div></div></div><div class="grid2"><div><div class="k">Válida hasta</div><div class="v mono">${fmtD(p.val)}</div></div><div><div class="k">Zonas</div><div class="v mono">${esc(p.zonas)}</div></div></div><span class="holo ${p.holo?"":"no"}" title="${p.holo?"Holograma":"Sin holograma"}"></span></div>`+
+  (c.doc?`<div class="card dni"><div class="k">Documento nacional de identidad (simulado)</div><div class="row"><div class="ava" style="background:var(--muted)">${ini}</div><div><div class="k">Nombre</div><div class="v">${esc(c.doc.n)}</div><div class="k">Apellidos</div><div class="v">${esc(c.doc.a)}</div></div></div><div><div class="k">Número</div><div class="v mono">${esc(c.doc.dni)}</div></div></div>`:`<div class="card dni"><div class="k">Documento de identidad</div><p class="muted">«Me lo he dejado en el coche, pero tengo la acreditación».</p></div>`);
+ $("#dec").innerHTML=DEC.map(([k,t])=>`<button type="button" data-k="${k}" aria-pressed="${sel===k}" ${done||R.log.length>R.i?"disabled":""}>${t}</button>`).join("");
+ $$("#dec button").forEach(b=>b.onclick=()=>{sel=b.dataset.k;$("#mot").innerHTML=MOT[sel].map(m=>`<option>${m}</option>`).join("");render()});
+ if(!sel)$("#mot").innerHTML=`<option>Elige primero una decisión</option>`;
+ $("#ok").disabled=!sel||done||R.log.length>R.i;$("#nx").hidden=!(R.log.length>R.i)||done;
+ guest();regT()}
+function guest(){const q=$("#gq").value.trim().toLowerCase(),c=R.cases[Math.min(R.i,R.cases.length-1)];
+ $("#guest").innerHTML=R.G.filter(g=>!q||(g.a+" "+g.n+" "+g.dni).toLowerCase().includes(q)).sort((x,y)=>x.a.localeCompare(y.a,"es")).map(g=>`<div class="${q&&g.dni===c.p.dni?"hit":""}"><span>${esc(g.a)}, ${esc(g.n)}</span><span class="mono small">${esc(g.dni)}</span></div>`).join("")||`<p class="muted small">Sin resultados.</p>`}
+$("#gq").oninput=guest;
+$("#ok").onclick=()=>{const c=R.cases[R.i],m=$("#mot").value,okA=sel===c.act,okM=m===c.mot,ok=okA&&okM;
+ R.log.push({h:hora(R.i),n:c.p.n+" "+c.p.a,dni:c.p.dni,t:c.p.tipo,d:DEC.find(d=>d[0]===sel)[1],m,ok,why:c.why,exp:DEC.find(d=>d[0]===c.act)[1]+" · "+c.mot});sv();
+ $("#fb").innerHTML=`<p class="fb ${ok?"ok":"ko"}"><b>${ok?"Correcto.":okA?"Decisión correcta, motivo mejorable.":"Decisión incorrecta."}</b> ${esc(c.why)}${ok?"":`<br><span class="small">Esperado: ${esc(DEC.find(d=>d[0]===c.act)[1])} · ${esc(c.mot)}</span>`}</p>`;render()};
+$("#nx").onclick=()=>{R.i++;sel=null;$("#fb").innerHTML="";$("#gq").value="";sv();render()};
+function regT(){$("#reg").innerHTML=R.log.map(l=>`<tr><td class="mono">${l.h}</td><td>${esc(l.n)}</td><td class="mono">${esc(l.dni)}</td><td>${esc(l.t)}</td><td>${esc(l.d)}</td><td>${esc(l.m)}</td><td>${l.ok?'<span class="pill ok">Correcta</span>':'<span class="pill ko">Revisar</span>'}</td></tr>`).join("")||`<tr><td colspan="7" class="muted">Aún no hay registros.</td></tr>`;
+ const n=R.log.filter(l=>l.ok).length;$("#score").textContent=`${n} de ${R.log.length} correctas · nota orientativa ${R.log.length?(10*n/R.cases.length).toFixed(1).replace(".",","):"—"}`}
+$("#newR").onclick=()=>{R=ronda();sel=null;$("#fb").innerHTML="";sv();render()};
+$("#csvB").onclick=()=>saveFile("registro_accesos.csv",csv([["Hora","Nombre","DNI","Tipo","Decisión","Motivo","Resultado","Actuación esperada"],...R.log.map(l=>[l.h,l.n,l.dni,l.t,l.d,l.m,l.ok?"Correcta":"Revisar",l.exp])]));
+$("#docB").onclick=()=>{const D=DOCX,n=R.log.filter(l=>l.ok).length;let b=D.Title("Parte de servicio · Control de accesos")+D.tbl(null,[["Servicio","Control de accesos · Networking CIFP (simulación)"],["Fecha","20/11/2026"],["Vigilante","[Nombre y TIP simulada]"],["Personas atendidas",String(R.log.length)],["Decisiones correctas",`${n} de ${R.log.length}`]]);
+ b+=D.H1("Registro de accesos")+D.tbl(["Hora","Nombre","DNI","Tipo","Decisión","Motivo"],R.log.map(l=>[l.h,l.n,l.dni,l.t,l.d,l.m]));
+ b+=D.H1("Incidencias")+(R.log.filter(l=>l.d!=="Permitir acceso").map(l=>D.P(`${l.h} · ${l.n}: ${l.d}. Motivo: ${l.m}.`)).join("")||D.P("Sin incidencias."))+D.H1("Autoevaluación")+R.log.filter(l=>!l.ok).map(l=>D.P(`${l.h} · ${l.n}: esperado «${l.exp}». ${l.why}`)).join("")+D.P("[Reflexión del alumno/a sobre las decisiones a mejorar]");
+ saveFile("Parte_control_accesos.docx",D.build(b))};
+render();
+</script>
+
+</body></html>

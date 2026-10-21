@@ -1,0 +1,245 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Cuadrante del Dispositivo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.pal{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.pal button{display:inline-flex;gap:.4rem;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.25rem .7rem .25rem .3rem;cursor:pointer;font-weight:600;font-size:.88rem}
+.pal button i{width:1.1rem;height:1.1rem;border-radius:50%;display:inline-block;border:1px solid var(--line)}
+.pal button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset}
+.grid-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+table.q{border-collapse:separate;border-spacing:0;font-size:.82rem;width:auto;min-width:100%}
+table.q th,table.q td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:0;text-align:center}
+table.q th{padding:.3rem .35rem;font-family:var(--f-mono);font-weight:600;font-size:.75rem;background:var(--sunk);position:sticky;top:0}
+table.q th.who,table.q td.who{position:sticky;left:0;background:var(--surface);text-align:left;padding:.3rem .5rem;min-width:11rem;z-index:1;font-family:var(--f-body);font-size:.85rem}
+table.q th.who{background:var(--sunk);z-index:2}
+table.q td.c{width:2.6rem;min-width:2.6rem;height:2.1rem;cursor:pointer;font-family:var(--f-mono);font-weight:600;font-size:.7rem;color:var(--on-l)}
+table.q td.c.bad{outline:2px solid var(--ko);outline-offset:-3px}
+table.q td.tot{font-family:var(--f-mono);padding:0 .4rem}
+table.q tr.cov td{background:var(--sunk);font-family:var(--f-mono);font-size:.72rem;padding:.2rem 0}
+table.q tr.cov td.lack{background:color-mix(in srgb,var(--ko) 22%,var(--surface));color:var(--ko);font-weight:700}
+.alerts{display:grid;gap:.35rem}
+.alerts li{list-style:none}
+.alerts ul{margin:0;padding:0;display:grid;gap:.3rem}
+.ed{display:grid;gap:.4rem}
+.ed .r{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr) auto;gap:.4rem;align-items:center}
+.ed .r.p{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 4.2rem 4.2rem 3.6rem auto}
+@media (max-width:640px){.ed .r,.ed .r.p{grid-template-columns:1fr 1fr}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Cuadrante del Dispositivo</b><span>Turnos, relevos y cobertura de puestos de un dispositivo de riesgo previsible · Curso 2026-2027</span></div>
+    <div class="chips"><em>GE6 · AEV4.1</em><em>RA5 a, b, d</em><em>Reto con EVB</em></div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" id="tab-cuad" aria-controls="v-cuad">Cuadrante</button>
+    <button role="tab" id="tab-pers" aria-controls="v-pers">Personal y puestos</button>
+  </nav>
+</header>
+
+<main>
+  <section id="v-cuad" role="tabpanel" aria-labelledby="tab-cuad" class="panel">
+    <div class="intro"><p class="eyebrow" id="evEyebrow">Evento</p><h2 id="evTitle">Dispositivo</h2>
+      <p class="muted">Elige un puesto en la paleta y pulsa las casillas de cada persona para asignarlo por horas. Pulsa con «Descanso» o «Borrar» para liberar. Las alertas se recalculan al momento.</p></div>
+    <div class="pal" id="pal" role="group" aria-label="Paleta de puestos"></div>
+    <div class="grid-wrap"><table class="q" id="q"></table></div>
+    <div class="alerts" id="alerts"></div>
+    <div class="btns"><button class="btn" id="docx" type="button">Cuadrante y alertas (.docx)</button><button class="btn ghost" id="csvB" type="button">Exportar (.csv)</button><span class="spacer"></span><button class="btn ghost" id="jOut" type="button">Guardar (.json)</button><label class="btn ghost" for="jIn" style="cursor:pointer">Abrir</label><input type="file" id="jIn" accept=".json" hidden><button class="btn warn" id="reset" type="button">Cargar ejemplo de nuevo</button></div>
+  </section>
+
+  <section id="v-pers" role="tabpanel" aria-labelledby="tab-pers" class="panel" hidden>
+    <div class="grid3">
+      <label class="f">Evento<input type="text" id="e-name"></label>
+      <label class="f">Fecha<input type="date" id="e-date"></label>
+      <label class="f">Hora de inicio<input type="number" id="e-start" min="0" max="23"></label>
+      <label class="f">Horas de dispositivo<input type="number" id="e-hours" min="2" max="24"></label>
+      <label class="f">Máx. horas seguidas sin descanso<small>Según convenio o normativa [verificar]</small><input type="number" id="e-cont" min="1" max="12"></label>
+      <label class="f">Máx. horas por persona<small>Según convenio o normativa [verificar]</small><input type="number" id="e-max" min="1" max="24"></label>
+    </div>
+    <h3>Puestos</h3>
+    <div class="ed" id="edPu"></div>
+    <button class="btn ghost sm" id="addPu" type="button">+ Añadir puesto</button>
+    <h3>Personal</h3>
+    <div class="ed" id="edPe"></div>
+    <button class="btn ghost sm" id="addPe" type="button">+ Añadir persona</button>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+
+"use strict";
+const PERF=["Coordinación","Sanitario","Voluntariado PC","Seguridad","Comunicaciones","Logística"];
+const COLORS=["var(--r1)","var(--r2)","var(--r3)","var(--r4)","var(--warn)","var(--navy)","var(--ko)","var(--muted)"];
+const SAMPLE={ej:true,ev:{name:"Ejemplo · Día de La Isleta 2027",date:"2027-02-26",start:10,hours:12,cont:4,max:8},
+ pu:[{n:"Puesto de mando avanzado",c:"PMA",perf:"Coordinación",from:10,to:22,need:1},{n:"Puesto sanitario",c:"SAN",perf:"Sanitario",from:10,to:22,need:2},{n:"Control de accesos",c:"ACC",perf:"Voluntariado PC",from:10,to:22,need:2},{n:"Patrulla a pie",c:"PAT",perf:"Voluntariado PC",from:12,to:22,need:2},{n:"Emisora y enlace CECOES",c:"COM",perf:"Comunicaciones",from:10,to:22,need:1}],
+ pe:[["Coord. 1","Coordinación"],["Coord. 2","Coordinación"],["Sanit. 1","Sanitario"],["Sanit. 2","Sanitario"],["Sanit. 3","Sanitario"],["Sanit. 4","Sanitario"],["Volunt. 1","Voluntariado PC"],["Volunt. 2","Voluntariado PC"],["Volunt. 3","Voluntariado PC"],["Volunt. 4","Voluntariado PC"],["Volunt. 5","Voluntariado PC"],["Volunt. 6","Voluntariado PC"],["Radio 1","Comunicaciones"],["Radio 2","Comunicaciones"]].map(([n,p])=>({n,p})),a:{}};
+(()=>{const A=SAMPLE.a,set=(p,h0,h1,c)=>{for(let h=h0;h<h1;h++)A[p+"|"+h]=c};set(0,10,14,"PMA");set(0,15,16,"PMA");set(1,16,22,"PMA");set(2,10,14,"SAN");set(3,10,14,"SAN");set(4,14,18,"SAN");set(5,14,18,"SAN");set(2,18,22,"SAN");set(3,18,22,"SAN");
+ set(6,10,14,"ACC");set(7,10,14,"ACC");set(8,14,18,"ACC");set(9,14,19,"ACC");set(6,15,19,"PAT");set(7,15,19,"PAT");set(10,12,16,"PAT");set(11,12,16,"PAT");set(10,17,22,"ACC");set(11,19,22,"PAT");set(12,10,16,"COM");set(13,16,22,"COM")})();
+let S=store.get("turnos_v1",null)||JSON.parse(JSON.stringify(SAMPLE));let brush=S.pu[0]?.c||"";
+const sv=()=>store.set("turnos_v1",S);
+const hrs=()=>Array.from({length:S.ev.hours},(_,i)=>S.ev.start+i), hl=h=>String(h%24).padStart(2,"0")+":00";
+const col=c=>{const i=S.pu.findIndex(p=>p.c===c);return i<0?"var(--muted)":COLORS[i%COLORS.length]};
+function analyze(){const H=hrs(),al=[],bad=new Set(),cov={};
+ H.forEach(h=>S.pu.forEach(p=>{if(h>=p.from&&h<p.to){const n=S.pe.filter((_,i)=>S.a[i+"|"+h]===p.c).length;cov[p.c+"|"+h]=n;if(n<p.need)al.push(["ko",`${hl(h)} · ${p.n}: ${n} de ${p.need} personas`,"cov"])}}));
+ S.pe.forEach((pe,i)=>{let run=0,tot=0,over=false;H.forEach(h=>{const c=S.a[i+"|"+h];if(c&&c!=="DES"){run++;tot++;if(run>S.ev.cont){bad.add(i+"|"+h);over=true}}else run=0;
+   const p=S.pu.find(x=>x.c===c);if(p&&p.perf!==pe.p){bad.add(i+"|"+h)}if(p&&(h<p.from||h>=p.to))bad.add(i+"|"+h)});
+  if(over)al.push(["ko",`${pe.n}: supera ${S.ev.cont} h seguidas sin descanso`,"rest"]);
+  if(tot>S.ev.max)al.push(["ko",`${pe.n}: ${tot} h asignadas (máximo ${S.ev.max} h)`,"max"]);
+  const wrong=[...new Set(H.map(h=>S.pu.find(x=>x.c===S.a[i+"|"+h])).filter(p=>p&&p.perf!==pe.p).map(p=>p.c))];
+  if(wrong.length)al.push(["warn",`${pe.n} (${pe.p}) asignado a puestos de otro perfil: ${wrong.join(", ")}`,"perf"])});
+ const cov0=al.filter(a=>a[2]==="cov").length;return{al,bad,cov,cov0}}
+function render(){$("#evEyebrow").textContent=S.ej?"Ejemplo cargado · edítalo en «Personal y puestos»":"Evento";$("#evTitle").textContent=`${S.ev.name} · ${fmtD(S.ev.date)} · ${hl(S.ev.start)}–${hl(S.ev.start+S.ev.hours)}`;
+ $("#pal").innerHTML=[...S.pu.map(p=>[p.c,p.n,col(p.c)]),["DES","Descanso","var(--sunk)"],["","Borrar","var(--surface)"]].map(([c,n,k])=>`<button type="button" data-b="${esc(c)}" aria-pressed="${brush===c}"><i style="background:${k}"></i>${esc(c?c+" · "+n:n)}</button>`).join("");
+ $$("#pal button").forEach(b=>b.onclick=()=>{brush=b.dataset.b;render()});
+ const A=analyze(),H=hrs();
+ let t=`<thead><tr><th class="who">Persona · perfil</th>${H.map(h=>`<th>${hl(h)}</th>`).join("")}<th>Horas</th></tr></thead><tbody>`;
+ S.pe.forEach((pe,i)=>{let tot=0;t+=`<tr><td class="who">${esc(pe.n)}<br><span class="small muted">${esc(pe.p)}</span></td>`+H.map(h=>{const c=S.a[i+"|"+h]||"";if(c&&c!=="DES")tot++;const bg=c==="DES"?"var(--sunk)":c?col(c):"transparent";return `<td class="c${A.bad.has(i+"|"+h)?" bad":""}" data-k="${i}|${h}" style="background:${bg};${c==="DES"?"color:var(--muted)":""}" title="${esc(pe.n+" · "+hl(h))}">${c==="DES"?"D":esc(c)}</td>`}).join("")+`<td class="tot">${tot}</td></tr>`});
+ S.pu.forEach(p=>{t+=`<tr class="cov"><td class="who">Cobertura ${esc(p.c)} <span class="muted">(${p.need})</span></td>`+H.map(h=>{if(h<p.from||h>=p.to)return `<td>·</td>`;const n=A.cov[p.c+"|"+h];return `<td class="${n<p.need?"lack":""}">${n}</td>`}).join("")+`<td></td></tr>`});
+ $("#q").innerHTML=t+"</tbody>";
+ $$("#q td.c").forEach(td=>td.onclick=()=>{const k=td.dataset.k;if(brush)S.a[k]=brush;else delete S.a[k];S.ej=false;sv();render()});
+ $("#alerts").innerHTML=A.al.length?`<p><span class="pill ko">${A.al.length} alertas</span> ${A.cov0?`<span class="pill warn">${A.cov0} franjas sin cubrir</span>`:""}</p><ul>${A.al.map(([k,m])=>`<li class="fb ${k==="ko"?"ko":""}">${esc(m)}</li>`).join("")}</ul>`:`<p class="fb ok">Cuadrante sin alertas: todos los puestos cubiertos, descansos y máximos respetados.</p>`}
+function edit(){const E=S.ev;[["name","name"],["date","date"],["start","start"],["hours","hours"],["cont","cont"],["max","max"]].forEach(([id,k])=>{const el=$("#e-"+id);el.value=E[k];el.onchange=()=>{E[k]=el.type==="number"?Math.max(+el.min||0,+el.value||0):el.value;S.ej=false;sv();render()}});
+ $("#edPu").innerHTML=S.pu.map((p,i)=>`<div class="r p"><input type="text" value="${esc(p.n)}" data-pu="${i}" data-f="n" aria-label="Nombre del puesto"><select data-pu="${i}" data-f="perf" aria-label="Perfil requerido">${PERF.map(x=>`<option ${x===p.perf?"selected":""}>${x}</option>`).join("")}</select><input type="number" value="${p.from}" data-pu="${i}" data-f="from" aria-label="Desde (hora)"><input type="number" value="${p.to}" data-pu="${i}" data-f="to" aria-label="Hasta (hora)"><input type="number" min="1" value="${p.need}" data-pu="${i}" data-f="need" aria-label="Personas necesarias"><button class="btn ghost sm" data-delpu="${i}" type="button">Quitar</button></div>`).join("")+`<p class="small muted">Nombre · perfil requerido · desde (h) · hasta (h) · personas necesarias. El código es el que aparece en el cuadrante.</p>`;
+ $("#edPe").innerHTML=S.pe.map((p,i)=>`<div class="r"><input type="text" value="${esc(p.n)}" data-pe="${i}" data-f="n" aria-label="Nombre"><select data-pe="${i}" data-f="p" aria-label="Perfil">${PERF.map(x=>`<option ${x===p.p?"selected":""}>${x}</option>`).join("")}</select><button class="btn ghost sm" data-delpe="${i}" type="button">Quitar</button></div>`).join("");
+ $$("[data-pu]").forEach(x=>x.onchange=()=>{const p=S.pu[x.dataset.pu],f=x.dataset.f;p[f]=x.type==="number"?+x.value:x.value;if(f==="n"&&!p.cfix)p.c=uniq(p.n);S.ej=false;sv();render()});
+ $$("[data-pe]").forEach(x=>x.onchange=()=>{S.pe[x.dataset.pe][x.dataset.f]=x.value;S.ej=false;sv();render()});
+ $$("[data-delpu]").forEach(b=>b.onclick=()=>{const c=S.pu[b.dataset.delpu].c;S.pu.splice(+b.dataset.delpu,1);Object.keys(S.a).forEach(k=>{if(S.a[k]===c)delete S.a[k]});sv();edit();render()});
+ $$("[data-delpe]").forEach(b=>b.onclick=()=>{const i=+b.dataset.delpe,na={};S.pe.splice(i,1);Object.entries(S.a).forEach(([k,v])=>{const[p,h]=k.split("|").map(Number);if(p<i)na[k]=v;else if(p>i)na[(p-1)+"|"+h]=v});S.a=na;sv();edit();render()})}
+function uniq(n){let b=n.normalize("NFD").replace(/[^A-Za-z]/g,"").slice(0,3).toUpperCase()||"PUE",c=b,k=2;while(S.pu.filter(p=>p.c===c).length>1||S.pu.some(p=>p.c===c&&p.n!==n))c=b.slice(0,2)+k++;return c}
+$("#addPu").onclick=()=>{S.pu.push({n:"Puesto nuevo",c:uniq("Puesto nuevo"),perf:PERF[2],from:S.ev.start,to:S.ev.start+S.ev.hours,need:1});sv();edit();render()};
+$("#addPe").onclick=()=>{S.pe.push({n:"Persona "+(S.pe.length+1),p:PERF[2]});sv();edit();render()};
+$("#reset").onclick=()=>{const b=$("#reset");if(b.dataset.sure){S=JSON.parse(JSON.stringify(SAMPLE));brush=S.pu[0].c;sv();edit();render();b.textContent="Cargar ejemplo de nuevo";delete b.dataset.sure}else{b.dataset.sure=1;b.textContent="Se perderá tu cuadrante. Pulsa otra vez"}};
+$("#csvB").onclick=()=>{const H=hrs();saveFile("cuadrante.csv",csv([["Persona","Perfil",...H.map(hl),"Horas"],...S.pe.map((p,i)=>[p.n,p.p,...H.map(h=>S.a[i+"|"+h]||""),H.filter(h=>S.a[i+"|"+h]&&S.a[i+"|"+h]!=="DES").length])]))};
+$("#jOut").onclick=()=>saveFile("cuadrante.json",JSON.stringify(S));
+$("#jIn").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t);if(!o.ev||!o.pu||!o.pe)throw 0;S=o;brush=S.pu[0]?.c||"";sv();edit();render();toast("Cuadrante abierto")}).catch(()=>toast("Ese archivo no es un cuadrante de esta herramienta."));e.target.value=""};
+$("#docx").onclick=()=>{const D=DOCX,H=hrs(),A=analyze();let b=D.Title("Cuadrante de turnos y relevos")+D.P(`${S.ev.name} · ${fmtD(S.ev.date)} · ${hl(S.ev.start)}–${hl(S.ev.start+S.ev.hours)}`);
+ b+=D.H1("Puestos")+D.tbl(["Código","Puesto","Perfil","Franja","Personas"],S.pu.map(p=>[p.c,p.n,p.perf,hl(p.from)+"–"+hl(p.to),String(p.need)]));
+ b+=D.H1("Cuadrante (D = descanso)")+D.tbl(["Persona",...H.map(h=>String(h%24)),"h"],S.pe.map((p,i)=>[p.n,...H.map(h=>S.a[i+"|"+h]==="DES"?"D":S.a[i+"|"+h]||""),String(H.filter(h=>S.a[i+"|"+h]&&S.a[i+"|"+h]!=="DES").length)]));
+ b+=D.H1("Alertas")+(A.al.length?A.al.map(a=>D.P("• "+a[1])).join(""):D.P("Sin alertas."))+D.H1("Justificación del cuadrante")+D.P("[Explica los criterios de asignación, relevos y descansos]");
+ saveFile("Cuadrante_dispositivo.docx",D.build(b,true))};
+tabs(["cuad","pers"],"turnos_tab");edit();render();
+</script>
+
+</body></html>

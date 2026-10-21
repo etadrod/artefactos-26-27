@@ -1,0 +1,262 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Ronda en el Depósito de Explosivos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.ronda{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,20rem);gap:1rem;align-items:start}
+@media (max-width:900px){.ronda{grid-template-columns:1fr}}
+.map{width:100%;height:auto;max-width:100%;display:block;border:1px solid var(--line);border-radius:var(--radius);background:color-mix(in srgb,var(--warn) 9%,var(--surface))}
+.map .ground{fill:color-mix(in srgb,var(--warn) 14%,var(--surface))}
+.map .fence{fill:none;stroke:var(--ink);stroke-width:3;stroke-dasharray:10 5}
+.map .bld{fill:var(--sunk);stroke:var(--ink);stroke-width:2}
+.map .berm{fill:color-mix(in srgb,var(--ok) 25%,var(--surface));stroke:var(--ok);stroke-width:1.5}
+.map .road{fill:none;stroke:var(--muted);stroke-width:14;stroke-linecap:round;opacity:.35}
+.map text{fill:var(--ink);font:600 13px var(--f-body)}
+.map text.s{fill:var(--muted);font:12px var(--f-body)}
+.hs{cursor:pointer}
+.hs circle{fill:var(--navy);stroke:var(--surface);stroke-width:3}
+.hs text{fill:var(--navy-ink);font:700 12px var(--f-mono);pointer-events:none}
+.hs.ok circle{fill:var(--ok)}.hs.ko circle{fill:var(--ko)}
+.hs.cur circle{stroke:var(--signal);stroke-width:5}
+.hs:focus-visible circle{stroke:var(--signal);stroke-width:5}
+.obs{font-size:1.02rem;background:var(--sunk);border-radius:6px;padding:.7rem .9rem}
+.steps{display:grid;gap:.4rem;margin:0;padding:0;list-style:none}
+.steps li{display:flex;gap:.5rem;align-items:center;border:1px solid var(--line);border-radius:6px;padding:.45rem .6rem;background:var(--surface)}
+.steps li .t{flex:1;min-width:0}
+.steps li button{border:1px solid var(--line);background:var(--bg);border-radius:4px;width:2rem;height:2rem;cursor:pointer}
+.steps li.ok{border-color:var(--ok)}.steps li.ko{border-color:var(--ko)}
+.labels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:1rem}
+.lab{display:grid;gap:.5rem;justify-items:center;border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;background:var(--surface)}
+.lab select{width:100%}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Ronda en el Depósito de Explosivos</b><span>Vigilancia del almacenamiento: señalización, cerramientos, llaves y etiquetado · Curso 2026-2027</span></div>
+    <div class="chips"><em>VIB · AEV4.1</em><em>RA8 a, e, f</em></div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Partes">
+    <button role="tab" id="tab-ronda" aria-controls="v-ronda">1 · Ronda perimetral</button>
+    <button role="tab" id="tab-cierre" aria-controls="v-cierre">2 · Cierre y llaves</button>
+    <button role="tab" id="tab-etiq" aria-controls="v-etiq">3 · Etiquetas</button>
+    <button role="tab" id="tab-res" aria-controls="v-res">Resultado</button>
+  </nav>
+</header>
+
+<main>
+  <section id="v-ronda" role="tabpanel" aria-labelledby="tab-ronda" class="panel">
+    <div class="intro"><p class="eyebrow">Supuesto · depósito ficticio</p><h2>Ronda de vigilancia de las 22:00</h2>
+      <p class="muted">Recorre los 13 puntos del plano. En cada uno lee lo que observas y decide si está correcto o hay una deficiencia. Las deficiencias cambian en cada ronda.</p></div>
+    <div class="ronda">
+      <svg class="map" id="map" viewBox="0 0 900 560" role="img" aria-label="Plano del depósito con puntos de control"></svg>
+      <div class="panel" id="side"></div>
+    </div>
+  </section>
+
+  <section id="v-cierre" role="tabpanel" aria-labelledby="tab-cierre" class="panel" hidden>
+    <div class="intro"><p class="eyebrow">Custodia de llaves</p><h2>Ordena el cierre del depósito</h2>
+      <p class="muted">Pon los pasos en el orden correcto con las flechas. La referencia es el plan de seguridad del depósito [EDITABLE: adaptar al plan que se use en clase].</p></div>
+    <ol class="steps" id="steps"></ol>
+    <div class="btns"><button class="btn" id="chkSteps" type="button">Comprobar orden</button></div>
+    <div id="stepsFb"></div>
+  </section>
+
+  <section id="v-etiq" role="tabpanel" aria-labelledby="tab-etiq" class="panel" hidden>
+    <div class="intro"><p class="eyebrow">Clase 1 ADR</p><h2>¿Qué indica cada etiqueta?</h2>
+      <p class="muted">Identifica la división de riesgo de cada bulto según su etiqueta de clase 1. Comprueba las definiciones con el ADR vigente.</p></div>
+    <div class="labels" id="labels"></div>
+    <div class="btns"><button class="btn" id="chkLab" type="button">Comprobar etiquetas</button></div>
+  </section>
+
+  <section id="v-res" role="tabpanel" aria-labelledby="tab-res" class="panel" hidden>
+    <div class="intro"><p class="eyebrow">Parte de ronda</p><h2>Resultado</h2></div>
+    <div class="grid3" id="resK"></div>
+    <div class="tbl"><table><thead><tr><th>Punto</th><th>Observación</th><th>Tu valoración</th><th>Real</th></tr></thead><tbody id="resT"></tbody></table></div>
+    <div class="btns"><button class="btn" id="docB" type="button">Parte de ronda (.docx)</button><button class="btn warn" id="newR" type="button">Nueva ronda</button></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+
+"use strict";
+/* [id, nombre, x, y, observación correcta, observación con deficiencia, tipo de deficiencia] */
+const P=[
+ ["P1","Puerta principal del recinto",450,520,"Puerta cerrada con candado; cerradura sin daños.","La cadena de la puerta está puesta pero sin candado.","Cerramiento"],
+ ["P2","Valla perimetral norte",450,40,"Malla íntegra, tensa y sin huecos.","Malla cortada a ras de suelo: hueco de unos 40 cm.","Cerramiento"],
+ ["P3","Valla perimetral este",860,280,"Valla en buen estado y franja exterior limpia.","Vegetación seca acumulada junto a la valla.","Cerramiento"],
+ ["P4","Señal de acceso «Prohibido fumar y encender fuego»",380,500,"Señal fijada, visible y legible.","La señal está descolorida y no se lee.","Señalización"],
+ ["P5","Señal «Materias explosivas» del polvorín 1",250,150,"Señal fijada en la puerta del polvorín.","La señal está caída en el suelo.","Señalización"],
+ ["P6","Puerta del polvorín 1",250,250,"Puerta cerrada; cerradura intacta.","Marcas de palanca junto a la cerradura.","Cerramiento"],
+ ["P7","Puerta del polvorín 2",640,250,"Puerta cerrada y bloqueada.","Puerta entreabierta sin personal en la zona.","Cerramiento"],
+ ["P8","Merlón de protección del polvorín 2",640,120,"Talud continuo, sin erosión.","Erosión del talud con un hueco visible.","Cerramiento"],
+ ["P9","Cámara de CCTV del lado norte",130,60,"Cámara orientada a la valla norte, piloto encendido.","Cámara girada hacia el exterior: no cubre la valla.","Medios de seguridad"],
+ ["P10","Iluminación perimetral oeste",40,300,"Focos encendidos en todo el lado oeste.","Un foco fundido: tramo oeste a oscuras.","Medios de seguridad"],
+ ["P11","Extintor junto a la garita",560,470,"Precinto intacto, manómetro en zona verde.","Precinto roto y manómetro en zona roja.","Medios de seguridad"],
+ ["P12","Señal «Prohibido el paso a personas no autorizadas»",520,520,"Señal fijada junto a la puerta.","No hay señal: solo quedan los tornillos.","Señalización"],
+ ["P13","Libro de registro de la garita",610,500,"Libro al día con la última ronda anotada.","Última anotación de hace dos turnos.","Documentación"]];
+const STEPS=["Comprobar que no queda personal en el interior y que el material está en su sitio","Cerrar las puertas de los polvorines y comprobar el cierre","Cerrar la puerta del recinto","Activar el sistema de alarma y confirmar la recepción con la central","Depositar las llaves en el lugar de custodia que fija el plan de seguridad","Anotar en el libro de registro la hora de cierre, las llaves y el responsable"];
+const DIV={"1.1":"Riesgo de explosión en masa","1.2":"Riesgo de proyección sin explosión en masa","1.3":"Riesgo de incendio con ligero riesgo de explosión o proyección","1.4":"Sin riesgo significativo de explosión","1.5":"Materias muy poco sensibles con riesgo de explosión en masa","1.6":"Objetos extremadamente poco sensibles"};
+let seed=Date.now()%2147483647;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const shuf=a=>a.map(x=>[rnd(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+function nueva(){const ko=new Set(shuf(P.map(p=>p[0])).slice(0,5));return{ko:[...ko],v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:shuf(Object.keys(DIV)).slice(0,4).map(d=>({d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]})),la:{},lDone:false}}
+let R=store.get("dep_r",null)||nueva();const sv=()=>store.set("dep_r",R);
+function map(){const hs=P.map(p=>{const v=R.v[p[0]];return `<g class="hs ${v?(v.ok==="C"?"ok":"ko"):""} ${R.cur===p[0]?"cur":""}" data-id="${p[0]}" tabindex="0" role="button" aria-label="${esc(p[0]+" "+p[1])}"><circle cx="${p[2]}" cy="${p[3]}" r="16"/><text x="${p[2]}" y="${p[3]+4}" text-anchor="middle">${p[0].slice(1)}</text></g>`}).join("");
+ $("#map").innerHTML=`<rect class="ground" x="0" y="0" width="900" height="560"/><path class="road" d="M450 560 L450 420 L250 420 M450 420 L640 420"/>
+ <rect class="fence" x="40" y="40" width="820" height="480"/>
+ <path class="berm" d="M150 110 h200 v190 h-40 v-150 h-120 v150 h-40z"/><rect class="bld" x="200" y="160" width="100" height="90"/><text x="250" y="210" text-anchor="middle">Polvorín 1</text>
+ <path class="berm" d="M540 80 h200 v220 h-40 v-180 h-120 v180 h-40z"/><rect class="bld" x="590" y="160" width="100" height="90"/><text x="640" y="210" text-anchor="middle">Polvorín 2</text>
+ <rect class="bld" x="580" y="450" width="70" height="50"/><text x="615" y="480" text-anchor="middle" class="s">Garita</text>
+ <text x="450" y="548" text-anchor="middle" class="s">Acceso</text><text x="760" y="510" class="s">Merlones en verde</text>${hs}`;
+ $$(".hs").forEach(g=>{const go=()=>{R.cur=g.dataset.id;sv();map();side()};g.onclick=go;g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}})}
+function side(){const S=$("#side"),done=Object.keys(R.v).length;if(!R.cur){S.innerHTML=`<h3>Puntos revisados: ${done}/13</h3><p class="muted">Pulsa un punto del plano para acercarte.</p>`;return}
+ const p=P.find(x=>x[0]===R.cur),ko=R.ko.includes(p[0]),v=R.v[p[0]]||{};
+ S.innerHTML=`<p class="eyebrow">${esc(p[0])}</p><h3>${esc(p[1])}</h3><p class="obs">${esc(ko?p[5]:p[4])}</p>
+ <div class="seg" role="group" aria-label="Valoración"><button type="button" data-o="C" aria-pressed="${v.ok==="C"}">Correcto</button><button type="button" data-o="D" aria-pressed="${v.ok==="D"}">Deficiencia</button></div>
+ ${v.ok==="D"?`<label class="f">Tipo<select id="tipo">${["Cerramiento","Señalización","Medios de seguridad","Documentación"].map(t=>`<option ${v.t===t?"selected":""}>${t}</option>`).join("")}</select></label><label class="f">Actuación<input type="text" id="act" value="${esc(v.a||"")}" placeholder="Qué haces y a quién lo comunicas"></label>`:""}
+ <p class="small muted">Puntos revisados: ${done}/13</p>`;
+ S.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{R.v[p[0]]={...v,ok:b.dataset.o,t:v.t||"Cerramiento"};sv();map();side()});
+ const t=$("#tipo");if(t)t.onchange=()=>{R.v[p[0]].t=t.value;sv()};const a=$("#act");if(a)a.oninput=()=>{R.v[p[0]].a=a.value;sv()}}
+function steps(){$("#steps").innerHTML=R.order.map((s,k)=>`<li class="${R.sDone?(s===k?"ok":"ko"):""}"><span class="mono">${k+1}</span><span class="t">${esc(STEPS[s])}</span><button type="button" data-u="${k}" aria-label="Subir">↑</button><button type="button" data-d="${k}" aria-label="Bajar">↓</button></li>`).join("");
+ $$("[data-u]").forEach(b=>b.onclick=()=>mv(+b.dataset.u,-1));$$("[data-d]").forEach(b=>b.onclick=()=>mv(+b.dataset.d,1))}
+function mv(k,d){const j=k+d;if(j<0||j>=R.order.length)return;[R.order[k],R.order[j]]=[R.order[j],R.order[k]];R.sDone=false;$("#stepsFb").innerHTML="";sv();steps()}
+$("#chkSteps").onclick=()=>{R.sDone=true;sv();steps();const n=R.order.filter((s,k)=>s===k).length;$("#stepsFb").innerHTML=`<p class="fb ${n===6?"ok":"ko"}">${n} de 6 pasos en su sitio. ${n===6?"Las llaves quedan bajo custodia hasta que el depósito está cerrado y la alarma activada.":"Recuerda: las llaves no se depositan hasta que todo está cerrado y la alarma confirmada; el registro cierra el proceso."}</p>`};
+function label(d,g){return `<svg viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Etiqueta clase 1 división ${d} grupo ${g}"><rect x="17" y="17" width="86" height="86" transform="rotate(45 60 60)" fill="#F08A24" stroke="#111" stroke-width="2"/><rect x="22" y="22" width="76" height="76" transform="rotate(45 60 60)" fill="none" stroke="#111" stroke-width="1"/>${["1.1","1.2","1.3"].includes(d)?`<g fill="#111"><circle cx="60" cy="40" r="7"/><path d="M60 26 l3 8 8-4-4 8 9 2-8 4 6 7-9-2 1 9-6-6-6 6 1-9-9 2 6-7-8-4 9-2-4-8 8 4z" opacity=".9"/></g><text x="60" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="15" fill="#111">${d} ${g}</text>`:`<text x="60" y="62" text-anchor="middle" font-family="Arial" font-weight="700" font-size="30" fill="#111">${d}</text><text x="60" y="80" text-anchor="middle" font-family="Arial" font-weight="700" font-size="13" fill="#111">${g}</text>`}<text x="60" y="97" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#111">1</text></svg>`}
+function labs(){$("#labels").innerHTML=R.labs.map((l,k)=>{const a=R.la[k];return `<div class="lab">${label(l.d,l.g)}<select data-l="${k}" aria-label="División del bulto ${k+1}"><option value="">Elige el riesgo…</option>${Object.entries(DIV).map(([d,t])=>`<option value="${d}" ${a===d?"selected":""}>${t}</option>`).join("")}</select>${R.lDone?`<p class="fb ${a===l.d?"ok":"ko"}">${a===l.d?"Correcto":"División "+l.d+": "+DIV[l.d]}</p>`:""}</div>`}).join("");
+ $$("[data-l]").forEach(s=>s.onchange=()=>{R.la[s.dataset.l]=s.value;R.lDone=false;sv();labs()})}
+$("#chkLab").onclick=()=>{R.lDone=true;sv();labs()};
+function score(){const pts=P.filter(p=>{const v=R.v[p[0]];return v&&(v.ok==="D")===R.ko.includes(p[0])}).length,st=R.sDone?R.order.filter((s,k)=>s===k).length:0,lb=R.lDone?R.labs.filter((l,k)=>R.la[k]===l.d).length:0;
+ const nota=6*pts/13+2*st/6+2*lb/4;return{pts,st,lb,nota}}
+function res(){const s=score();$("#resK").innerHTML=[["Ronda",`${s.pts}/13`],["Cierre",R.sDone?`${s.st}/6`:"sin comprobar"],["Etiquetas",R.lDone?`${s.lb}/4`:"sin comprobar"],["Nota orientativa",s.nota.toFixed(1).replace(".",",")]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("");
+ $("#resT").innerHTML=P.map(p=>{const v=R.v[p[0]],ko=R.ko.includes(p[0]);return `<tr><td>${p[0]} · ${esc(p[1])}</td><td>${esc(ko?p[5]:p[4])}</td><td>${v?(v.ok==="D"?"Deficiencia"+(v.a?": "+esc(v.a):""):"Correcto"):"Sin revisar"}</td><td>${ko?'<span class="pill ko">Deficiencia</span>':'<span class="pill ok">Correcto</span>'} ${v&&(v.ok==="D")===ko?"✓":"✗"}</td></tr>`}).join("")}
+$("#tab-res").addEventListener("click",res);
+$("#newR").onclick=()=>{R=nueva();sv();all();toast("Nueva ronda: las deficiencias han cambiado")};
+$("#docB").onclick=()=>{const D=DOCX,s=score();let b=D.Title("Parte de ronda · Depósito de explosivos (simulación)")+D.tbl(null,[["Fecha y hora","[dd/mm/aaaa] · 22:00"],["Vigilante de explosivos","[Nombre]"],["Puntos revisados",Object.keys(R.v).length+" de 13"]]);
+ b+=D.H1("Deficiencias detectadas")+(P.filter(p=>R.v[p[0]]?.ok==="D").map(p=>{const v=R.v[p[0]];return D.P(`${p[0]} · ${p[1]} (${v.t}): ${R.ko.includes(p[0])?p[5]:p[4]} Actuación: ${v.a||"[sin indicar]"}`)}).join("")||D.P("Sin deficiencias."));
+ b+=D.H1("Cierre del depósito")+R.order.map((x,k)=>D.P(`${k+1}. ${STEPS[x]}`)).join("")+D.H1("Autoevaluación")+D.P(`Ronda ${s.pts}/13 · Cierre ${s.st}/6 · Etiquetas ${s.lb}/4 · Nota orientativa ${s.nota.toFixed(1)}`);
+ saveFile("Parte_ronda_deposito.docx",D.build(b))};
+function all(){map();side();steps();labs();res()}
+tabs(["ronda","cierre","etiq","res"],"dep_tab");all();
+</script>
+
+</body></html>

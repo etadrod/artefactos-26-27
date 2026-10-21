@@ -1,0 +1,297 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Mapa de Riesgos de La Isleta</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.mk-tools{display:flex;flex-wrap:wrap;gap:.4rem}
+.mk-t{display:inline-flex;gap:.4rem;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.25rem .7rem .25rem .3rem;cursor:pointer;font-weight:600;font-size:.88rem}
+.mk-t i,.sw{width:1.1rem;height:1.1rem;border-radius:50%;display:inline-block;flex:none;vertical-align:middle}
+.mk-t[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset}
+.mk-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.mk-svg{display:block;width:100%;height:auto;max-width:100%;cursor:crosshair;touch-action:manipulation}
+.mk-svg .sel{filter:drop-shadow(0 0 4px var(--signal))}
+.mk-cal{display:flex;gap:.6rem;align-items:end;flex-wrap:wrap}.mk-cal label{max-width:16rem}
+.mk-cols{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:1rem}
+@media (max-width:760px){.mk-cols{grid-template-columns:1fr}}
+.mk-layers{display:grid;gap:.35rem}
+.chk{display:flex;gap:.45rem;align-items:center;cursor:pointer}
+.mk-tab input{min-width:8rem}
+.mk-tab tr.cur td{background:color-mix(in srgb,var(--signal) 10%,var(--surface))}
+
+body.pres main>:not(.mk){display:none}
+body.pres #mk-tools,body.pres #mk-hint,body.pres .mk>.btns,body.pres .mk-cols .tbl,body.pres #mk-calbox{display:none!important}
+body.pres .mk-cols{grid-template-columns:1fr}
+body.pres .mk-layers{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem}
+body.pres .mk-layers h3{display:none}
+#presB{background:var(--surface);color:var(--ink);border-color:var(--surface)}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Mapa de Riesgos de La Isleta</b><span>Riesgos (EVB) y recursos (GE6) en capas activables · Curso 2026-2027</span></div>
+    <div class="chips"><em>EVB · AEV2.1</em><em>RA2 e, f</em><button class="btn ghost sm" id="presB" type="button">Modo presentación</button></div>
+  </div>
+</header>
+
+<main>
+  <div class="intro"><p class="eyebrow">Reto conjunto EVB · GE6</p><h2>Localiza riesgos, flujos de mercancías peligrosas y recursos</h2>
+    <p class="muted">Sube como fondo una captura de La Isleta desde el Visor GRAFCAN (o similar), calibra la escala y sitúa cada elemento en su capa. Anota en cada elemento la fuente y la fecha del dato. El ejemplo inicial usa posiciones inventadas sobre una cuadrícula. Usa el modo presentación para exponer el mapa activando y desactivando capas.</p></div>
+
+  <section class="panel mk" aria-label="Editor de mapa">
+  <div class="mk-bar">
+    <div class="mk-tools" id="mk-tools" role="group" aria-label="Capas para dibujar"></div>
+  </div>
+  <p class="small" id="mk-hint" role="status"></p>
+  <div class="mk-wrap"><svg id="mk-svg" class="mk-svg" role="img" aria-label="Mapa de trabajo"></svg></div>
+  <div class="btns">
+    <button class="btn ghost sm" id="mk-end" type="button" hidden>Terminar línea</button>
+    <button class="btn ghost sm" id="mk-undo" type="button">Deshacer</button>
+    <button class="btn ghost sm" id="mk-cal" type="button">Calibrar escala</button>
+    <span class="small muted" id="mk-scale"></span>
+    <span class="spacer"></span>
+    <label class="btn ghost sm" for="mk-bg" style="cursor:pointer">Cambiar fondo (captura del mapa)</label><input type="file" id="mk-bg" accept="image/*" hidden>
+    <button class="btn ghost sm" id="mk-nobg" type="button">Fondo neutro</button>
+  </div>
+  <div class="mk-cal" id="mk-calbox" hidden><label class="f">Metros entre los dos puntos<input type="number" id="mk-calm" min="1"></label><button class="btn sm" id="mk-calok" type="button">Guardar escala</button></div>
+  <div class="mk-cols">
+    <div><h3>Capas visibles</h3><div class="mk-layers" id="mk-layers"></div></div>
+    <div class="tbl"><h3>Elementos</h3><table class="mk-tab"><thead><tr><th>Capa</th><th>Nombre</th><th>Nota</th><th class="num">Longitud</th><th></th></tr></thead><tbody id="mk-list"></tbody></table></div>
+  </div>
+  <div class="btns">
+    <button class="btn ghost" id="mk-png" type="button">Imagen del mapa (.jpg)</button>
+    <button class="btn ghost" id="mk-json" type="button">Guardar trabajo (.json)</button>
+    <label class="btn ghost" for="mk-open" style="cursor:pointer">Abrir trabajo</label><input type="file" id="mk-open" accept=".json" hidden>
+    <button class="btn warn" id="mk-sample" type="button">Cargar ejemplo</button>
+  </div>
+</section>
+
+
+  <section class="panel">
+    <h3>Mantenimiento del mapa y de la base de datos (RA2 f)</h3>
+    <div class="grid3">
+      <label class="f">Responsable de la actualización<input type="text" id="d-resp"></label>
+      <label class="f">Periodicidad<input type="text" id="d-per" placeholder="[EDITABLE]"></label>
+      <label class="f">Fecha de la última revisión<input type="date" id="d-fec"></label>
+    </div>
+    <label class="f">Fuentes de datos<small>Organismos, visores, planes y fecha de consulta</small><textarea id="d-fue" rows="3"></textarea></label>
+    <label class="f">Cambios a vigilar<small>Nuevos asentamientos, cambios de rutas, crecimiento urbano, nuevas instalaciones</small><textarea id="d-cam" rows="3"></textarea></label>
+    <div class="grid3" id="sumK"></div>
+    <div class="btns"><button class="btn" id="docB" type="button">Ficha del mapa (.docx)</button></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+
+"use strict";
+const CFG={key:"isl_v1",file:"mapa_isleta",
+ layers:[{id:"rt",n:"Riesgo tecnológico",t:"point",col:"var(--ko)",hex:"#B3261E",sym:"T"},{id:"rn",n:"Riesgo natural",t:"point",col:"var(--r2)",hex:"#1F5AAA",sym:"N"},{id:"ra",n:"Riesgo antrópico",t:"point",col:"var(--r4)",hex:"#7A3FA0",sym:"A"},
+  {id:"mt",n:"Flujo MMPP terrestre",t:"line",col:"var(--warn)",hex:"#B98A12"},{id:"mm",n:"Flujo MMPP marítimo",t:"line",col:"var(--r2)",hex:"#1F5AAA",dash:true},
+  {id:"hi",n:"Hidrante (GE6)",t:"point",col:"var(--signal)",hex:"#D2551E",sym:"H"},{id:"bs",n:"Base o parque (GE6)",t:"point",col:"var(--navy)",hex:"#1F3A68",sym:"B"},{id:"pr",n:"Punto de reunión (GE6)",t:"point",col:"var(--ok)",hex:"#2F7D4F",sym:"R"}],
+ sample:{ej:true,bg:null,scale:5,hide:{},d:{},
+  f:[{id:"i1",l:"rt",n:"Ejemplo · depósito de combustible",p:[[820,520]],o:"Fuente y fecha [EDITABLE]"},
+   {id:"i2",l:"rn",n:"Ejemplo · ladera con desprendimientos",p:[[360,180]],o:"Fuente y fecha [EDITABLE]"},
+   {id:"i3",l:"ra",n:"Ejemplo · zona de gran afluencia",p:[[300,560]],o:""},
+   {id:"i4",l:"mt",n:"Ejemplo · ruta de cisternas",p:[[820,520],[700,600],[520,640],[260,700]],o:""},
+   {id:"i5",l:"mm",n:"Ejemplo · atraque de buques de MMPP",p:[[1150,420],[960,470],[860,510]],o:""},
+   {id:"i6",l:"hi",n:"Ejemplo · hidrante 1",p:[[640,560]],o:""},
+   {id:"i7",l:"bs",n:"Ejemplo · parque de bomberos",p:[[180,640]],o:""},
+   {id:"i8",l:"pr",n:"Ejemplo · punto de reunión",p:[[460,420]],o:""}]},
+ onLoad(M){M.d=M.d||{};bind(M)},onRender(M){sum(M)}};
+const K=["resp","per","fec","fue","cam"];
+function bind(M){K.forEach(k=>{const el=$("#d-"+k);el.value=M.d[k]||"";el.oninput=()=>{M.d[k]=el.value;MK.save()}})}
+function sum(M){const n=ids=>M.f.filter(f=>ids.includes(f.l)).length,sin=M.f.filter(f=>!(f.o||"").trim()).length;
+ $("#sumK").innerHTML=[["Riesgos",n(["rt","rn","ra"])],["Flujos MMPP",n(["mt","mm"])],["Recursos GE6",n(["hi","bs","pr"])],["Sin fuente anotada",sin]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("")}
+/* Editor de mapa sobre imagen: capas de puntos y líneas, escala, exportación. CFG la define cada página. */
+const MK=(()=>{
+ const W0=1200,H0=760;
+ let M=store.get(CFG.key,null)||JSON.parse(JSON.stringify(CFG.sample));
+ if(!M.bg)M.bg=null;M.hide=M.hide||{};M.f=M.f||[];
+ let tool=null,draft=null,selId=null,cal=null;
+ const sv=()=>{try{localStorage.setItem(CFG.key,JSON.stringify(M))}catch(e){toast("Memoria llena: la imagen de fondo es muy grande. Guarda en .json.",5000)}};
+ const L=id=>CFG.layers.find(l=>l.id===id);
+ const dims=()=>M.bg?{w:M.bg.w,h:M.bg.h}:{w:W0,h:H0};
+ const len=pts=>pts.slice(1).reduce((a,p,i)=>a+Math.hypot(p[0]-pts[i][0],p[1]-pts[i][1]),0);
+ const meters=px=>M.scale?px*M.scale:null;
+ const fmtL=px=>{const m=meters(px);return m==null?"sin escala":m>=1000?(m/1000).toFixed(2).replace(".",",")+" km":Math.round(m)+" m"};
+ function svgFeatures(forExport){const d=dims(),k=Math.max(d.w,d.h)/1200;let s="";
+  M.f.forEach(f=>{const l=L(f.l);if(!l||M.hide[l.id])return;const c=forExport?l.hex:l.col;
+   if(l.t==="line"&&f.p.length>1){s+=`<polyline points="${f.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${c}" stroke-width="${6*k}" stroke-linecap="round" stroke-linejoin="round" ${l.dash?`stroke-dasharray="${14*k} ${10*k}"`:""} ${!forExport&&f.id===selId?'class="sel"':""} data-f="${f.id}"/>`;
+    const m=f.p[Math.floor(f.p.length/2)];s+=`<text x="${m[0]}" y="${m[1]-10*k}" text-anchor="middle" font-size="${15*k}" font-weight="700" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*k}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n||l.n)}</text>`}
+   if(l.t==="point"&&f.p.length){const[x,y]=f.p[0];s+=`<g data-f="${f.id}" ${!forExport&&f.id===selId?'class="sel"':""}><circle cx="${x}" cy="${y}" r="${13*k}" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${3*k}"/><text x="${x}" y="${y+5*k}" text-anchor="middle" font-size="${13*k}" font-weight="700" fill="#fff" font-family="IBM Plex Mono,monospace">${esc(l.sym)}</text><text x="${x+18*k}" y="${y+5*k}" font-size="${14*k}" font-weight="700" fill="${forExport?"#142033":"var(--ink)"}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*k}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n)}</text></g>`}});
+  return s}
+ function grid(){const d=dims();let g=`<rect width="${d.w}" height="${d.h}" fill="var(--sunk)"/>`;for(let x=0;x<=d.w;x+=60)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${d.h}" stroke="var(--line)"/>`;for(let y=0;y<=d.h;y+=60)g+=`<line x1="0" y1="${y}" x2="${d.w}" y2="${y}" stroke="var(--line)"/>`;
+  return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
+ function render(){const d=dims(),sv_=$("#mk-svg");sv_.setAttribute("viewBox",`0 0 ${d.w} ${d.h}`);
+  let s=M.bg?`<image href="${esc(M.bg.src)}" x="0" y="0" width="${d.w}" height="${d.h}"/>`:grid();s+=svgFeatures(false);
+  if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${l.col}"/>`).join("")}
+  if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="none" stroke="var(--signal)" stroke-width="3"/>`).join("");
+  sv_.innerHTML=s;
+  $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":"punto"}</span></button>`).join("");
+  $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
+  $("#mk-layers").innerHTML=CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
+  $$("[data-h]").forEach(c=>c.onchange=()=>{M.hide[c.dataset.h]=!c.checked;sv();render()});
+  $("#mk-list").innerHTML=M.f.length?M.f.map(f=>{const l=L(f.l);return `<tr ${f.id===selId?'class="cur"':""}><td><i class="sw" style="background:${l.col}"></i> ${esc(l.n)}</td><td><input type="text" value="${esc(f.n)}" data-n="${f.id}" aria-label="Nombre"></td><td><input type="text" value="${esc(f.o||"")}" data-o="${f.id}" aria-label="Nota"></td><td class="num">${l.t==="line"?fmtL(len(f.p)):""}</td><td><button class="btn ghost sm" type="button" data-del="${f.id}">Quitar</button></td></tr>`}).join(""):`<tr><td colspan="5" class="muted">Elige una capa y pulsa en el mapa para añadir elementos.</td></tr>`;
+  $$("[data-n]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.n).n=i.value;sv();render()});
+  $$("[data-o]").forEach(i=>i.oninput=()=>{M.f.find(f=>f.id===i.dataset.o).o=i.value;sv()});
+  $$("[data-del]").forEach(b=>b.onclick=()=>{M.f=M.f.filter(f=>f.id!==b.dataset.del);sv();render()});
+  $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
+  if(CFG.onRender)CFG.onRender(M)}
+ function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t==="line")}
+ function pt(e){const s=$("#mk-svg"),r=s.getBoundingClientRect(),d=dims();return[Math.round((e.clientX-r.left)/r.width*d.w),Math.round((e.clientY-r.top)/r.height*d.h)]}
+ const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
+ function finish(){if(draft&&draft.p.length>1){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n,p:draft.p});sv()}draft=null}
+ function bind(){const s=$("#mk-svg");
+  s.addEventListener("click",e=>{const p=pt(e);
+   if(cal){cal.push(p);if(cal.length===2){$("#mk-calbox").hidden=false;$("#mk-calm").focus()}render();return}
+   const hit=e.target.closest("[data-f]");if(!tool){selId=hit?hit.dataset.f:null;render();return}
+   const l=L(tool);if(l.t==="point"){const n=M.f.filter(f=>f.l===l.id).length+1;M.f.push({id:nid(),l:l.id,n:l.n+" "+n,p:[p]});sv();render()}else{draft=draft&&draft.l===l.id?draft:{l:l.id,p:[]};draft.p.push(p);render()}});
+  s.addEventListener("dblclick",e=>{e.preventDefault();if(draft&&draft.p.length>2)draft.p.pop();finish();render()});
+  $("#mk-end").onclick=()=>{finish();render()};
+  $("#mk-undo").onclick=()=>{if(draft&&draft.p.length){draft.p.pop();render()}else{M.f.pop();sv();render()}};
+  $("#mk-cal").onclick=()=>{finish();tool=null;cal=[];hint();render()};
+  $("#mk-calok").onclick=()=>{const m=+$("#mk-calm").value;if(!(m>0)||!cal||cal.length<2){toast("Indica los metros entre los dos puntos.");return}const px=Math.hypot(cal[1][0]-cal[0][0],cal[1][1]-cal[0][1]);M.scale=m/px;cal=null;$("#mk-calbox").hidden=true;sv();hint();render();toast("Escala guardada")};
+  $("#mk-bg").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1800/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+   M.bg={src:c.toDataURL("image/jpeg",.8),w:c.width,h:c.height};M.scale=null;M.f=[];sv();render();toast("Fondo cargado. Calibra la escala con un tramo conocido.",4000)};im.src=r.result};r.readAsDataURL(f);e.target.value=""};
+  $("#mk-nobg").onclick=()=>{M.bg=null;M.scale=null;sv();render()};
+  $("#mk-json").onclick=()=>saveFile(CFG.file+".json",JSON.stringify(M));
+  $("#mk-open").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t);if(!Array.isArray(o.f))throw 0;M=o;M.hide=M.hide||{};sv();render();if(CFG.onLoad)CFG.onLoad(M);toast("Abierto")}).catch(()=>toast("Ese archivo no es de esta herramienta."));e.target.value=""};
+  $("#mk-sample").onclick=()=>{const b=$("#mk-sample");if(b.dataset.sure){M=JSON.parse(JSON.stringify(CFG.sample));sv();render();if(CFG.onLoad)CFG.onLoad(M);delete b.dataset.sure;b.textContent="Cargar ejemplo"}else{b.dataset.sure=1;b.textContent="Se borrará tu mapa. Pulsa otra vez"}};
+  $("#mk-png").onclick=async()=>{const u=await png();if(u)saveFile(CFG.file+".jpg",d2b(u))};
+  hint()}
+ const d2b=u=>{const s=atob(u.split(",")[1]),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return new Blob([a])};
+ function png(){return new Promise(ok=>{const d=dims(),svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}">${M.bg?`<image href="${esc(M.bg.src)}" width="${d.w}" height="${d.h}"/>`:`<rect width="${d.w}" height="${d.h}" fill="#E8ECF2"/>`}${svgFeatures(true)}</svg>`;
+  const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=d.w;c.height=d.h;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,d.w,d.h);g.drawImage(im,0,0);ok(c.toDataURL("image/jpeg",.88))};im.onerror=()=>{toast("No se pudo generar la imagen.");ok(null)};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)})}
+ return{init(){bind();render();if(CFG.onLoad)CFG.onLoad(M)},render,png,get M(){return M},save:sv,L,len,fmtL,dims};
+})();
+
+$("#presB").onclick=()=>{const on=document.body.classList.toggle("pres");$("#presB").textContent=on?"Salir de la presentación":"Modo presentación";$("#presB").setAttribute("aria-pressed",on)};
+$("#docB").onclick=async()=>{const M=MK.M,D=DOCX,img=await MK.png(),d=M.d||{};
+ let b=D.Title("Mapa de riesgos de La Isleta")+(img?D.IMG(0,17,17*MK.dims().h/MK.dims().w):"");
+ b+=D.H1("Elementos del mapa")+D.tbl(["Capa","Nombre","Fuente, fecha y observaciones","Longitud"],M.f.map(f=>{const l=MK.L(f.l);return[l.n,f.n,f.o||"",l.t==="line"?MK.fmtL(MK.len(f.p)):""]}));
+ b+=D.H1("Mantenimiento")+D.tbl(null,[["Responsable",d.resp||""],["Periodicidad",d.per||""],["Última revisión",fmtD(d.fec)],["Fuentes de datos",d.fue||""],["Cambios a vigilar",d.cam||""]]);
+ saveFile("Mapa_riesgos_La_Isleta.docx",D.build(b,false,img?[img]:[]))};
+MK.init();
+</script>
+
+</body></html>

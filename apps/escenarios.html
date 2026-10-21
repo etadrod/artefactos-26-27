@@ -1,0 +1,282 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Escenarios de Escolta</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1rem}
+.card{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:var(--radius);padding:1rem;display:grid;gap:.5rem;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.card:hover{border-color:var(--navy)}
+.card b{font:600 1.2rem var(--f-display)}
+.scene{font-size:1.08rem;line-height:1.55;background:var(--sunk);border-radius:var(--radius);padding:1rem 1.1rem;max-width:70ch}
+.opts{display:grid;gap:.6rem;max-width:70ch}
+.opt{display:flex;gap:.7rem;align-items:flex-start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:.75rem .9rem;cursor:pointer;font:inherit;color:inherit;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--navy)}
+.opt .k{font:700 .95rem var(--f-mono);color:var(--navy);flex:none}
+.opt.chosen.good{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.opt.chosen.mid{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--surface))}
+.opt.chosen.bad{border-color:var(--ko);background:color-mix(in srgb,var(--ko) 10%,var(--surface))}
+.opt:disabled{cursor:default}
+.opt:disabled:not(.chosen){opacity:.55}
+.prog{display:flex;gap:.3rem}
+.prog i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.prog i.on{background:var(--navy)}
+.bars{display:grid;gap:.5rem;max-width:40rem}
+.bar{display:grid;grid-template-columns:10rem minmax(0,1fr) 3.5rem;gap:.6rem;align-items:center}
+.bar .tr{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar .tr span{display:block;height:100%;background:var(--navy)}
+@media (max-width:500px){.bar{grid-template-columns:7rem minmax(0,1fr) 3rem}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Escenarios de Escolta</b><span>Elige tu respuesta: cobertura, proporcionalidad, evacuación, defensa y comunicación · Curso 2026-2027</span></div>
+    <div class="chips"><em>VIB · AEV10.1</em><em>RA7 a–e</em></div>
+  </div>
+</header>
+
+<main>
+  <div class="intro"><p class="eyebrow">Entrenamiento previo a la simulación física</p><h2>Decide como jefe del equipo de escolta</h2>
+    <p class="muted">Cada escenario tiene varias decisiones encadenadas. Tras cada una verás la consecuencia y el porqué. Al final obtendrás el perfil por competencias y podrás exportar el registro de decisiones con el borrador del parte de incidencia. Escenarios ficticios con fines didácticos; contrasta los criterios con la normativa de seguridad privada [verificar versión vigente].</p></div>
+
+  <section id="v-pick" class="panel"><h3>Elige un escenario</h3><div class="picker" id="pick"></div></section>
+
+  <section id="v-play" class="panel" hidden>
+    <div class="btns" style="align-items:center"><b id="sTitle"></b><span class="spacer"></span><button class="btn ghost sm" id="backB" type="button">Cambiar de escenario</button></div>
+    <div class="prog" id="prog" aria-hidden="true"></div>
+    <p class="eyebrow" id="tag"></p>
+    <div class="scene" id="txt"></div>
+    <div class="opts" id="opts"></div>
+    <div id="fb" aria-live="polite"></div>
+    <div class="btns"><button class="btn" id="nextB" type="button" hidden>Continuar</button></div>
+  </section>
+
+  <section id="v-end" class="panel" hidden>
+    <h3>Resultado del escenario</h3>
+    <p id="endTxt" class="scene"></p>
+    <div class="bars" id="bars"></div>
+    <div class="tbl"><table><thead><tr><th>Decisión</th><th>Tu respuesta</th><th class="num">Puntos</th></tr></thead><tbody id="log"></tbody></table></div>
+    <label class="f">Borrador del parte de la incidencia para las FCS<small>Qué, cuándo, dónde, quién, actuación del equipo y estado del protegido</small><textarea id="parte" rows="5"></textarea></label>
+    <div class="btns"><button class="btn" id="docB" type="button">Registro y parte (.docx)</button><button class="btn ghost" id="againB" type="button">Repetir escenario</button><button class="btn ghost" id="otherB" type="button">Otro escenario</button></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+
+"use strict";
+const TAGS={cob:"Cobertura",pro:"Proporcionalidad",eva:"Evacuación",def:"Defensa",com:"Comunicación con FCS"};
+// pts: 2 correcta, 1 mejorable, 0 incorrecta
+const SC=[
+{id:"pie",t:"Agresión con arma blanca a pie",d:"Desplazamiento a pie de 150 m entre el aparcamiento y la entrada de un auditorio. Equipo de 3 escoltas.",
+ end:"El protegido llega a lugar seguro y la incidencia queda en manos de las FCS.",
+ steps:[
+ {tag:"cob",txt:"A mitad de recorrido, un hombre se separa del público y avanza rápido hacia el protegido con la mano derecha oculta bajo la chaqueta. Está a unos 8 metros.",
+  o:[["Cierras la cápsula: el escolta más próximo se interpone en la línea de aproximación y tú cubres al protegido con tu cuerpo.",2,"Correcto. La primera reacción es interponer cuerpos entre amenaza y protegido y reducir su exposición."],
+     ["Te adelantas tú solo a interceptar al hombre y dejas al protegido con el tercer escolta.",1,"Mejorable. Interceptar puede ser necesario, pero el jefe de equipo no debe abandonar al protegido; esa función es del escolta de avanzada o flanco."],
+     ["Esperas a ver qué saca de la chaqueta antes de mover al equipo.",0,"Incorrecto. Esperar a confirmar la amenaza consume el tiempo de reacción. Ante un indicio razonable se cubre primero."]]},
+ {tag:"pro",txt:"El hombre saca un cuchillo y lanza un golpe contra el escolta que se ha interpuesto. El agresor está solo.",
+  o:[["El escolta controla el brazo armado con la técnica entrenada y lo lleva al suelo con la ayuda imprescindible para neutralizar el ataque.",2,"Correcto. Respuesta congruente con una agresión con arma blanca: medio y fuerza necesarios para neutralizarla, sin exceso."],
+     ["El escolta golpea repetidamente al agresor una vez que ya está en el suelo y desarmado.",0,"Incorrecto. Con la agresión neutralizada desaparece la necesidad; seguir golpeando es desproporcionado y genera responsabilidad."],
+     ["El escolta retrocede y solo se protege con los brazos.",1,"Mejorable. Protegerse no basta si el agresor puede seguir atacando al equipo o al protegido; hay que neutralizar el ataque."]]},
+ {tag:"eva",txt:"El agresor está controlado. Hay gritos y el público se agolpa. El protegido está ileso pero muy nervioso.",
+  o:[["Evacúas al protegido por el itinerario previsto hacia el lugar de refugio, con un escolta y tú; el tercero se queda con el agresor.",2,"Correcto. Prioridad: sacar al protegido de la zona por el itinerario planificado. La escena la mantiene otro miembro del equipo."],
+     ["Te quedas con todo el equipo junto al agresor hasta que llegue la policía.",0,"Incorrecto. El protegido sigue expuesto (puede haber un segundo agresor). La misión es su seguridad, no la custodia del agresor."],
+     ["Llevas al protegido de vuelta al vehículo por el camino más corto, que no estaba previsto.",1,"Mejorable. Volver al vehículo puede ser válido, pero improvisar un itinerario no reconocido aumenta el riesgo. Usa el de evacuación planificado."]]},
+ {tag:"com",txt:"Ya en el refugio, el protegido está a salvo. Tu compañero sigue con el agresor reducido.",
+  o:[["Avisas de inmediato al 1-1-2 / FCS: lugar exacto, agresor reducido, arma intervenida, posibles heridos, y te pones a su disposición.",2,"Correcto. Comunicación inmediata y completa; el agresor y el arma se entregan a las FCS."],
+     ["Llamas primero a la empresa y esperas instrucciones antes de avisar a la policía.",1,"Mejorable. Informar a la empresa es necesario, pero no puede retrasar el aviso a las FCS."],
+     ["Pides al compañero que suelte al agresor para evitar problemas.",0,"Incorrecto. El detenido debe ponerse a disposición de las FCS con el arma intervenida."]]},
+ {tag:"com",txt:"Al llegar la patrulla, uno de los agentes pregunta cómo se redujo al agresor.",
+  o:[["Explicáis la técnica aplicada, por qué fue necesaria y entregáis el cuchillo sin manipularlo más.",2,"Correcto. Transparencia y preservación de la prueba. Lo anotarás también en el parte."],
+     ["Minimizáis lo ocurrido para no tener que declarar.",0,"Incorrecto. Ocultar información puede perjudicar al equipo y a la investigación."],
+     ["Decís que fue el agresor quien se cayó solo.",0,"Incorrecto. Faltar a la verdad ante las FCS no es una opción profesional."]]}]},
+{id:"veh",t:"Ataque en la subida al vehículo",d:"Salida de un hotel. El vehículo espera en la puerta con el conductor. Equipo de 2 escoltas.",
+ end:"El vehículo sale de la zona de riesgo y el protegido llega al destino alternativo.",
+ steps:[
+ {tag:"cob",txt:"Cuando el protegido está a dos pasos de la puerta del vehículo, una moto se detiene en paralelo y el pasajero hace ademán de sacar algo de una mochila.",
+  o:[["Introduces al protegido en el vehículo de inmediato, cubriéndolo con tu cuerpo, y cierras la puerta.",2,"Correcto. El vehículo es la protección más próxima: meter al protegido es la cobertura más rápida."],
+     ["Haces volver al protegido al hotel corriendo.",1,"Mejorable. Puede ser válido si el vehículo está comprometido, pero aquí el vehículo está a dos pasos y alejarse lo expone más tiempo."],
+     ["Te diriges a la moto a pedir explicaciones.",0,"Incorrecto. Te alejas del protegido y lo dejas sin cobertura."]]},
+ {tag:"eva",txt:"El protegido ya está dentro. La moto sigue ahí.",
+  o:[["Ordenas al conductor salir por el itinerario alternativo previsto hacia el destino alternativo.",2,"Correcto. Salir de la zona de riesgo por una ruta planificada; el destino original puede estar comprometido."],
+     ["Ordenas esperar dentro del vehículo con los seguros puestos.",0,"Incorrecto. Un vehículo parado es un blanco; la regla es movimiento."],
+     ["Ordenas seguir a la moto para identificarla.",0,"Incorrecto. La misión es proteger, no perseguir. Eso corresponde a las FCS."]]},
+ {tag:"pro",txt:"Ves que el pasajero de la moto saca un teléfono móvil y se marchan. No ha habido agresión.",
+  o:[["Sigues la evacuación, no hay uso de fuerza y anotas matrícula y descripción.",2,"Correcto. Sin agresión no hay respuesta de fuerza; la información puede ser útil."],
+     ["Haces que el compañero bloquee a la moto con su cuerpo.",0,"Incorrecto. No hay agresión ni flagrancia: no está justificado intervenir sobre esas personas."],
+     ["Das la situación por terminada y vuelves al itinerario principal.",1,"Mejorable. Puede tratarse de una vigilancia previa; mantén el plan alternativo hasta valorarlo."]]},
+ {tag:"com",txt:"Llegáis al destino alternativo sin novedad.",
+  o:[["Informas al jefe de seguridad y comunicas los hechos a las FCS con matrícula y descripción, como posible seguimiento.",2,"Correcto. Un posible seguimiento debe comunicarse aunque no haya habido ataque."],
+     ["No dices nada porque al final no pasó nada.",0,"Incorrecto. Se pierde información de inteligencia que puede prevenir el siguiente intento."],
+     ["Lo publicas en el grupo de mensajería del equipo para que estén atentos.",1,"Mejorable. Avisar al equipo está bien, pero por el canal reglado y sin sustituir la comunicación a las FCS."]]}]},
+{id:"mul",t:"Lanzamiento de objeto en una concentración",d:"Salida de un acto público con concentración de protesta tras la valla. Equipo de 4 escoltas y apoyo policial en la zona.",
+ end:"El protegido sale de la zona sin lesiones y la policía se hace cargo de la concentración.",
+ steps:[
+ {tag:"cob",txt:"Un objeto (una botella) vuela desde la multitud hacia el protegido.",
+  o:[["Cubres al protegido con tu cuerpo, bajándole la cabeza, y el equipo cierra la formación hacia el lado de la multitud.",2,"Correcto. Cobertura inmediata del protegido y cierre del flanco expuesto."],
+     ["Intentas atrapar la botella.",0,"Incorrecto. No sabes qué contiene y dejas al protegido descubierto."],
+     ["Gritas al protegido que se agache.",1,"Mejorable. Una orden verbal ayuda, pero no sustituye a la cobertura física."]]},
+ {tag:"def",txt:"Uno de los manifestantes salta la valla y corre hacia la formación sin armas visibles.",
+  o:[["Un escolta lo frena con un control de contención y lo aparta, sin golpes, mientras el resto sigue con el protegido.",2,"Correcto. Defensa adecuada a la amenaza y el resto del equipo mantiene la misión."],
+     ["Todo el equipo se lanza a por él.",0,"Incorrecto. El protegido queda solo. Uno contiene, el resto evacúa."],
+     ["Un escolta usa la defensa extensible contra él.",0,"Incorrecto. Sin armas y sin agresión grave, el medio es desproporcionado."]]},
+ {tag:"eva",txt:"La multitud presiona la valla en la salida prevista.",
+  o:[["Evacúas por la salida alternativa del plan, alejada de la concentración.",2,"Correcto. Si el itinerario principal está comprometido, se usa el alternativo previsto."],
+     ["Mantienes la salida prevista porque el vehículo está allí.",0,"Incorrecto. El vehículo se mueve hacia el protegido; no al revés por una zona hostil."],
+     ["Esperáis dentro del edificio sin plan.",1,"Mejorable. Refugiarse puede ser útil un momento, pero sin plan se pierde la iniciativa."]]},
+ {tag:"com",txt:"Ya en el vehículo, con el protegido a salvo.",
+  o:[["Informas al mando policial presente del lanzamiento y del manifestante contenido, con descripción y hora.",2,"Correcto. La coordinación con las FCS presentes es inmediata."],
+     ["Esperas al final del día para hacer el parte.",1,"Mejorable. El parte se hace, pero la comunicación a las FCS debe ser inmediata."],
+     ["No informas porque la policía ya estaba allí.",0,"Incorrecto. Que haya policía no supone que haya visto lo ocurrido; hay que comunicarlo."]]}]}];
+let cur=null,step=0,log=[],S=store.get("esc_v1")||{};
+function show(v){["pick","play","end"].forEach(x=>$("#v-"+x).hidden=x!==v)}
+function pick(){$("#pick").innerHTML=SC.map(s=>`<button class="card" type="button" data-s="${s.id}"><b>${esc(s.t)}</b><span class="muted">${esc(s.d)}</span><span class="small">${s.steps.length} decisiones${S[s.id]!=null?` · último resultado ${S[s.id]}%`:""}</span></button>`).join("");
+ $$("[data-s]").forEach(b=>b.onclick=()=>start(b.dataset.s));show("pick")}
+function start(id){cur=SC.find(s=>s.id===id);step=0;log=[];$("#sTitle").textContent=cur.t;$("#parte").value="";play()}
+function play(){const st=cur.steps[step];show("play");
+ $("#prog").innerHTML=cur.steps.map((_,i)=>`<i class="${i<=step?"on":""}"></i>`).join("");
+ $("#tag").textContent=`Decisión ${step+1} de ${cur.steps.length} · ${TAGS[st.tag]}`;$("#txt").textContent=st.txt;$("#fb").innerHTML="";$("#nextB").hidden=true;
+ // shuffle so the right answer is not always first
+ const ord=st.o.map((_,i)=>i).sort(()=>Math.random()-.5);
+ $("#opts").innerHTML=ord.map((i,n)=>`<button class="opt" type="button" data-o="${i}"><span class="k">${"ABC"[n]}</span><span>${esc(st.o[i][0])}</span></button>`).join("");
+ $$("[data-o]").forEach(b=>b.onclick=()=>choose(+b.dataset.o,b))}
+function choose(i,btn){const st=cur.steps[step],[t,p,fb]=st.o[i];log.push({tag:st.tag,q:st.txt,a:t,p});
+ $$("[data-o]").forEach(b=>b.disabled=true);btn.classList.add("chosen",["bad","mid","good"][p]);
+ $("#fb").innerHTML=`<div class="fb ${p===2?"ok":""}"><b>${["Incorrecto","Mejorable","Correcto"][p]}.</b> ${esc(fb.replace(/^(Correcto|Mejorable|Incorrecto)\.\s*/,""))}</div>`;
+ $("#nextB").hidden=false;$("#nextB").textContent=step+1<cur.steps.length?"Continuar":"Ver resultado";$("#nextB").focus()}
+$("#nextB").onclick=()=>{step++;step<cur.steps.length?play():end()};
+function pct(){return Math.round(log.reduce((a,l)=>a+l.p,0)/(log.length*2)*100)}
+function end(){const tot=pct();S[cur.id]=tot;store.set("esc_v1",S);show("end");
+ $("#endTxt").textContent=(tot>=75?cur.end:"El escenario termina, pero alguna decisión expuso al protegido o al equipo. Repasa la retroalimentación y repite.")+` Resultado global: ${tot} %.`;
+ $("#bars").innerHTML=Object.entries(TAGS).filter(([k])=>log.some(l=>l.tag===k)).map(([k,n])=>{const ls=log.filter(l=>l.tag===k),v=Math.round(ls.reduce((a,l)=>a+l.p,0)/(ls.length*2)*100);return`<div class="bar"><span>${n}</span><span class="tr"><span style="width:${v}%"></span></span><b class="mono">${v} %</b></div>`}).join("");
+ $("#log").innerHTML=log.map((l,i)=>`<tr><td>${i+1}. ${esc(TAGS[l.tag])}</td><td>${esc(l.a)}</td><td class="num">${l.p}/2</td></tr>`).join("")}
+$("#docB").onclick=()=>{const D=DOCX;
+ let b=D.Title("Registro de decisiones · "+cur.t)+D.tbl(null,[["Fecha",fmtD(today())],["Escenario",cur.d],["Resultado global",pct()+" %"]]);
+ b+=D.H1("Decisiones")+D.tbl(["Situación","Respuesta","Puntos"],log.map(l=>[l.q,l.a,l.p+"/2"]))+D.H1("Borrador del parte de la incidencia")+D.P($("#parte").value||"");
+ saveFile(`Escenario_${cur.id}.docx`,D.build(b,false))};
+$("#againB").onclick=()=>start(cur.id);$("#otherB").onclick=pick;$("#backB").onclick=pick;
+pick();
+console.assert(SC.every(s=>s.steps.every(st=>st.o.some(o=>o[1]===2))),"cada decisión tiene una respuesta correcta");
+</script>
+
+</body></html>

@@ -1,0 +1,231 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Control Documental de Voladura</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:1rem}
+.doc{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--navy);border-radius:var(--radius);padding:1rem;display:grid;gap:.5rem;min-width:0}
+.doc h4{margin:0;font:600 1.15rem var(--f-display);text-transform:uppercase;letter-spacing:.03em}
+.doc .meta{font:.85rem var(--f-mono);color:var(--muted);display:flex;flex-wrap:wrap;gap:.25rem 1rem}
+.doc table{font-size:.92rem}
+.sig{font:.9rem var(--f-mono);border-top:1px dashed var(--line);padding-top:.4rem}
+.sig b{font-family:var(--f-body)}
+.ans{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1rem}
+.cl{display:grid;gap:.35rem}
+.cl label{display:flex;gap:.5rem;align-items:flex-start;cursor:pointer;line-height:1.35;border-radius:6px;padding:.25rem .35rem}
+.cl input{margin-top:.2rem;accent-color:var(--navy);flex:none;width:1.05rem;height:1.05rem}
+.cl label.ok{background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.cl label.ko{background:color-mix(in srgb,var(--ko) 14%,transparent)}
+.sob{display:grid;grid-template-columns:minmax(0,1fr) 7rem 2.5rem;gap:.4rem .6rem;align-items:center}
+.sob input{width:100%}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Control Documental de Voladura</b><span>Consumo, sobrante y discrepancias entre documentos · Curso 2026-2027</span></div>
+    <div class="chips"><em>VIB · AEV6.1</em><em>RA10 b, c, e</em></div>
+  </div>
+</header>
+
+<main>
+  <div class="intro"><p class="eyebrow">Supuesto práctico autocorregible</p><h2>¿Cuadra lo entregado con lo consumido?</h2>
+    <p class="muted">Cada caso es una voladura ficticia con cuatro documentos. Toma como referencia el documento de entrega y el certificado de consumo del artillero, calcula el sobrante de cada producto y señala las discrepancias que encuentres en el resto. Todos los datos son inventados. Referencia: Reglamento de Explosivos [verificar versión vigente].</p></div>
+
+  <section class="panel">
+    <div class="btns" style="align-items:center"><span class="pill" id="caseN"></span><span class="spacer"></span><button class="btn ghost" id="newB" type="button">Nuevo caso</button></div>
+    <div class="docs" id="docs"></div>
+  </section>
+
+  <section class="ans">
+    <div class="panel"><h3>1 · Sobrante por producto (RA10 c)</h3><p class="small muted">Sobrante = entregado − consumido certificado.</p><div class="sob" id="sob"></div></div>
+    <div class="panel"><h3>2 · Discrepancias detectadas (RA10 b, c)</h3><div class="cl" id="dis"></div></div>
+  </section>
+
+  <section class="panel">
+    <h3>3 · Actuación del vigilante (RA10 e)</h3>
+    <label class="f">Qué debe hacer ante las discrepancias y por qué es importante este control<textarea id="act" rows="4"></textarea></label>
+    <div class="btns"><button class="btn" id="corB" type="button">Corregir</button><button class="btn ghost" id="docB" type="button">Hoja de comprobación (.docx)</button></div>
+    <div id="res" aria-live="polite"></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+
+"use strict";
+const PROD=[{n:"Explosivo tipo emulsión encartuchado",u:"kg",q:[50,75,100,125,150],s:[0,2.5,5,7.5,10]},{n:"Explosivo tipo ANFO",u:"kg",q:[200,250,300,400],s:[0,25,50]},{n:"Detonadores eléctricos",u:"ud",q:[40,60,80,100],s:[0,2,4,6,10]},{n:"Cordón detonante",u:"m",q:[100,150,200,300],s:[0,10,20,50]},{n:"Multiplicadores (booster)",u:"ud",q:[10,20,30],s:[0,1,2,5]}];
+const DIS=[["firma","El certificado de consumo no está firmado por el artillero"],["fecha","La fecha del certificado no coincide con la de la voladura"],["libro","El libro de registro anota una salida distinta a la del documento de entrega"],["ndoc","El nº de documento de entrega del libro de registro no coincide"],["devol","El parte de servicio declara una devolución distinta al sobrante real"],["destino","El parte de servicio no indica el destino del sobrante (devolución al depósito o destrucción)"]];
+const PLACES=["Cantera El Roque [ficticia]","Obra de túnel Barranco Hondo [ficticia]","Desmonte Lomo Alto [ficticio]","Cantera Las Majadas [ficticia]"];
+function rng(seed){let a=seed>>>0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function make(seed){const r=rng(seed),pick=a=>a[Math.floor(r()*a.length)];
+ const prods=PROD.map(p=>({p,k:r()})).sort((a,b)=>a.k-b.k).slice(0,3).map(({p})=>{const q=pick(p.q),s=pick(p.s);return{n:p.n,u:p.u,ent:q,con:q-s,sob:s}});
+ const nd=pick(DIS.length>3?[1,2,2]:[1]),keys=DIS.map(d=>d[0]).map(k=>({k,x:r()})).sort((a,b)=>a.x-b.x).slice(0,nd).map(o=>o.k);
+ const day=1+Math.floor(r()*27),fecha=`2026-11-${String(day).padStart(2,"0")}`,doc=`DE-${1000+Math.floor(r()*9000)}`;
+ const off=i=>prods[i].u==="ud"?pick([1,2,5]):pick([5,10,25]),li=Math.floor(r()*3),pi=Math.floor(r()*3),lo=off(li),po=off(pi);
+ return{seed,keys,fecha,doc,lugar:pick(PLACES),hora:pick(["09:30","10:15","11:00","12:30"]),prods,li,lo,pi,po,dest:pick(["Devolución al depósito","Destrucción controlada in situ"])}}
+function fmtN(v){return String(v).replace(".",",")}
+function plusDay(d){const x=new Date(d+"T12:00:00");x.setDate(x.getDate()+1);return x.toISOString().slice(0,10)}
+let C,S=store.get("vol_v1")||null;
+function load(seed){C=make(seed);if(!S||S.seed!==seed)S={seed,sob:{},dis:{},act:S?.act||"",done:false};store.set("vol_v1",S);render()}
+function render(){const has=k=>C.keys.includes(k),P=C.prods;
+ $("#caseN").textContent="Caso nº "+C.seed;
+ const t=(head,rows)=>`<div class="tbl"><table><thead><tr>${head.map((h,i)=>`<th${i?' class="num"':""}>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td${i?' class="num"':""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+ const libro=P.map((p,i)=>[p.n,fmtN(p.ent+(has("libro")&&i===C.li?C.lo:0))+" "+p.u]);
+ const dev=P.map((p,i)=>[p.n,fmtN(Math.max(0,p.sob+(has("devol")&&i===C.pi?(p.sob>=C.po?-C.po:C.po):0)))+" "+p.u]);
+ $("#docs").innerHTML=`
+ <article class="doc"><h4>Documento de entrega</h4><div class="meta"><span>Nº ${C.doc}</span><span>${fmtD(C.fecha)}</span><span>Destino: ${esc(C.lugar)}</span></div>${t(["Producto","Entregado"],P.map(p=>[p.n,fmtN(p.ent)+" "+p.u]))}<div class="sig">Entrega: <b>Responsable del depósito</b> · Recibe: <b>Artillero</b> (firmado)</div></article>
+ <article class="doc"><h4>Certificado de consumo</h4><div class="meta"><span>Voladura: ${fmtD(C.fecha)} ${C.hora}</span><span>Fecha certificado: ${fmtD(has("fecha")?plusDay(C.fecha):C.fecha)}</span></div>${t(["Producto","Consumido"],P.map(p=>[p.n,fmtN(p.con)+" "+p.u]))}<div class="sig">Artillero: <b>${has("firma")?"— sin firma —":"firmado"}</b></div></article>
+ <article class="doc"><h4>Libro de registro</h4><div class="meta"><span>Asiento de salida ${fmtD(C.fecha)}</span><span>Doc. entrega: ${has("ndoc")?C.doc.replace(/\d$/,d=>(+d+3)%10):C.doc}</span></div>${t(["Producto","Salida"],libro)}</article>
+ <article class="doc"><h4>Parte de servicio del vigilante</h4><div class="meta"><span>${fmtD(C.fecha)}</span><span>Servicio de vigilancia de la voladura</span></div>${t(["Producto","Sobrante devuelto"],dev)}<div class="sig">Destino del sobrante: <b>${has("destino")?"— no consta —":C.dest}</b></div></article>`;
+ $("#sob").innerHTML=P.map((p,i)=>`<span>${esc(p.n)}</span><input type="number" step="0.5" min="0" inputmode="decimal" data-s="${i}" value="${S.sob[i]??""}" aria-label="Sobrante de ${esc(p.n)}"><span class="mono">${p.u}</span>`).join("");
+ $("#dis").innerHTML=DIS.map(([k,txt])=>`<label data-k="${k}"><input type="checkbox" data-d="${k}" ${S.dis[k]?"checked":""}> ${esc(txt)}</label>`).join("");
+ $("#act").value=S.act||"";
+ $$("[data-s]").forEach(el=>el.oninput=()=>{S.sob[el.dataset.s]=el.value;S.done=false;save()});
+ $$("[data-d]").forEach(el=>el.onchange=()=>{S.dis[el.dataset.d]=el.checked;S.done=false;save()});
+ if(S.done)correct();else $("#res").innerHTML=""}
+function save(){store.set("vol_v1",S)}
+$("#act").oninput=e=>{S.act=e.target.value;save()};
+function score(){const P=C.prods;let a=0,b=0;
+ const sob=P.map((p,i)=>{const v=parseFloat(String(S.sob[i]??"").replace(",","."));const ok=v===p.sob;if(ok)a++;return ok});
+ // each false positive cancels a hit, so ticking everything scores nothing
+ const dis=DIS.map(([k])=>{const real=C.keys.includes(k);if(S.dis[k])b+=real?1:-1;return !!S.dis[k]===real});
+ return{sob,dis,nota:Math.round((a/P.length*5+Math.max(0,b)/C.keys.length*5)*10)/10}}
+function correct(){const R=score();S.done=true;save();
+ $$("[data-s]").forEach((el,i)=>el.style.borderColor=R.sob[i]?"var(--ok)":"var(--ko)");
+ $$("#dis label").forEach((l,i)=>{l.classList.toggle("ok",R.dis[i]);l.classList.toggle("ko",!R.dis[i])});
+ const bad=C.prods.map((p,i)=>R.sob[i]?"":`${p.n}: ${fmtN(p.sob)} ${p.u}`).filter(Boolean);
+ $("#res").innerHTML=`<div class="fb ${R.nota>=5?"ok":""}"><p><b>Puntuación orientativa: ${fmtN(R.nota)} / 10</b> (sobrantes 5 · discrepancias 5). La actuación del apartado 3 la valora el profesorado con la rúbrica.</p>${bad.length?`<p>Sobrantes correctos que fallaste: ${esc(bad.join(" · "))}.</p>`:""}<p>Discrepancias del caso: ${esc(C.keys.map(k=>DIS.find(d=>d[0]===k)[1]).join(" · "))}.</p></div>`}
+$("#corB").onclick=correct;
+$("#newB").onclick=()=>{S=null;load(1000+Math.floor(Math.random()*9000));toast("Nuevo caso generado")};
+$("#docB").onclick=()=>{const D=DOCX,R=score(),P=C.prods;
+ let b=D.Title("Hoja de comprobación · Control documental de voladura")+D.tbl(null,[["Caso nº",String(C.seed)],["Fecha de la voladura",fmtD(C.fecha)],["Lugar",C.lugar],["Documento de entrega",C.doc]]);
+ b+=D.H1("Sobrante calculado")+D.tbl(["Producto","Entregado","Consumido","Sobrante (alumno)"],P.map((p,i)=>[p.n,fmtN(p.ent)+" "+p.u,fmtN(p.con)+" "+p.u,(S.sob[i]??"")+" "+p.u]));
+ b+=D.H1("Discrepancias señaladas")+D.tbl(["Discrepancia","Señalada"],DIS.map(([k,t])=>[t,S.dis[k]?"Sí":"No"]));
+ b+=D.H1("Actuación del vigilante")+D.P(S.act||"")+(S.done?D.P(`Puntuación orientativa de la autocorrección: ${fmtN(R.nota)} / 10.`):"");
+ saveFile(`Comprobacion_voladura_caso_${C.seed}.docx`,D.build(b,false))};
+load(S?.seed||1000+Math.floor(Math.random()*9000));
+// self-check: surplus never negative and every case has 1-2 discrepancies
+for(let s=1000;s<1200;s++){const c=make(s);console.assert(c.prods.every(p=>p.sob>=0&&p.con>0)&&c.keys.length>=1&&c.keys.length<=2,"caso "+s)}
+</script>
+
+</body></html>

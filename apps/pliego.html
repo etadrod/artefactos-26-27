@@ -1,0 +1,302 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Generador de Pliego Técnico</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.rows{display:grid;gap:.4rem}
+.row{display:grid;gap:.4rem;align-items:center}
+.row input,.row select{width:100%;min-width:0}
+.row .x{border:1px solid var(--line);background:var(--bg);border-radius:4px;width:2rem;height:2rem;cursor:pointer;color:var(--muted)}
+.r-fase{grid-template-columns:minmax(0,1fr) 5rem 5rem 2rem}
+.r-pre{grid-template-columns:minmax(0,1fr) 5rem 5rem 6rem 2rem}
+.r-cri{grid-template-columns:minmax(0,1fr) 11rem 5rem 2rem}
+.r-hit{grid-template-columns:minmax(0,1fr) 6rem 2rem}
+.rh{font:600 .8rem var(--f-body);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+@media (max-width:560px){.r-pre{grid-template-columns:minmax(0,1fr) 4rem 4.5rem 2rem}.r-pre .sub{display:none}.r-cri{grid-template-columns:minmax(0,1fr) 4.5rem 2rem}.r-cri select{grid-column:1/-1;grid-row:2}}
+.gantt{width:auto;max-width:100%;height:auto;display:block}
+.gantt text{font:12px var(--f-body);fill:var(--ink)}
+.gantt .wk{font:11px var(--f-mono);fill:var(--muted)}
+.gantt line{stroke:var(--line)}
+.gantt rect.b{fill:var(--navy)}
+.help{font-size:.92rem;color:var(--muted);border-left:3px solid var(--signal);padding:.2rem .7rem;max-width:75ch}
+.cl{display:grid;gap:.35rem}
+.cl label{display:flex;gap:.5rem;align-items:flex-start;cursor:pointer;line-height:1.35}
+.cl input{margin-top:.2rem;accent-color:var(--navy);flex:none;width:1.05rem;height:1.05rem}
+.tot{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:flex-end;font-weight:600}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Generador de Pliego Técnico</b><span>Estudio de análisis de riesgos para el Plan Territorial Municipal · Curso 2026-2027</span></div>
+    <div class="chips"><em>EVB · AEV6.1</em><em>Reto ABR con GE6</em><em>RA1-3 g, h, i · RA4 i</em></div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Pasos">
+    <button role="tab" id="tab-obj" aria-controls="v-obj">1 · Objeto</button>
+    <button role="tab" id="tab-sol" aria-controls="v-sol">2 · Solvencia</button>
+    <button role="tab" id="tab-tec" aria-controls="v-tec">3 · Prescripciones</button>
+    <button role="tab" id="tab-pla" aria-controls="v-pla">4 · Plazos</button>
+    <button role="tab" id="tab-pre" aria-controls="v-pre">5 · Presupuesto</button>
+    <button role="tab" id="tab-cla" aria-controls="v-cla">6 · Cláusulas</button>
+    <button role="tab" id="tab-sup" aria-controls="v-sup">7 · Supervisión y acta</button>
+  </nav>
+</header>
+
+<main>
+  <div class="intro"><p class="eyebrow">Expediente técnico de contratación</p><h2>Redacta el pliego paso a paso</h2>
+    <p class="muted">Rellena cada paso; el trabajo se guarda en este navegador. Exporta el pliego y la supervisión en Word, y guarda el .json para compartirlo con tu grupo. Marco: Ley 9/2017 de Contratos del Sector Público [verificar artículos y versión vigente]. Consulta pliegos reales en la Plataforma de Contratación del Sector Público (Act EA-6.3).</p>
+    <div class="btns"><button class="btn" id="docP" type="button">Pliego (.docx)</button><button class="btn" id="docS" type="button">Supervisión y acta (.docx)</button><button class="btn ghost" id="jsonB" type="button">Guardar trabajo (.json)</button><label class="btn ghost" for="openF" style="cursor:pointer">Abrir trabajo</label><input type="file" id="openF" accept=".json" hidden><button class="btn warn" id="resetB" type="button">Empezar de cero</button></div>
+  </div>
+
+  <section class="panel" id="v-obj" role="tabpanel">
+    <h3>1 · Objeto y alcance del contrato</h3>
+    <div class="grid2">
+      <label class="f">Órgano de contratación<input type="text" data-k="org" placeholder="Ayuntamiento de [EDITABLE]"></label>
+      <label class="f">Tipo de riesgo del estudio<select data-k="riesgo"><option value="">Elige…</option><option>Natural</option><option>Tecnológico</option><option>Antrópico</option></select></label>
+    </div>
+    <label class="f">Objeto del contrato<small>Qué se contrata, en una o dos frases</small><textarea data-k="objeto" rows="2"></textarea></label>
+    <label class="f">Alcance<small>Ámbito territorial, escala de trabajo, riesgos incluidos y excluidos</small><textarea data-k="alcance" rows="4"></textarea></label>
+    <label class="f">Necesidad e idoneidad<small>Por qué lo necesita el Plan Territorial Municipal</small><textarea data-k="necesidad" rows="3"></textarea></label>
+  </section>
+
+  <section class="panel" id="v-sol" role="tabpanel" hidden>
+    <h3>2 · Quién puede hacerlo y qué solvencia se exige</h3>
+    <p class="help">La solvencia debe ser proporcional al objeto. Separa la económica y financiera de la técnica o profesional.</p>
+    <label class="f">Organismos y tipos de empresa capaces de realizar el estudio<textarea data-k="empresas" rows="3"></textarea></label>
+    <label class="f">Solvencia económica y financiera<textarea data-k="solE" rows="3"></textarea></label>
+    <label class="f">Solvencia técnica o profesional<small>Trabajos similares, titulaciones del equipo, medios técnicos</small><textarea data-k="solT" rows="4"></textarea></label>
+  </section>
+
+  <section class="panel" id="v-tec" role="tabpanel" hidden>
+    <h3>3 · Prescripciones técnicas</h3>
+    <label class="f">Metodología exigida<small>Identificación, análisis (peligrosidad, vulnerabilidad), evaluación y zonificación</small><textarea data-k="metodo" rows="4"></textarea></label>
+    <label class="f">Precisión y escala<small>Escala cartográfica, sistema de referencia, nivel de detalle de los datos</small><textarea data-k="precision" rows="3"></textarea></label>
+    <label class="f">Encuesta a la población (Act EA-6.1)<small>Objetivo, muestra, forma de aplicación y uso de los resultados</small><textarea data-k="encuesta" rows="3"></textarea></label>
+    <label class="f">Entregables<small>Uno por línea: se convierten en la lista de supervisión</small><textarea data-k="entregables" rows="5" placeholder="Memoria del estudio&#10;Cartografía de riesgos en formato SIG&#10;Base de datos de elementos vulnerables&#10;Informe de la encuesta"></textarea></label>
+  </section>
+
+  <section class="panel" id="v-pla" role="tabpanel" hidden>
+    <h3>4 · Plazos y diagrama de Gantt (Act EA-6.2)</h3>
+    <div class="row r-fase rh"><span>Fase</span><span>Semana inicio</span><span>Duración (sem.)</span><span></span></div>
+    <div class="rows" id="fases"></div>
+    <div class="btns"><button class="btn ghost sm" id="addF" type="button">Añadir fase</button></div>
+    <div class="tbl"><svg class="gantt" id="gantt" role="img" aria-label="Diagrama de Gantt"></svg></div>
+    <p class="small muted" id="plazo"></p>
+  </section>
+
+  <section class="panel" id="v-pre" role="tabpanel" hidden>
+    <h3>5 · Presupuesto base de licitación</h3>
+    <div class="row r-pre rh"><span>Partida</span><span>Unidades</span><span>Precio (€)</span><span class="sub" style="text-align:right">Importe</span><span></span></div>
+    <div class="rows" id="pres"></div>
+    <div class="btns"><button class="btn ghost sm" id="addP" type="button">Añadir partida</button><span class="spacer"></span><label class="f" style="max-width:12rem">IGIC (%) [verificar tipo vigente]<input type="number" data-k="igic" min="0" step="0.5"></label></div>
+    <div class="tot" id="tot"></div>
+  </section>
+
+  <section class="panel" id="v-cla" role="tabpanel" hidden>
+    <h3>6 · Cláusulas administrativas y económicas</h3>
+    <p class="help">Los criterios de adjudicación deben ser medibles y sumar 100 puntos. Indica si se valoran con fórmula o por juicio de valor.</p>
+    <div class="row r-cri rh"><span>Criterio</span><span>Tipo</span><span>Puntos</span><span></span></div>
+    <div class="rows" id="cris"></div>
+    <div class="btns"><button class="btn ghost sm" id="addC" type="button">Añadir criterio</button><span class="spacer"></span><span id="criT"></span></div>
+    <label class="f">Penalidades por incumplimiento<textarea data-k="penal" rows="3"></textarea></label>
+    <label class="f">Forma de pago<textarea data-k="pago" rows="2"></textarea></label>
+    <label class="f">Garantías y otras condiciones<textarea data-k="garantia" rows="2"></textarea></label>
+  </section>
+
+  <section class="panel" id="v-sup" role="tabpanel" hidden>
+    <h3>7 · Supervisión y acta de recepción</h3>
+    <h4>Hitos de control</h4>
+    <div class="row r-hit rh"><span>Hito</span><span>Semana</span><span></span></div>
+    <div class="rows" id="hits"></div>
+    <div class="btns"><button class="btn ghost sm" id="addH" type="button">Añadir hito</button></div>
+    <h4>Comprobación de entregables del pliego</h4>
+    <div class="cl" id="chk"></div>
+    <div class="grid2">
+      <label class="f">Resultado de la recepción<select data-k="acta"><option value="">Elige…</option><option>Conforme</option><option>Con reparos</option></select></label>
+      <label class="f">Plazo de subsanación<input type="text" data-k="subs" placeholder="[EDITABLE]"></label>
+    </div>
+    <label class="f">Reparos u observaciones<textarea data-k="reparos" rows="3"></textarea></label>
+    <h4>Coste-beneficio de dos medidas de reducción del riesgo (RA4 i)</h4>
+    <div class="grid2">
+      <label class="f">Medida A · coste y beneficio esperado<textarea data-k="cbA" rows="3"></textarea></label>
+      <label class="f">Medida B · coste y beneficio esperado<textarea data-k="cbB" rows="3"></textarea></label>
+    </div>
+    <label class="f">Conclusión: medida más eficiente<textarea data-k="cbC" rows="2"></textarea></label>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+
+"use strict";
+const EMPTY=()=>({d:{igic:7},fases:[{n:"Recopilación de información",i:1,w:3},{n:"Trabajo de campo y encuesta",i:3,w:4},{n:"Análisis y cartografía",i:6,w:5},{n:"Redacción y entrega",i:11,w:2}],pres:[{n:"Técnico/a responsable (horas)",q:0,p:0}],cris:[{n:"Precio",t:"Automático (fórmula)",p:0}],hits:[{n:"Entrega del plan de trabajo",w:1}],chk:{}});
+let S=store.get("pli_v1")||EMPTY();
+const sv=()=>store.set("pli_v1",S),eur=v=>v.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})+" €",num=v=>parseFloat(String(v).replace(",","."))||0;
+const LISTS={
+ fases:{cls:"r-fase",def:{n:"",i:1,w:1},f:[["n","text"],["i","number"],["w","number"]]},
+ pres:{cls:"r-pre",def:{n:"",q:1,p:0},f:[["n","text"],["q","number"],["p","number"]],extra:r=>`<span class="sub mono" style="text-align:right">${eur(num(r.q)*num(r.p))}</span>`},
+ cris:{cls:"r-cri",def:{n:"",t:"Automático (fórmula)",p:0},f:[["n","text"],["t","sel"],["p","number"]]},
+ hits:{cls:"r-hit",def:{n:"",w:1},f:[["n","text"],["w","number"]]}};
+function list(k){const L=LISTS[k];
+ $("#"+k).innerHTML=S[k].map((r,i)=>`<div class="row ${L.cls}">${L.f.map(([f,t])=>t==="sel"?`<select data-l="${k}" data-i="${i}" data-f="${f}" aria-label="Tipo">${["Automático (fórmula)","Juicio de valor"].map(o=>`<option${o===r[f]?" selected":""}>${o}</option>`).join("")}</select>`:`<input type="${t}" ${t==="number"?'min="0" step="any" inputmode="decimal"':""} data-l="${k}" data-i="${i}" data-f="${f}" value="${esc(r[f]??"")}" aria-label="${f}">`).join("")}${L.extra?L.extra(r):""}<button class="x" type="button" data-del="${k}" data-i="${i}" aria-label="Quitar fila">×</button></div>`).join("");
+ $$(`[data-l="${k}"]`).forEach(el=>el[el.tagName==="SELECT"?"onchange":"oninput"]=()=>{S[k][el.dataset.i][el.dataset.f]=el.value;sv();derived(k)});
+ $$(`[data-del="${k}"]`).forEach(b=>b.onclick=()=>{S[k].splice(+b.dataset.i,1);sv();list(k);derived(k)})}
+function derived(k){if(k==="fases"||!k)gantt();if(k==="pres"||!k){tot();if(k==="pres")$$("#pres .sub").forEach((s,i)=>s.textContent=eur(num(S.pres[i].q)*num(S.pres[i].p)))}if(k==="cris"||!k)cri()}
+function gantt(){const F=S.fases.filter(f=>f.n),end=Math.max(4,...F.map(f=>num(f.i)+num(f.w)-1)),lw=210,cw=Math.max(24,Math.min(48,560/end)),h=26*F.length+30,w=lw+cw*end+10;
+ let s=`<svg viewBox="0 0 ${w} ${h}" width="${w}" xmlns="http://www.w3.org/2000/svg">`;
+ for(let i=1;i<=end;i++)s+=`<text class="wk" x="${lw+cw*(i-.5)}" y="14" text-anchor="middle">S${i}</text><line x1="${lw+cw*(i-1)}" y1="20" x2="${lw+cw*(i-1)}" y2="${h}"/>`;
+ F.forEach((f,j)=>{const y=26+j*26;s+=`<text x="0" y="${y+13}">${esc(f.n.slice(0,30))}</text><rect class="b" x="${lw+cw*(num(f.i)-1)+2}" y="${y+2}" width="${Math.max(4,cw*num(f.w)-4)}" height="16" rx="3"/>`});
+ const svg=$("#gantt");svg.outerHTML=s.replace("<svg",`<svg class="gantt" id="gantt" role="img" aria-label="Diagrama de Gantt"`);
+ $("#plazo").textContent=F.length?`Plazo total de ejecución: ${end} semanas.`:""}
+function totals(){const base=S.pres.reduce((a,r)=>a+num(r.q)*num(r.p),0),ig=base*num(S.d.igic)/100;return{base,ig,total:base+ig}}
+function tot(){const t=totals();$("#tot").innerHTML=`<span>Base: ${eur(t.base)}</span><span>IGIC: ${eur(t.ig)}</span><span>Total: ${eur(t.total)}</span>`}
+function cri(){const s=S.cris.reduce((a,c)=>a+num(c.p),0);$("#criT").innerHTML=`<span class="pill ${s===100?"ok":"warn"}">${s} / 100 puntos</span>`}
+const ents=()=>(S.d.entregables||"").split("\n").map(x=>x.trim()).filter(Boolean);
+function chk(){const E=ents();$("#chk").innerHTML=E.length?E.map((e,i)=>`<label><input type="checkbox" data-c="${esc(e)}" ${S.chk[e]?"checked":""}> ${esc(e)} · cumple lo exigido en el pliego</label>`).join(""):`<p class="small muted">Escribe los entregables en el paso 3 y aparecerán aquí.</p>`;
+ $$("[data-c]").forEach(c=>c.onchange=()=>{S.chk[c.dataset.c]=c.checked;sv()})}
+function fields(){$$("[data-k]").forEach(el=>{el.value=S.d[el.dataset.k]??"";el[el.tagName==="SELECT"?"onchange":"oninput"]=()=>{S.d[el.dataset.k]=el.value;sv();if(el.dataset.k==="igic")tot();if(el.dataset.k==="entregables")chk()}})}
+function all(){fields();Object.keys(LISTS).forEach(list);derived();chk()}
+Object.keys(LISTS).forEach(k=>$("#add"+{fases:"F",pres:"P",cris:"C",hits:"H"}[k]).onclick=()=>{S[k].push({...LISTS[k].def});sv();list(k);derived(k)});
+$("#jsonB").onclick=()=>saveFile("pliego_tecnico.json",JSON.stringify(S,null,1));
+$("#openF").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t);if(!o.d||!Array.isArray(o.fases))throw 0;S=o;sv();all();toast("Trabajo abierto")}).catch(()=>toast("Ese archivo no es de esta herramienta."));e.target.value=""};
+$("#resetB").onclick=()=>{const b=$("#resetB");if(b.dataset.sure){S=EMPTY();sv();all();delete b.dataset.sure;b.textContent="Empezar de cero"}else{b.dataset.sure=1;b.textContent="Se borrará todo. Pulsa otra vez"}};
+const P=(t)=>DOCX.P(t||"[pendiente]");
+$("#docP").onclick=()=>{const D=DOCX,d=S.d,t=totals();
+ let b=D.Title("Pliego de prescripciones técnicas")+D.tbl(null,[["Órgano de contratación",d.org||""],["Objeto",d.objeto||""],["Tipo de riesgo",d.riesgo||""],["Presupuesto base de licitación",eur(t.total)+" (IGIC incluido)"]]);
+ b+=D.H1("1. Objeto y alcance")+P(d.alcance)+D.H2("Necesidad e idoneidad")+P(d.necesidad);
+ b+=D.H1("2. Capacidad y solvencia")+D.H2("Organismos y empresas")+P(d.empresas)+D.H2("Solvencia económica y financiera")+P(d.solE)+D.H2("Solvencia técnica o profesional")+P(d.solT);
+ b+=D.H1("3. Prescripciones técnicas")+D.H2("Metodología")+P(d.metodo)+D.H2("Precisión y escala")+P(d.precision)+D.H2("Encuesta a la población")+P(d.encuesta)+D.H2("Entregables")+(ents().length?D.tbl(["Nº","Entregable"],ents().map((e,i)=>[String(i+1),e])):P());
+ b+=D.H1("4. Plazos")+D.tbl(["Fase","Semana de inicio","Duración (semanas)"],S.fases.filter(f=>f.n).map(f=>[f.n,String(f.i),String(f.w)]))+D.P($("#plazo").textContent);
+ b+=D.H1("5. Presupuesto")+D.tbl(["Partida","Unidades","Precio","Importe"],S.pres.filter(r=>r.n).map(r=>[r.n,String(r.q),eur(num(r.p)),eur(num(r.q)*num(r.p))]).concat([["Base imponible","","",eur(t.base)],[`IGIC ${S.d.igic||0} %`,"","",eur(t.ig)],["Total","","",eur(t.total)]]));
+ b+=D.H1("6. Cláusulas administrativas y económicas")+D.H2("Criterios de adjudicación")+D.tbl(["Criterio","Tipo","Puntos"],S.cris.filter(c=>c.n).map(c=>[c.n,c.t,String(c.p)]))+D.H2("Penalidades")+P(d.penal)+D.H2("Forma de pago")+P(d.pago)+D.H2("Garantías y otras condiciones")+P(d.garantia);
+ saveFile("Pliego_prescripciones_tecnicas.docx",D.build(b,false))};
+$("#docS").onclick=()=>{const D=DOCX,d=S.d;
+ let b=D.Title("Supervisión y acta de recepción")+D.tbl(null,[["Órgano de contratación",d.org||""],["Objeto",d.objeto||""]]);
+ b+=D.H1("Hitos de control")+D.tbl(["Hito","Semana"],S.hits.filter(h=>h.n).map(h=>[h.n,String(h.w)]));
+ b+=D.H1("Lista de supervisión")+D.tbl(["Entregable exigido en el pliego","Cumple"],ents().map(e=>[e,S.chk[e]?"Sí":"No"]));
+ b+=D.H1("Acta de recepción")+D.tbl(null,[["Resultado",d.acta||""],["Reparos u observaciones",d.reparos||""],["Plazo de subsanación",d.subs||""],["Fecha",""],["Firma del responsable del contrato",""]]);
+ b+=D.H1("Coste-beneficio de medidas de reducción del riesgo")+D.H2("Medida A")+P(d.cbA)+D.H2("Medida B")+P(d.cbB)+D.H2("Conclusión")+P(d.cbC);
+ saveFile("Supervision_y_acta_recepcion.docx",D.build(b,false))};
+tabs(["obj","sol","tec","pla","pre","cla","sup"],"pli_tab");all();
+</script>
+
+</body></html>
