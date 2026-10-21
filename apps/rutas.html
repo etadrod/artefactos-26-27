@@ -112,6 +112,9 @@ th.num{text-align:right}
 .mk-tab input{min-width:8rem}
 .mk-tab tr.cur td{background:color-mix(in srgb,var(--signal) 10%,var(--surface))}
 
+.mk-zoom{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-bottom:.4rem}
+.mk-svg{touch-action:pinch-zoom}
+
 .cl{display:grid;gap:.3rem}
 .cl label{display:flex;gap:.5rem;align-items:flex-start;cursor:pointer;line-height:1.35}
 .cl input{margin-top:.2rem;accent-color:var(--navy);flex:none;width:1.05rem;height:1.05rem}
@@ -136,6 +139,7 @@ th.num{text-align:right}
     <div class="mk-tools" id="mk-tools" role="group" aria-label="Capas para dibujar"></div>
   </div>
   <p class="small" id="mk-hint" role="status"></p>
+  <div class="mk-zoom" role="group" aria-label="Zoom"><button class="btn ghost sm" id="mk-zin" type="button" aria-label="Acercar">+</button><button class="btn ghost sm" id="mk-zout" type="button" aria-label="Alejar">−</button><button class="btn ghost sm" id="mk-zfit" type="button">Ver todo</button><span class="small muted">Rueda del ratón para acercar; arrastra para moverte.</span></div>
   <div class="mk-wrap"><svg id="mk-svg" class="mk-svg" role="img" aria-label="Mapa de trabajo"></svg></div>
   <div class="btns">
     <button class="btn ghost sm" id="mk-end" type="button" hidden>Terminar línea</button>
@@ -238,6 +242,7 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
  let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
@@ -305,7 +310,15 @@ const MK=(()=>{
  const W0=1200,H0=760;
  let M=store.get(CFG.key,null)||JSON.parse(JSON.stringify(CFG.sample));
  if(!M.bg)M.bg=null;M.hide=M.hide||{};M.f=M.f||[];
- let tool=null,draft=null,selId=null,cal=null;
+ let tool=null,draft=null,selId=null,cal=null,V=null,drag=null,noClick=false;
+ // CFG.osm={z,x0,y0,nx,ny,mpp}: fondo de teselas de OpenStreetMap (solo con conexión; no se guarda la imagen)
+ const osmBg=()=>({osm:CFG.osm,w:CFG.osm.nx*256,h:CFG.osm.ny*256});
+ if(CFG.osm&&!M.bg&&(M.ej||!M.f.length)){M.bg=osmBg();M.scale=CFG.osm.mpp;if(M.ej){M.f=[];M.ej=false}}
+ const tiles=()=>{const o=M.bg.osm,a=[];for(let j=0;j<o.ny;j++)for(let i=0;i<o.nx;i++)a.push([i*256,j*256,`https://tile.openstreetmap.org/${o.z}/${o.x0+i}/${o.y0+j}.png`]);return a};
+ const bgSvg=()=>M.bg.osm?tiles().map(([x,y,u])=>`<image href="${u}" x="${x}" y="${y}" width="256.5" height="256.5"/>`).join("")+`<text x="${M.bg.w-8}" y="${M.bg.h-8}" text-anchor="end" font-size="14" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">© OpenStreetMap contributors</text>`:`<image href="${esc(M.bg.src)}" x="0" y="0" width="${M.bg.w}" height="${M.bg.h}"/>`;
+ const vb=()=>{const d=dims();return V||{x:0,y:0,w:d.w,h:d.h}};
+ function zoom(f,cx,cy){const d=dims(),v=vb(),w=Math.min(d.w,Math.max(d.w/8,v.w/f)),h=w*d.h/d.w;cx=cx??v.x+v.w/2;cy=cy??v.y+v.h/2;
+  const x=Math.min(d.w-w,Math.max(0,cx-(cx-v.x)*w/v.w)),y=Math.min(d.h-h,Math.max(0,cy-(cy-v.y)*h/v.h));V=w>=d.w?null:{x,y,w,h};$("#mk-svg").setAttribute("viewBox",`${vb().x} ${vb().y} ${vb().w} ${vb().h}`)}
  const sv=()=>{try{localStorage.setItem(CFG.key,JSON.stringify(M))}catch(e){toast("Memoria llena: la imagen de fondo es muy grande. Guarda en .json.",5000)}};
  const L=id=>CFG.layers.find(l=>l.id===id);
  const dims=()=>M.bg?{w:M.bg.w,h:M.bg.h}:{w:W0,h:H0};
@@ -320,8 +333,8 @@ const MK=(()=>{
   return s}
  function grid(){const d=dims();let g=`<rect width="${d.w}" height="${d.h}" fill="var(--sunk)"/>`;for(let x=0;x<=d.w;x+=60)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${d.h}" stroke="var(--line)"/>`;for(let y=0;y<=d.h;y+=60)g+=`<line x1="0" y1="${y}" x2="${d.w}" y2="${y}" stroke="var(--line)"/>`;
   return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
- function render(){const d=dims(),sv_=$("#mk-svg");sv_.setAttribute("viewBox",`0 0 ${d.w} ${d.h}`);
-  let s=M.bg?`<image href="${esc(M.bg.src)}" x="0" y="0" width="${d.w}" height="${d.h}"/>`:grid();s+=svgFeatures(false);
+ function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);
+  let s=M.bg?bgSvg():grid();s+=svgFeatures(false);
   if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${l.col}"/>`).join("")}
   if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="none" stroke="var(--signal)" stroke-width="3"/>`).join("");
   sv_.innerHTML=s;
@@ -336,11 +349,18 @@ const MK=(()=>{
   $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
   if(CFG.onRender)CFG.onRender(M)}
  function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t==="line")}
- function pt(e){const s=$("#mk-svg"),r=s.getBoundingClientRect(),d=dims();return[Math.round((e.clientX-r.left)/r.width*d.w),Math.round((e.clientY-r.top)/r.height*d.h)]}
+ function pt(e){const s=$("#mk-svg"),r=s.getBoundingClientRect(),v=vb();return[Math.round(v.x+(e.clientX-r.left)/r.width*v.w),Math.round(v.y+(e.clientY-r.top)/r.height*v.h)]}
  const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
  function finish(){if(draft&&draft.p.length>1){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n,p:draft.p});sv()}draft=null}
  function bind(){const s=$("#mk-svg");
-  s.addEventListener("click",e=>{const p=pt(e);
+ s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.25:0.8,p[0],p[1])},{passive:false});
+  s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
+  s.addEventListener("pointermove",e=>{if(!drag||!V)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;
+   const r=s.getBoundingClientRect(),d=dims(),k=drag.v.w/r.width;V={...drag.v,x:Math.min(d.w-drag.v.w,Math.max(0,drag.v.x-dx*k)),y:Math.min(d.h-drag.v.h,Math.max(0,drag.v.y-dy*k))};s.setAttribute("viewBox",`${V.x} ${V.y} ${V.w} ${V.h}`)});
+  addEventListener("pointerup",()=>{if(drag&&drag.m)noClick=true;drag=null});
+  $("#mk-zin").onclick=()=>zoom(1.5);$("#mk-zout").onclick=()=>zoom(1/1.5);$("#mk-zfit").onclick=()=>{V=null;render()};
+  if(CFG.osm){const b=document.createElement("button");b.className="btn ghost sm";b.type="button";b.textContent="Mapa base de La Isleta";b.onclick=()=>{M.bg=osmBg();M.scale=CFG.osm.mpp;V=null;sv();render()};$("#mk-nobg").after(b)}
+  s.addEventListener("click",e=>{if(noClick){noClick=false;return}const p=pt(e);
    if(cal){cal.push(p);if(cal.length===2){$("#mk-calbox").hidden=false;$("#mk-calm").focus()}render();return}
    const hit=e.target.closest("[data-f]");if(!tool){selId=hit?hit.dataset.f:null;render();return}
    const l=L(tool);if(l.t==="point"){const n=M.f.filter(f=>f.l===l.id).length+1;M.f.push({id:nid(),l:l.id,n:l.n+" "+n,p:[p]});sv();render()}else{draft=draft&&draft.l===l.id?draft:{l:l.id,p:[]};draft.p.push(p);render()}});
@@ -350,16 +370,17 @@ const MK=(()=>{
   $("#mk-cal").onclick=()=>{finish();tool=null;cal=[];hint();render()};
   $("#mk-calok").onclick=()=>{const m=+$("#mk-calm").value;if(!(m>0)||!cal||cal.length<2){toast("Indica los metros entre los dos puntos.");return}const px=Math.hypot(cal[1][0]-cal[0][0],cal[1][1]-cal[0][1]);M.scale=m/px;cal=null;$("#mk-calbox").hidden=true;sv();hint();render();toast("Escala guardada")};
   $("#mk-bg").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1800/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
-   M.bg={src:c.toDataURL("image/jpeg",.8),w:c.width,h:c.height};M.scale=null;M.f=[];sv();render();toast("Fondo cargado. Calibra la escala con un tramo conocido.",4000)};im.src=r.result};r.readAsDataURL(f);e.target.value=""};
-  $("#mk-nobg").onclick=()=>{M.bg=null;M.scale=null;sv();render()};
+   M.bg={src:c.toDataURL("image/jpeg",.8),w:c.width,h:c.height};M.scale=null;M.f=[];V=null;sv();render();toast("Fondo cargado. Calibra la escala con un tramo conocido.",4000)};im.src=r.result};r.readAsDataURL(f);e.target.value=""};
+  $("#mk-nobg").onclick=()=>{M.bg=null;M.scale=null;V=null;sv();render()};
   $("#mk-json").onclick=()=>saveFile(CFG.file+".json",JSON.stringify(M));
   $("#mk-open").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t);if(!Array.isArray(o.f))throw 0;M=o;M.hide=M.hide||{};sv();render();if(CFG.onLoad)CFG.onLoad(M);toast("Abierto")}).catch(()=>toast("Ese archivo no es de esta herramienta."));e.target.value=""};
   $("#mk-sample").onclick=()=>{const b=$("#mk-sample");if(b.dataset.sure){M=JSON.parse(JSON.stringify(CFG.sample));sv();render();if(CFG.onLoad)CFG.onLoad(M);delete b.dataset.sure;b.textContent="Cargar ejemplo"}else{b.dataset.sure=1;b.textContent="Se borrará tu mapa. Pulsa otra vez"}};
   $("#mk-png").onclick=async()=>{const u=await png();if(u)saveFile(CFG.file+".jpg",d2b(u))};
   hint()}
  const d2b=u=>{const s=atob(u.split(",")[1]),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return new Blob([a])};
- function png(){return new Promise(ok=>{const d=dims(),svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}">${M.bg?`<image href="${esc(M.bg.src)}" width="${d.w}" height="${d.h}"/>`:`<rect width="${d.w}" height="${d.h}" fill="#E8ECF2"/>`}${svgFeatures(true)}</svg>`;
-  const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=d.w;c.height=d.h;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,d.w,d.h);g.drawImage(im,0,0);ok(c.toDataURL("image/jpeg",.88))};im.onerror=()=>{toast("No se pudo generar la imagen.");ok(null)};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)})}
+ const loadIm=u=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u});
+ async function png(){const d=dims(),T=M.bg&&M.bg.osm?await Promise.all(tiles().map(async([x,y,u])=>[x,y,await loadIm(u)])):[];return new Promise(ok=>{const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}">${M.bg&&!M.bg.osm?`<image href="${esc(M.bg.src)}" width="${d.w}" height="${d.h}"/>`:M.bg?"":`<rect width="${d.w}" height="${d.h}" fill="#E8ECF2"/>`}${svgFeatures(true)}${M.bg&&M.bg.osm?`<text x="${d.w-8}" y="${d.h-8}" text-anchor="end" font-size="14" fill="#333" font-family="Arial">© OpenStreetMap contributors</text>`:""}</svg>`;
+  const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=d.w;c.height=d.h;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,d.w,d.h);T.forEach(([x,y,t])=>{if(t)g.drawImage(t,x,y)});g.drawImage(im,0,0);ok(c.toDataURL("image/jpeg",.88))};im.onerror=()=>{toast("No se pudo generar la imagen.");ok(null)};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)})}
  return{init(){bind();render();if(CFG.onLoad)CFG.onLoad(M)},render,png,get M(){return M},save:sv,L,len,fmtL,dims};
 })();
 
@@ -370,7 +391,7 @@ $("#docB").onclick=async()=>{const M=MK.M,D=DOCX,img=await MK.png(),d=M.d||{};
  b+=D.H1("Inspección del vehículo")+D.tbl(["Comprobación","Estado"],CL.veh.map((x,i)=>[x,M.c["veh"+i]?"Comprobado":"Pendiente"]))+D.H1("Secuencia en vehículo")+D.P(d.sv||"")+D.H1("Secuencia a pie")+D.P(d.sp||"");
  saveFile("Plan_desplazamiento_protegido.docx",D.build(b,false,img?[img]:[]))};
 MK.init();
-rubrica({auto(){const M=MK.M,d=M.d||{},c=M.c||{},has=l=>M.f.some(x=>x.l===l)?1:0,fr=g=>CL[g].filter((_,i)=>c[g+i]).length/CL[g].length,w=k=>words(d[k]);
+rubrica({btn:"docB",label:"Descarga PDF",auto(){const M=MK.M,d=M.d||{},c=M.c||{},has=l=>M.f.some(x=>x.l===l)?1:0,fr=g=>CL[g].filter((_,i)=>c[g+i]).length/CL[g].length,w=k=>words(d[k]);
  if(M.ej)return Array(8).fill([0,"Sigue cargado el ejemplo: crea tu propio plan."]);
  return[[((w("car")?1:0)+has("ip"))/2,`Caravana: ${d.car||"sin indicar"}. Itinerario principal ${has("ip")?"dibujado":"sin dibujar"}.`],
   [((has("rc")&&has("ds")?1:0)+clamp01(w("rec")/15)+clamp01(w("des")/15))/3,`Recogida y destino ${has("rc")&&has("ds")?"marcados":"sin marcar"}; valoración de recogida ${w("rec")} y de destino ${w("des")} palabras.`],

@@ -213,6 +213,7 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
  let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
@@ -306,7 +307,7 @@ $("#docx").onclick=()=>{const D=DOCX,H=hrs(),A=analyze();let b=D.Title("Cuadrant
  b+=D.H1("Alertas")+(A.al.length?A.al.map(a=>D.P("• "+a[1])).join(""):D.P("Sin alertas."))+D.H1("Justificación del cuadrante")+D.P("[Explica los criterios de asignación, relevos y descansos]");
  saveFile("Cuadrante_dispositivo.docx",D.build(b,true))};
 tabs(["cuad","pers"],"turnos_tab");edit();render();
-rubrica({auto(){if(S.ej)return[[0,"Sigue cargado el ejemplo."],[0,"Sigue cargado el ejemplo."],null,null,null,null,null,null];
+rubrica({btn:"docx",label:"Descarga PDF",auto(){if(S.ej)return[[0,"Sigue cargado el ejemplo."],[0,"Sigue cargado el ejemplo."],null,null,null,null,null,null];
  const A=analyze(),np=Math.max(1,S.pe.length),perf=A.al.filter(a=>a[2]==="perf").length,rest=A.al.filter(a=>a[2]==="rest"||a[2]==="max").length;
  const fr=S.pu.reduce((a,p)=>a+Math.max(0,Math.min(p.to,S.ev.start+S.ev.hours)-Math.max(p.from,S.ev.start)),0)||1;
  return[[1-perf/np,`${S.pe.length} personas; ${perf} asignadas a puestos de otro perfil.`],

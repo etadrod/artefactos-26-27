@@ -223,6 +223,7 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
  let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
@@ -323,7 +324,7 @@ $("#docB").onclick=()=>{const D=DOCX,s=score();let b=D.Title("Parte de ronda · 
  saveFile("Parte_ronda_deposito.docx",D.build(b))};
 function all(){map();side();steps();labs();res()}
 tabs(["ronda","cierre","etiq","res"],"dep_tab");all();
-rubrica({auto(){const s=score(),ko=R.ko,det=P.filter(p=>ko.includes(p[0])&&R.v[p[0]]?.ok==="D"),act=det.filter(p=>words(R.v[p[0]].a)>=4).length;
+rubrica({btn:"docB",label:"Descarga PDF",auto(){const s=score(),ko=R.ko,det=P.filter(p=>ko.includes(p[0])&&R.v[p[0]]?.ok==="D"),act=det.filter(p=>words(R.v[p[0]].a)>=4).length;
  const se=P.filter(p=>p[6]==="Cerramiento"||p[6]==="Señalización"),seOk=se.filter(p=>{const v=R.v[p[0]];return v&&(v.ok==="D")===ko.includes(p[0])}).length;
  return[[R.lDone?s.lb/4:0,R.lDone?`${s.lb} de 4 etiquetas identificadas correctamente.`:"Etiquetas sin comprobar."],
   [(s.pts/13+(det.length?act/det.length:0))/2,`Ronda: ${s.pts} de 13 puntos bien valorados; ${act} de ${det.length} deficiencias reales con actuación descrita.`],

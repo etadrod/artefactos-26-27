@@ -230,6 +230,7 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
  let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
@@ -364,7 +365,7 @@ $("#acta").onclick=()=>{const D=DOCX,d=S.d,media=[];let b=D.Title("Acta de inspe
  b+=D.H1("Conclusión")+D.P(d.concl||"")+D.P("")+D.tbl(null,[["Firma del equipo inspector",""],["Firma de la persona responsable de la instalación",""]]);
  saveFile("Acta_inspeccion_"+(d.fecha||today())+".docx",D.build(b,false,media))};
 bindData();render();
-rubrica({auto(key){const d=S.d,all=S.els.flatMap(e=>TPL[e.tpl].items.map((_,i)=>[e,i])),ev=all.filter(([e,i])=>e.st[i]).length/Math.max(1,all.length);
+rubrica({btn:"acta",label:"Descarga PDF",auto(key){const d=S.d,all=S.els.flatMap(e=>TPL[e.tpl].items.map((_,i)=>[e,i])),ev=all.filter(([e,i])=>e.st[i]).length/Math.max(1,all.length);
  const nc=all.filter(([e,i])=>e.st[i]==="NC"),ncm=nc.length?nc.filter(([e,i])=>words((e.nc[i]||{}).m)>=3).length/nc.length:1,cw=words(d.concl);
  if(S.ejemplo)return key.startsWith("ge6")?[null,null,null,[0,"Sigue cargado el ejemplo."],[0,"Sigue cargado el ejemplo."],[0,"Sigue cargado el ejemplo."],[0,"Sigue cargado el ejemplo."]]:[null,null,null,[0,"Sigue cargado el ejemplo."],[0,"Sigue cargado el ejemplo."]];
  const txt=`${S.els.length} elementos; ${Math.round(ev*100)} % de puntos valorados; ${nc.length} no conformidades, ${Math.round(ncm*100)} % con medida correctora.`;

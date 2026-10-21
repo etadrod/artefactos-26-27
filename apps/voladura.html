@@ -196,6 +196,7 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
  let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
@@ -292,7 +293,7 @@ $("#docB").onclick=()=>{const D=DOCX,R=score(),P=C.prods;
 load(S?.seed||1000+Math.floor(Math.random()*9000));
 // self-check: surplus never negative and every case has 1-2 discrepancies
 for(let s=1000;s<1200;s++){const c=make(s);console.assert(c.prods.every(p=>p.sob>=0&&p.con>0)&&c.keys.length>=1&&c.keys.length<=2,"caso "+s)}
-rubrica({auto(){const s=score(),P=C.prods,a=s.sob.filter(Boolean).length;let b=0;DIS.forEach(([k])=>{if(S.dis[k])b+=C.keys.includes(k)?1:-1});
+rubrica({btn:"docB",label:"Descarga PDF",auto(){const s=score(),P=C.prods,a=s.sob.filter(Boolean).length;let b=0;DIS.forEach(([k])=>{if(S.dis[k])b+=C.keys.includes(k)?1:-1});
  const t=S.act||"",kw=[/comunic|avis|inform/i,/guardia civil|intervenci[oó]n de armas|responsable|jefe/i,/parte|registro|acta/i].filter(x=>x.test(t)).length;
  return[[a/P.length,`${a} de ${P.length} productos con el consumo confirmado y el sobrante bien calculado.`],
   [(a/P.length+Math.max(0,b)/C.keys.length)/2,`Sobrantes ${a}/${P.length}; discrepancias reales detectadas (descontando falsas) ${Math.max(0,b)}/${C.keys.length}.`],

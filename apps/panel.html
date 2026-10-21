@@ -205,6 +205,7 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
  let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
@@ -296,7 +297,7 @@ $("#docx").onclick=()=>{const s=stats(),X=DOCX,cv=document.createElement("canvas
  saveFile("Anexo_estadistico_supervision.docx",X.build(b,false,[img]))};
 render();
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",render);new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]})}catch(e){}
-rubrica({auto(){return[null,null,null,null,[SRC==="ejemplo"?.3:1,SRC==="ejemplo"?"Usa los datos de ejemplo: sube los partes de tu equipo.":`Estadística calculada con los partes propios (${SRC}).`],null]},
+rubrica({btn:"docx",label:"Descarga PDF",auto(){return[null,null,null,null,[SRC==="ejemplo"?.3:1,SRC==="ejemplo"?"Usa los datos de ejemplo: sube los partes de tu equipo.":`Estadística calculada con los partes propios (${SRC}).`],null]},
  resumen(){const s=stats();return[["Fuente",SRC==="ejemplo"?"datos de ejemplo":SRC],["Servicios",String(s.n)],["Respuesta media",f1(s.m)+" min"],["Dentro de objetivo",Math.round(s.pct)+" % (meta "+T.pct+" %)"]]}});
 </script>
 

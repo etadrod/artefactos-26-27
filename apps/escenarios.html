@@ -207,6 +207,7 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
  let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
@@ -343,7 +344,7 @@ $("#docB").onclick=()=>{const D=DOCX;
 $("#againB").onclick=()=>start(cur.id);$("#otherB").onclick=pick;$("#backB").onclick=pick;
 pick();
 console.assert(SC.every(s=>s.steps.every(st=>st.o.some(o=>o[1]===2))),"cada decisión tiene una respuesta correcta");
-rubrica({auto(){const D=S.det||{},agg={};Object.values(D).forEach(t=>Object.entries(t).forEach(([k,[p,m]])=>{agg[k]=agg[k]||[0,0];agg[k][0]+=p;agg[k][1]+=m}));
+rubrica({btn:"docB",label:"Descarga PDF",auto(){const D=S.det||{},agg={};Object.values(D).forEach(t=>Object.entries(t).forEach(([k,[p,m]])=>{agg[k]=agg[k]||[0,0];agg[k][0]+=p;agg[k][1]+=m}));
  return["cob","pro","eva","def","com"].map(k=>agg[k]?[agg[k][0]/agg[k][1],`${TAGS[k]}: ${agg[k][0]} de ${agg[k][1]} puntos en los escenarios jugados.`]:[0,`Sin decisiones de ${TAGS[k].toLowerCase()} todavía: juega los escenarios.`])},
  resumen(){return SC.map(s=>[s.t,S[s.id]!=null?S[s.id]+" %":"sin jugar"])}});
 </script>

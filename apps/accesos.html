@@ -213,6 +213,7 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
  let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
@@ -316,7 +317,7 @@ $("#docB").onclick=()=>{const D=DOCX,n=R.log.filter(l=>l.ok).length;let b=D.Titl
  b+=D.H1("Incidencias")+(R.log.filter(l=>l.d!=="Permitir acceso").map(l=>D.P(`${l.h} · ${l.n}: ${l.d}. Motivo: ${l.m}.`)).join("")||D.P("Sin incidencias."))+D.H1("Autoevaluación")+R.log.filter(l=>!l.ok).map(l=>D.P(`${l.h} · ${l.n}: esperado «${l.exp}». ${l.why}`)).join("")+D.P("[Reflexión del alumno/a sobre las decisiones a mejorar]");
  saveFile("Parte_control_accesos.docx",D.build(b))};
 render();
-rubrica({auto(){const L=R.log,n=L.length;if(!n)return[[0,"No hay ninguna persona atendida en la ronda."],[0,"No hay ninguna persona atendida en la ronda."]];
+rubrica({btn:"docB",label:"Descarga PDF",auto(){const L=R.log,n=L.length;if(!n)return[[0,"No hay ninguna persona atendida en la ronda."],[0,"No hay ninguna persona atendida en la ronda."]];
  const ok=L.filter(l=>l.ok).length,fx=L.map((l,k)=>[l,R.cases[k]]).filter(([,c])=>c.act!=="ok"),fo=fx.filter(([l])=>l.ok).length;
  return[[ok/R.cases.length,`${ok} de ${R.cases.length} personas resueltas correctamente (decisión y motivo).`],
   [fx.length?fo/fx.length:0,`${fo} de ${fx.length} acreditaciones o documentos con fallo detectados y resueltos.`],null,null,null]},
