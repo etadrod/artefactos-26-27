@@ -120,6 +120,7 @@ th .ayuda .tip{font-weight:400}
 
 .mk-zoom{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-bottom:.4rem}
 .mk-svg{touch-action:pinch-zoom}
+.mk-svg.pan{cursor:grab}.mk-svg.pan.drag,.mk-svg.drag{cursor:grabbing}
 
 .cl{display:grid;gap:.3rem}
 .cl label{display:flex;gap:.5rem;align-items:flex-start;cursor:pointer;line-height:1.35}
@@ -356,7 +357,7 @@ const MK=(()=>{
   let s=M.bg?bgSvg():grid();s+=svgFeatures(false);
   if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${l.col}"/>`).join("")}
   if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="none" stroke="var(--signal)" stroke-width="3"/>`).join("");
-  sv_.innerHTML=s;
+  sv_.innerHTML=s;sv_.classList.toggle("pan",!tool&&!cal);
   $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":"punto"}</span></button>`).join("");
   $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
   $("#mk-layers").innerHTML=CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
@@ -374,9 +375,9 @@ const MK=(()=>{
  function bind(){const s=$("#mk-svg");
  s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.1:1/1.1,p[0],p[1])},{passive:false});
   s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
-  s.addEventListener("pointermove",e=>{if(!drag||!V)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;
+  s.addEventListener("pointermove",e=>{if(!drag||!V)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;s.classList.add("drag");
    const r=s.getBoundingClientRect(),d=dims(),k=drag.v.w/r.width;V={...drag.v,x:Math.min(d.w-drag.v.w,Math.max(0,drag.v.x-dx*k)),y:Math.min(d.h-drag.v.h,Math.max(0,drag.v.y-dy*k))};s.setAttribute("viewBox",`${V.x} ${V.y} ${V.w} ${V.h}`)});
-  addEventListener("pointerup",()=>{if(drag&&drag.m)noClick=true;drag=null});
+  addEventListener("pointerup",()=>{if(drag&&drag.m)noClick=true;drag=null;s.classList.remove("drag")});
   $("#mk-zin").onclick=()=>zoom(1.25);$("#mk-zout").onclick=()=>zoom(1/1.25);(CFG.hideBtns||[]).forEach(id=>{const e=$("#"+id);if(e)e.hidden=true});$("#mk-zfit").onclick=()=>{V=null;render()};
   if(CFG.osm){const b=document.createElement("button");b.className="btn ghost sm";b.type="button";b.textContent="Mapa base de La Isleta";b.onclick=()=>{M.bg=osmBg();M.scale=CFG.osm.mpp;V=null;sv();render()};$("#mk-nobg").after(b)}
   s.addEventListener("click",e=>{if(noClick){noClick=false;return}const p=pt(e);
