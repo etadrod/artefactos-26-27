@@ -314,8 +314,15 @@ const MK=(()=>{
  // CFG.osm={z,x0,y0,nx,ny,mpp}: fondo de teselas de OpenStreetMap (solo con conexión; no se guarda la imagen)
  const osmBg=()=>({osm:CFG.osm,w:CFG.osm.nx*256,h:CFG.osm.ny*256});
  if(CFG.osm&&!M.bg&&(M.ej||!M.f.length)){M.bg=osmBg();M.scale=CFG.osm.mpp;if(M.ej){M.f=[];M.ej=false}}
+ // si cambia el encuadre del mapa base, se desplazan los elementos ya dibujados para que no se muevan sobre el terreno
+ if(CFG.osm&&M.bg&&M.bg.osm&&(M.bg.osm.x0!==CFG.osm.x0||M.bg.osm.y0!==CFG.osm.y0||M.bg.osm.nx!==CFG.osm.nx||M.bg.osm.ny!==CFG.osm.ny)){const dx=(M.bg.osm.x0-CFG.osm.x0)*256,dy=(M.bg.osm.y0-CFG.osm.y0)*256;M.f.forEach(f=>f.p=f.p.map(([x,y])=>[x+dx,y+dy]));M.bg=osmBg();M.scale=CFG.osm.mpp}
  const tiles=()=>{const o=M.bg.osm,a=[];for(let j=0;j<o.ny;j++)for(let i=0;i<o.nx;i++)a.push([i*256,j*256,`https://tile.openstreetmap.org/${o.z}/${o.x0+i}/${o.y0+j}.png`]);return a};
- const bgSvg=()=>M.bg.osm?tiles().map(([x,y,u])=>`<image href="${u}" x="${x}" y="${y}" width="256.5" height="256.5"/>`).join("")+`<text x="${M.bg.w-8}" y="${M.bg.h-8}" text-anchor="end" font-size="14" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">© OpenStreetMap contributors</text>`:`<image href="${esc(M.bg.src)}" x="0" y="0" width="${M.bg.w}" height="${M.bg.h}"/>`;
+ const bgSvg=()=>M.bg.osm?tiles().map(([x,y,u])=>`<image href="${u}" x="${x}" y="${y}" width="256.5" height="256.5"/>`).join("")+gridSvg()+`<text x="${M.bg.w-8}" y="${M.bg.h-8}" text-anchor="end" font-size="14" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">© OpenStreetMap contributors</text>`:`<image href="${esc(M.bg.src)}" x="0" y="0" width="${M.bg.w}" height="${M.bg.h}"/>`;
+ // cuadrícula de referencia (CFG.osm.grid metros): columnas A, B, C… y filas 1, 2, 3…
+ function gridSvg(){const o=CFG.osm;if(!o||!o.grid||!M.bg||!M.bg.osm)return"";const g=o.grid/o.mpp,W=M.bg.w,H=M.bg.h;let s="";
+  for(let i=0,x=0;x<=W;i++,x+=g){s+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="2"/>`;if(x+g/2<W)s+=`<text x="${x+g/2}" y="26" text-anchor="middle" font-size="22" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="4" paint-order="stroke" font-family="Arial,sans-serif">${String.fromCharCode(65+i)}</text>`}
+  for(let j=0,y=0;y<=H;j++,y+=g){s+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="2"/>`;if(y+g/2<H)s+=`<text x="10" y="${y+g/2+8}" font-size="22" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="4" paint-order="stroke" font-family="Arial,sans-serif">${j+1}</text>`}
+  return s+`<text x="10" y="${H-12}" font-size="16" fill="#1F3A68" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">Cuadrícula de ${o.grid} m</text>`}
  const vb=()=>{const d=dims();return V||{x:0,y:0,w:d.w,h:d.h}};
  function zoom(f,cx,cy){const d=dims(),v=vb(),w=Math.min(d.w,Math.max(d.w/8,v.w/f)),h=w*d.h/d.w;cx=cx??v.x+v.w/2;cy=cy??v.y+v.h/2;
   const x=Math.min(d.w-w,Math.max(0,cx-(cx-v.x)*w/v.w)),y=Math.min(d.h-h,Math.max(0,cy-(cy-v.y)*h/v.h));V=w>=d.w?null:{x,y,w,h};$("#mk-svg").setAttribute("viewBox",`${vb().x} ${vb().y} ${vb().w} ${vb().h}`)}
@@ -353,12 +360,12 @@ const MK=(()=>{
  const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
  function finish(){if(draft&&draft.p.length>1){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n,p:draft.p});sv()}draft=null}
  function bind(){const s=$("#mk-svg");
- s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.25:0.8,p[0],p[1])},{passive:false});
+ s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.1:1/1.1,p[0],p[1])},{passive:false});
   s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
   s.addEventListener("pointermove",e=>{if(!drag||!V)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;
    const r=s.getBoundingClientRect(),d=dims(),k=drag.v.w/r.width;V={...drag.v,x:Math.min(d.w-drag.v.w,Math.max(0,drag.v.x-dx*k)),y:Math.min(d.h-drag.v.h,Math.max(0,drag.v.y-dy*k))};s.setAttribute("viewBox",`${V.x} ${V.y} ${V.w} ${V.h}`)});
   addEventListener("pointerup",()=>{if(drag&&drag.m)noClick=true;drag=null});
-  $("#mk-zin").onclick=()=>zoom(1.5);$("#mk-zout").onclick=()=>zoom(1/1.5);$("#mk-zfit").onclick=()=>{V=null;render()};
+  $("#mk-zin").onclick=()=>zoom(1.25);$("#mk-zout").onclick=()=>zoom(1/1.25);(CFG.hideBtns||[]).forEach(id=>{const e=$("#"+id);if(e)e.hidden=true});$("#mk-zfit").onclick=()=>{V=null;render()};
   if(CFG.osm){const b=document.createElement("button");b.className="btn ghost sm";b.type="button";b.textContent="Mapa base de La Isleta";b.onclick=()=>{M.bg=osmBg();M.scale=CFG.osm.mpp;V=null;sv();render()};$("#mk-nobg").after(b)}
   s.addEventListener("click",e=>{if(noClick){noClick=false;return}const p=pt(e);
    if(cal){cal.push(p);if(cal.length===2){$("#mk-calbox").hidden=false;$("#mk-calm").focus()}render();return}
@@ -379,7 +386,7 @@ const MK=(()=>{
   hint()}
  const d2b=u=>{const s=atob(u.split(",")[1]),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return new Blob([a])};
  const loadIm=u=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u});
- async function png(){const d=dims(),T=M.bg&&M.bg.osm?await Promise.all(tiles().map(async([x,y,u])=>[x,y,await loadIm(u)])):[];return new Promise(ok=>{const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}">${M.bg&&!M.bg.osm?`<image href="${esc(M.bg.src)}" width="${d.w}" height="${d.h}"/>`:M.bg?"":`<rect width="${d.w}" height="${d.h}" fill="#E8ECF2"/>`}${svgFeatures(true)}${M.bg&&M.bg.osm?`<text x="${d.w-8}" y="${d.h-8}" text-anchor="end" font-size="14" fill="#333" font-family="Arial">© OpenStreetMap contributors</text>`:""}</svg>`;
+ async function png(){const d=dims(),T=M.bg&&M.bg.osm?await Promise.all(tiles().map(async([x,y,u])=>[x,y,await loadIm(u)])):[];return new Promise(ok=>{const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}">${M.bg&&!M.bg.osm?`<image href="${esc(M.bg.src)}" width="${d.w}" height="${d.h}"/>`:M.bg?"":`<rect width="${d.w}" height="${d.h}" fill="#E8ECF2"/>`}${M.bg&&M.bg.osm?gridSvg():""}${svgFeatures(true)}${M.bg&&M.bg.osm?`<text x="${d.w-8}" y="${d.h-8}" text-anchor="end" font-size="14" fill="#333" font-family="Arial">© OpenStreetMap contributors</text>`:""}</svg>`;
   const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=d.w;c.height=d.h;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,d.w,d.h);T.forEach(([x,y,t])=>{if(t)g.drawImage(t,x,y)});g.drawImage(im,0,0);ok(c.toDataURL("image/jpeg",.88))};im.onerror=()=>{toast("No se pudo generar la imagen.");ok(null)};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)})}
  return{init(){bind();render();if(CFG.onLoad)CFG.onLoad(M)},render,png,get M(){return M},save:sv,L,len,fmtL,dims};
 })();
