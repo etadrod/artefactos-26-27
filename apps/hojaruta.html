@@ -158,7 +158,7 @@ th .ayuda .tip{font-weight:400}
   <div class="mk-cal" id="mk-calbox" hidden><label class="f">Metros entre los dos puntos<input type="number" id="mk-calm" min="1"></label><button class="btn sm" id="mk-calok" type="button">Guardar escala</button></div>
   <div class="mk-cols">
     <div><h3>Capas visibles</h3><div class="mk-layers" id="mk-layers"></div></div>
-    <div class="tbl"><h3>Elementos</h3><table class="mk-tab"><thead><tr><th>Capa</th><th>Nombre</th><th>Nota</th><th class="num">Longitud</th><th></th></tr></thead><tbody id="mk-list"></tbody></table></div>
+    <div class="tbl"><h3>Elementos</h3><table class="mk-tab"><thead><tr><th>Capa</th><th>Nombre</th><th>Nota</th><th class="num">Medida</th><th></th></tr></thead><tbody id="mk-list"></tbody></table></div>
   </div>
   <div class="btns">
     <button class="btn ghost" id="mk-png" type="button">Imagen del mapa (.jpg)</button>
@@ -344,12 +344,15 @@ const MK=(()=>{
  const dims=()=>M.bg?{w:M.bg.w,h:M.bg.h}:{w:W0,h:H0};
  const len=pts=>pts.slice(1).reduce((a,p,i)=>a+Math.hypot(p[0]-pts[i][0],p[1]-pts[i][1]),0);
  const meters=px=>M.scale?px*M.scale:null;
+ const area=pts=>Math.abs(pts.reduce((a,p,i)=>{const q=pts[(i+1)%pts.length];return a+p[0]*q[1]-q[0]*p[1]},0))/2;
+ const fmtA=px=>{const m=M.scale?px*M.scale*M.scale:null;return m==null?"sin escala":m>=1e4?(m/1e4).toFixed(2).replace(".",",")+" ha":Math.round(m)+" m²"};
  const fmtL=px=>{const m=meters(px);return m==null?"sin escala":m>=1000?(m/1000).toFixed(2).replace(".",",")+" km":Math.round(m)+" m"};
  function svgFeatures(forExport){const d=dims(),k=Math.max(d.w,d.h)/1200;let s="";
-  M.f.forEach(f=>{const l=L(f.l);if(!l||M.hide[l.id])return;const c=forExport?l.hex:l.col;
+  [...M.f].sort((a,b)=>(L(b.l)?.t==="area")-(L(a.l)?.t==="area")).forEach(f=>{const l=L(f.l);if(!l||M.hide[l.id])return;const c=forExport?l.hex:l.col;
    if(l.t==="line"&&f.p.length>1){s+=`<polyline points="${f.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${c}" stroke-width="${6*k}" stroke-linecap="round" stroke-linejoin="round" ${l.dash?`stroke-dasharray="${14*k} ${10*k}"`:""} ${!forExport&&f.id===selId?'class="sel"':""} data-f="${f.id}"/>`;
     const m=f.p[Math.floor(f.p.length/2)];s+=`<text x="${m[0]}" y="${m[1]-10*k}" text-anchor="middle" font-size="${15*k}" font-weight="700" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*k}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n||l.n)}</text>`}
-   if(l.t==="point"&&f.p.length){const[x,y]=f.p[0];s+=`<g data-f="${f.id}" ${!forExport&&f.id===selId?'class="sel"':""}><circle cx="${x}" cy="${y}" r="${13*k}" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${3*k}"/><text x="${x}" y="${y+5*k}" text-anchor="middle" font-size="${13*k}" font-weight="700" fill="#fff" font-family="IBM Plex Mono,monospace">${esc(l.sym)}</text><text x="${x+18*k}" y="${y+5*k}" font-size="${14*k}" font-weight="700" fill="${forExport?"#142033":"var(--ink)"}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*k}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n)}</text></g>`}});
+   if(l.t==="area"&&f.p.length>2){const[cx,cy]=f.p.reduce((a,p)=>[a[0]+p[0]/f.p.length,a[1]+p[1]/f.p.length],[0,0]),ki=k*(CFG.ik||1);s+=`<g data-f="${f.id}" ${!forExport&&f.id===selId?'class="sel"':""}><polygon points="${f.p.map(p=>p.join(",")).join(" ")}" fill="${c}" fill-opacity=".22" stroke="${c}" stroke-width="${2*k}" stroke-linejoin="round"/><text x="${cx}" y="${cy}" text-anchor="middle" font-size="${14*ki}" font-weight="700" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*ki}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n)}${f.pob?" · ≈"+esc(f.pob)+" hab.":""}</text></g>`}
+   if(l.t==="point"&&f.p.length){const ki=k*(CFG.ik||1);const[x,y]=f.p[0];s+=`<g data-f="${f.id}" ${!forExport&&f.id===selId?'class="sel"':""}><circle cx="${x}" cy="${y}" r="${13*ki}" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${3*ki}"/><text x="${x}" y="${y+5*ki}" text-anchor="middle" font-size="${13*ki}" font-weight="700" fill="#fff" font-family="IBM Plex Mono,monospace">${esc(l.sym)}</text><text x="${x+18*ki}" y="${y+5*ki}" font-size="${14*ki}" font-weight="700" fill="${forExport?"#142033":"var(--ink)"}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*ki}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n)}</text></g>`}});
   return s}
  function grid(){const d=dims();let g=`<rect width="${d.w}" height="${d.h}" fill="var(--sunk)"/>`;for(let x=0;x<=d.w;x+=60)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${d.h}" stroke="var(--line)"/>`;for(let y=0;y<=d.h;y+=60)g+=`<line x1="0" y1="${y}" x2="${d.w}" y2="${y}" stroke="var(--line)"/>`;
   return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
@@ -358,20 +361,21 @@ const MK=(()=>{
   if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${l.col}"/>`).join("")}
   if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="none" stroke="var(--signal)" stroke-width="3"/>`).join("");
   sv_.innerHTML=s;sv_.classList.toggle("pan",!tool&&!cal);
-  $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":"punto"}</span></button>`).join("");
+  $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":l.t==="area"?"superficie":"punto"}</span></button>`).join("");
   $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
   $("#mk-layers").innerHTML=CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
   $$("[data-h]").forEach(c=>c.onchange=()=>{M.hide[c.dataset.h]=!c.checked;sv();render()});
-  $("#mk-list").innerHTML=M.f.length?M.f.map(f=>{const l=L(f.l);return `<tr ${f.id===selId?'class="cur"':""}><td><i class="sw" style="background:${l.col}"></i> ${esc(l.n)}</td><td><input type="text" value="${esc(f.n)}" data-n="${f.id}" aria-label="Nombre"></td><td><input type="text" value="${esc(f.o||"")}" data-o="${f.id}" aria-label="Nota"></td><td class="num">${l.t==="line"?fmtL(len(f.p)):""}</td><td><button class="btn ghost sm" type="button" data-del="${f.id}">Quitar</button></td></tr>`}).join(""):`<tr><td colspan="5" class="muted">Elige una capa y pulsa en el mapa para añadir elementos.</td></tr>`;
+  $("#mk-list").innerHTML=M.f.length?M.f.map(f=>{const l=L(f.l);return `<tr ${f.id===selId?'class="cur"':""}><td><i class="sw" style="background:${l.col}"></i> ${esc(l.n)}</td><td><input type="text" value="${esc(f.n)}" data-n="${f.id}" aria-label="Nombre"></td><td><input type="text" value="${esc(f.o||"")}" data-o="${f.id}" aria-label="Nota"></td><td class="num">${l.t==="line"?fmtL(len(f.p)):l.t==="area"?`${fmtA(area(f.p))}<br><input type="number" min="0" step="1" value="${esc(f.pob||"")}" data-pob="${f.id}" aria-label="Población aproximada" placeholder="hab." style="width:7em"> hab.`:""}</td><td><button class="btn ghost sm" type="button" data-del="${f.id}">Quitar</button></td></tr>`}).join(""):`<tr><td colspan="5" class="muted">Elige una capa y pulsa en el mapa para añadir elementos.</td></tr>`;
   $$("[data-n]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.n).n=i.value;sv();render()});
+  $$("[data-pob]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.pob).pob=i.value;sv();render()});
   $$("[data-o]").forEach(i=>i.oninput=()=>{M.f.find(f=>f.id===i.dataset.o).o=i.value;sv()});
   $$("[data-del]").forEach(b=>b.onclick=()=>{M.f=M.f.filter(f=>f.id!==b.dataset.del);sv();render()});
   $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
   if(CFG.onRender)CFG.onRender(M)}
- function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t==="line")}
+ function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:l.t==="area"?`Pulsa para marcar los vértices de «${l.n}». Doble clic o «Terminar» para cerrarla; después indica la población en la tabla.`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t!=="point");$("#mk-end").textContent=l&&l.t==="area"?"Terminar superficie":"Terminar línea"}
  function pt(e){const s=$("#mk-svg"),r=s.getBoundingClientRect(),v=vb();return[Math.round(v.x+(e.clientX-r.left)/r.width*v.w),Math.round(v.y+(e.clientY-r.top)/r.height*v.h)]}
  const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
- function finish(){if(draft&&draft.p.length>1){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n,p:draft.p});sv()}draft=null}
+ function finish(){if(draft&&draft.p.length>(L(draft.l).t==="area"?2:1)){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n+" "+(M.f.filter(f=>f.l===draft.l).length+1),p:draft.p});sv()}draft=null}
  function bind(){const s=$("#mk-svg");
  s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.1:1/1.1,p[0],p[1])},{passive:false});
   s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
@@ -401,7 +405,7 @@ const MK=(()=>{
  const loadIm=u=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u});
  async function png(){const d=dims(),T=M.bg&&M.bg.osm?await Promise.all(tiles().map(async([x,y,u])=>[x,y,await loadIm(u)])):[];return new Promise(ok=>{const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}">${M.bg&&!M.bg.osm?`<image href="${esc(M.bg.src)}" width="${d.w}" height="${d.h}"/>`:M.bg?"":`<rect width="${d.w}" height="${d.h}" fill="#E8ECF2"/>`}${M.bg&&M.bg.osm?gridSvg():""}${svgFeatures(true)}${M.bg&&M.bg.osm?`<text x="${d.w-8}" y="${d.h-8}" text-anchor="end" font-size="14" fill="#333" font-family="Arial">© OpenStreetMap contributors</text>`:""}</svg>`;
   const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=d.w;c.height=d.h;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,d.w,d.h);T.forEach(([x,y,t])=>{if(t)g.drawImage(t,x,y)});g.drawImage(im,0,0);ok(c.toDataURL("image/jpeg",.88))};im.onerror=()=>{toast("No se pudo generar la imagen.");ok(null)};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)})}
- return{init(){bind();render();if(CFG.onLoad)CFG.onLoad(M)},render,png,get M(){return M},save:sv,L,len,fmtL,dims};
+ return{init(){bind();render();if(CFG.onLoad)CFG.onLoad(M)},render,png,get M(){return M},save:sv,L,len,fmtL,fmtA,area,dims};
 })();
 
 $("#docB").onclick=async()=>{const M=MK.M,D=DOCX,img=await MK.png(),d=M.d||{};
