@@ -258,7 +258,6 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   const rs=o.resumen?o.resumen(key):[];if(rs.length)tb({head:[["Resumen del trabajo en la herramienta",""]],body:rs.map(r=>[T(r[0]),T(r[1])]),columnStyles:{0:{fontStyle:"bold",cellWidth:55}}});
   if(y>250){doc.addPage();y=20}
   doc.setFontSize(8.5);doc.setFont("helvetica","normal");doc.splitTextToSize(T("Nota propuesta por la herramienta según la rúbrica de la AEV (cada criterio suma el 25 %, 50 %, 75 % o 100 % de su valor). Los criterios autoevaluados y la calificación final los valida el docente."),W-2*M).forEach(l=>{doc.text(l,M,y);y+=4});
-  y+=8;doc.text("Calificación final del docente: ________ / 10",M,y);doc.text("Firma: ______________________",W-M-60,y);
   const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
   const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
   saveFile(fn,doc.output("blob"))}}
