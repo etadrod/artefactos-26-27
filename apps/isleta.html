@@ -140,7 +140,7 @@ body.pres .mk-layers h3{display:none}
 
 <main>
   <div class="intro"><p class="eyebrow">Reto conjunto EVB · GE6</p><h2>Localiza riesgos, flujos de mercancías peligrosas y recursos</h2>
-    <p class="muted">El mapa base cubre el distrito Isleta-Puerto-Guanarteme con una cuadrícula de 500 m y la escala ya calibrada. Elige una capa y sitúa cada elemento; anota en cada uno la fuente y la fecha del dato. Con la capa «Población» dibuja las zonas habitadas como superficie e indica en la tabla su población aproximada, estimada con los datos de Catastro (número de viviendas por parcela); anota «Catastro» y la fecha como fuente. Si lo necesitas, puedes cambiar el fondo por una captura del Visor GRAFCAN y calibrar la escala. Usa el modo presentación para exponer el mapa activando y desactivando capas.</p></div>
+    <p class="muted">El mapa base cubre el distrito Isleta-Puerto-Guanarteme con una cuadrícula de 500 m y la escala ya calibrada. Elige una capa y sitúa cada elemento; añade en la nota de cada uno la información útil que conozcas, y recoge las fuentes y fechas de consulta en «Fuentes de datos». Con la capa «Población» dibuja las zonas habitadas como superficie e indica en la tabla su población aproximada, estimada con los datos de Catastro (número de viviendas por parcela); cita Catastro y la fecha de consulta en «Fuentes de datos». Si lo necesitas, puedes cambiar el fondo por una captura del Visor GRAFCAN y calibrar la escala. Usa el modo presentación para exponer el mapa activando y desactivando capas.</p></div>
 
   <section class="panel mk" aria-label="Editor de mapa">
   <div class="mk-bar">
@@ -326,8 +326,8 @@ function medR(M){const ts=tipos(M),md=(M.d||{}).med||{};if(!ts.length)return[0,"
  const v=ts.map(([id,n])=>{const ok=(md[id]||[]).filter(m=>m&&m.c&&words(m.t)>=8);return{n,k:ok.length,c:new Set(ok.map(m=>m.c)).size}});
  const r=v.reduce((a,x)=>a+(Math.min(x.k,3)/3*.7+Math.min(x.c,3)/3*.3),0)/v.length;
  return[r,v.map(x=>`${x.n}: ${x.k} medidas completas de ${x.c} tipos`).join("; ")+"."]}
-function sum(M){const n=ids=>M.f.filter(f=>ids.includes(f.l)).length,sin=M.f.filter(f=>!(f.o||"").trim()).length;
- $("#sumK").innerHTML=[["Riesgos",n(["rt","rn","ra"])],["Flujos MMPP",n(["mt","mm"])],["Recursos",n(["hi","bs","pr"])],["Población (hab.)",M.f.filter(f=>f.l==="po").reduce((a,f)=>a+(+f.pob||0),0).toLocaleString("es-ES")],["Sin fuente anotada",sin]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("")}
+function sum(M){const n=ids=>M.f.filter(f=>ids.includes(f.l)).length,sin=M.f.filter(f=>words(f.o)<8).length;
+ $("#sumK").innerHTML=[["Riesgos",n(["rt","rn","ra"])],["Flujos MMPP",n(["mt","mm"])],["Recursos",n(["hi","bs","pr"])],["Población (hab.)",M.f.filter(f=>f.l==="po").reduce((a,f)=>a+(+f.pob||0),0).toLocaleString("es-ES")],["Sin nota útil",sin]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("")}
 /* Editor de mapa sobre imagen: capas de puntos y líneas, escala, exportación. CFG la define cada página. */
 const MK=(()=>{
  const W0=1200,H0=760;
@@ -427,17 +427,17 @@ $("#docB").onclick=async()=>{const M=MK.M,D=DOCX,img=await MK.png(),d=M.d||{};
  b+=D.H1("Mantenimiento")+D.tbl(null,[["Responsable",d.resp||""],["Periodicidad",d.per||""],["Última revisión",fmtD(d.fec)],["Fuentes de datos",d.fue||""],["Cambios a vigilar",d.cam||""]]);
  saveFile("Mapa_riesgos_La_Isleta.docx",D.build(b,false,img?[img]:[]))};
 MK.init();
-ayuda({"#d-resp": "¿Qué cargo u organismo de la Administración se encarga de revisar este mapa para que no quede obsoleto, y qué servicio le ayuda a mantener al día los datos de recursos como los hidrantes? Responde con cargos u órganos, no con nombres de personas.", "#d-per": "¿Cada cuánto tiempo debería revisarse el mapa de forma ordinaria, y qué sucesos o cambios obligarían a revisarlo antes de esa fecha?", "#d-fec": "¿En qué fecha comprobasteis por última vez que los datos de todas las capas siguen siendo correctos?", "#d-fue": "¿De qué organismos, visores, planes o catálogos habéis sacado cada dato del mapa, y en qué fecha los consultasteis?", "#d-cam": "¿Qué cambios en el puerto, en las carreteras, en las viviendas o en los eventos de la zona harían que este mapa dejara de ser válido?", ".mk-tab thead th:nth-child(2)": "¿Qué es exactamente este elemento y dónde está, de forma que cualquiera lo identifique sin mirar el mapa?", ".mk-tab thead th:nth-child(3)": "¿De dónde has sacado este dato, en qué fecha lo consultaste y qué información útil añadirías sobre él?"});
+ayuda({"#d-resp": "¿Qué cargo u organismo de la Administración se encarga de revisar este mapa para que no quede obsoleto, y qué servicio le ayuda a mantener al día los datos de recursos como los hidrantes? Responde con cargos u órganos, no con nombres de personas.", "#d-per": "¿Cada cuánto tiempo debería revisarse el mapa de forma ordinaria, y qué sucesos o cambios obligarían a revisarlo antes de esa fecha?", "#d-fec": "¿En qué fecha comprobasteis por última vez que los datos de todas las capas siguen siendo correctos?", "#d-fue": "¿De qué organismos, visores, planes o catálogos habéis sacado cada dato del mapa, y en qué fecha los consultasteis?", "#d-cam": "¿Qué cambios en el puerto, en las carreteras, en las viviendas o en los eventos de la zona harían que este mapa dejara de ser válido?", ".mk-tab thead th:nth-child(2)": "¿Qué es exactamente este elemento y dónde está, de forma que cualquiera lo identifique sin mirar el mapa?", ".mk-tab thead th:nth-child(3)": "¿Qué información útil añadirías sobre él?"});
 rubrica({btn:"docB",label:"Descarga PDF",auto(){const M=MK.M,d=M.d||{},n=ids=>M.f.filter(f=>ids.includes(f.l)).length,has=l=>n([l])?1:0;
  if(M.ej)return Array(5).fill([0,"Sigue cargado el ejemplo: crea tu propio mapa."]);
- const nf=M.f.length,nom=nf?M.f.filter(f=>words(f.n)>=2).length/nf:0,fu=nf?M.f.filter(f=>(f.o||"").trim().length>=10).length/nf:0,capas=new Set(M.f.map(f=>f.l)).size;
+ const nf=M.f.length,nom=nf?M.f.filter(f=>words(f.n)>=2).length/nf:0,fu=nf?M.f.filter(f=>words(f.o)>=8).length/nf:0,capas=new Set(M.f.map(f=>f.l)).size;
  const mf=["resp","per","fec","fue"].filter(k=>(d[k]||"").trim()).length;
  return[[(clamp01(n(["rt"])/3)+has("mt")+has("mm"))/3,`${n(["rt"])} riesgos tecnológicos; flujo terrestre ${has("mt")?"sí":"no"}, marítimo ${has("mm")?"sí":"no"}.`],
   [(clamp01(n(["mt","mm"])/3)+nom+clamp01(capas/5))/3,`${n(["mt","mm"])} flujos de MMPP, ${capas} capas usadas, ${Math.round(nom*100)} % de elementos con nombre descriptivo.`],
-  [fu,`${Math.round(fu*100)} % de los elementos con fuente y fecha anotadas.`],
+  [fu,`${Math.round(fu*100)} % de los elementos con una nota útil (8 palabras o más).`],
   [(mf/4+clamp01(words(d.cam)/15))/2,`Plan de mantenimiento: ${mf} de 4 datos completados; cambios a vigilar en ${words(d.cam)} palabras.`],
   medR(M)]},
- resumen(){const M=MK.M;const md=M.d.med||{};return[["Elementos del mapa",String(M.f.length)],...tipos(M).map(([id,n])=>["Medidas no estructurales · "+n,(md[id]||[]).filter(m=>m&&(m.t||"").trim()).map((m,i)=>`${i+1}. ${m.c?m.c+": ":""}${m.t.trim()}`).join("\n")||"Sin medidas"]),["Riesgos",String(M.f.filter(f=>["rt","rn","ra"].includes(f.l)).length)],["Recursos",String(M.f.filter(f=>["hi","bs","pr"].includes(f.l)).length)],["Zonas de población",M.f.filter(f=>f.l==="po").map(f=>`${f.n}: ≈${f.pob||"?"} hab. (${MK.fmtA(MK.area(f.p))})`).join("; ")||"ninguna"]]}});
+ resumen(){const M=MK.M;const md=M.d.med||{};return[["Elementos del mapa",String(M.f.length)],["Notas de los elementos",M.f.map(f=>`${f.n}: ${(f.o||"").trim()||"sin nota"}`).join("\n")||"ninguno"],...tipos(M).map(([id,n])=>["Medidas no estructurales · "+n,(md[id]||[]).filter(m=>m&&(m.t||"").trim()).map((m,i)=>`${i+1}. ${m.c?m.c+": ":""}${m.t.trim()}`).join("\n")||"Sin medidas"]),["Riesgos",String(M.f.filter(f=>["rt","rn","ra"].includes(f.l)).length)],["Recursos",String(M.f.filter(f=>["hi","bs","pr"].includes(f.l)).length)],["Zonas de población",M.f.filter(f=>f.l==="po").map(f=>`${f.n}: ≈${f.pob||"?"} hab. (${MK.fmtA(MK.area(f.p))})`).join("; ")||"ninguna"]]}});
 </script>
 
 </body></html>
