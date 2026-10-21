@@ -96,6 +96,12 @@ th.num{text-align:right}
 .rubdlg .rub-t b{font-size:1.4rem}
 .rubdlg .row-btn{display:flex;justify-content:flex-end}
 @media print{.rubfab{display:none}}
+.ayuda{position:static;display:inline-block;margin-left:.35rem;vertical-align:middle;font-weight:400}
+.ayuda .info{width:1.25rem;height:1.25rem;border-radius:50%;border:1.5px solid var(--navy);background:var(--surface);color:var(--navy);font:700 .8rem/1 Georgia,serif;font-style:italic;cursor:pointer;padding:0;display:inline-grid;place-items:center}
+.ayuda .info[aria-expanded="true"]{background:var(--navy);color:var(--navy-ink)}
+.ayuda .tip{position:absolute;left:0;top:calc(100% + .35rem);z-index:40;width:min(20rem,calc(100vw - 48px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:var(--radius);padding:.6rem .75rem;box-shadow:0 6px 18px rgba(0,0,0,.18);font-size:.88rem;line-height:1.4;text-transform:none;letter-spacing:0;white-space:normal;text-align:left}
+th .ayuda .tip{font-weight:400}
+.ayuda-row{display:inline-flex;align-items:center;gap:0;position:relative}
 
 .mk-tools{display:flex;flex-wrap:wrap;gap:.4rem}
 .mk-t{display:inline-flex;gap:.4rem;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.25rem .7rem .25rem .3rem;cursor:pointer;font-weight:600;font-size:.88rem}
@@ -132,7 +138,7 @@ body.pres .mk-layers h3{display:none}
 
 <main>
   <div class="intro"><p class="eyebrow">Reto conjunto EVB · GE6</p><h2>Localiza riesgos, flujos de mercancías peligrosas y recursos</h2>
-    <p class="muted">Sube como fondo una captura de La Isleta desde el Visor GRAFCAN (o similar), calibra la escala y sitúa cada elemento en su capa. Anota en cada elemento la fuente y la fecha del dato. El ejemplo inicial usa posiciones inventadas sobre una cuadrícula. Usa el modo presentación para exponer el mapa activando y desactivando capas.</p></div>
+    <p class="muted">El mapa base cubre el distrito Isleta-Puerto-Guanarteme con una cuadrícula de 500 m y la escala ya calibrada. Elige una capa y sitúa cada elemento; anota en cada uno la fuente y la fecha del dato. Si lo necesitas, puedes cambiar el fondo por una captura del Visor GRAFCAN y calibrar la escala. Usa el modo presentación para exponer el mapa activando y desactivando capas.</p></div>
 
   <section class="panel mk" aria-label="Editor de mapa">
   <div class="mk-bar">
@@ -168,7 +174,7 @@ body.pres .mk-layers h3{display:none}
     <h3>Mantenimiento del mapa y de la base de datos (RA2 f)</h3>
     <div class="grid3">
       <label class="f">Responsable de la actualización<input type="text" id="d-resp"></label>
-      <label class="f">Periodicidad<input type="text" id="d-per" placeholder="[EDITABLE]"></label>
+      <label class="f">Periodicidad<input type="text" id="d-per"></label>
       <label class="f">Fecha de la última revisión<input type="date" id="d-fec"></label>
     </div>
     <label class="f">Fuentes de datos<small>Organismos, visores, planes y fecha de consulta</small><textarea id="d-fue" rows="3"></textarea></label>
@@ -273,6 +279,12 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
   const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
   saveFile(fn,doc.output("blob"))}}
+/* Ayuda flotante: ayuda({"#id-del-campo o selector de cabecera": "texto"}) añade un icono «i» junto a la etiqueta */
+function ayuda(map){Object.entries(map).forEach(([sel,txt])=>{const el=document.querySelector(sel);if(!el)return;const host=el.closest("label")||el;
+ const w=document.createElement("span");w.className="ayuda";w.innerHTML=`<button type="button" class="info" aria-label="Ayuda" aria-expanded="false">i</button><span class="tip" role="tooltip" hidden></span>`;w.querySelector(".tip").textContent=txt;
+ const tn=[...host.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(tn){const row=document.createElement("span");row.className="ayuda-row";tn.replaceWith(row);row.append(tn,w)}else host.appendChild(w);
+ const b=w.querySelector(".info"),t=w.querySelector(".tip");b.onclick=e=>{e.preventDefault();e.stopPropagation();const open=t.hidden;document.querySelectorAll(".ayuda .tip").forEach(x=>{x.hidden=true;x.previousElementSibling.setAttribute("aria-expanded","false")});t.hidden=!open;b.setAttribute("aria-expanded",open)}});
+ if(!ayuda._b){ayuda._b=1;document.addEventListener("click",e=>{if(!e.target.closest(".ayuda"))document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)});document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)})}}
 
 "use strict";
 const CFG={key:"isl_v1",file:"mapa_isleta",hideBtns:["mk-sample","mk-nobg"],osm:{z:16,x0:29955,y0:27417,nx:11,ny:14,grid:500,mpp:156543.03392*Math.cos(28.155*Math.PI/180)/65536},
@@ -386,6 +398,7 @@ $("#docB").onclick=async()=>{const M=MK.M,D=DOCX,img=await MK.png(),d=M.d||{};
  b+=D.H1("Mantenimiento")+D.tbl(null,[["Responsable",d.resp||""],["Periodicidad",d.per||""],["Última revisión",fmtD(d.fec)],["Fuentes de datos",d.fue||""],["Cambios a vigilar",d.cam||""]]);
  saveFile("Mapa_riesgos_La_Isleta.docx",D.build(b,false,img?[img]:[]))};
 MK.init();
+ayuda({"#d-resp": "Quién se encarga de que el mapa no quede obsoleto. Pon el cargo u órgano, no un nombre propio. Ejemplo: «Técnico/a de Protección Civil del Ayuntamiento de Las Palmas de Gran Canaria, con apoyo de bomberos para los hidrantes». En el aula: «Grupo 2, coordinador/a del reto».", "#d-per": "Cada cuánto se revisa el mapa y qué obliga a revisarlo antes. Ejemplo: «Revisión anual ordinaria antes del verano; revisión extraordinaria tras un accidente con MMPP, una obra que cambie las rutas, una actividad nueva o un cambio en el puerto».", "#d-fec": "Fecha en que comprobasteis por última vez que los datos de todas las capas siguen vigentes.", "#d-fue": "De dónde sale cada dato y cuándo lo consultasteis. Ejemplos de fuentes: Visor GRAFCAN, Autoridad Portuaria, plan de emergencia municipal, PLATECA, catálogo de hidrantes de bomberos, noticias de sucesos. Indica siempre la fecha de consulta.", "#d-cam": "Qué cambios del territorio obligarían a actualizar el mapa. Ejemplos: nuevas instalaciones en el puerto, cambios en las rutas de cisternas, obras en vías principales, nuevas viviendas en zonas de riesgo, nuevos eventos de gran afluencia.", ".mk-tab thead th:nth-child(2)": "Nombre concreto del elemento. Ejemplo: «Depósito de combustible del muelle…», no «Riesgo 1».", ".mk-tab thead th:nth-child(3)": "Fuente y fecha del dato, y cualquier observación útil. Ejemplo: «Visor GRAFCAN, 20/10/2026. Almacena gasóleo». La rúbrica valora que todos los elementos la tengan."});
 rubrica({btn:"docB",label:"Descarga PDF",auto(){const M=MK.M,d=M.d||{},n=ids=>M.f.filter(f=>ids.includes(f.l)).length,has=l=>n([l])?1:0;
  if(M.ej)return Array(4).fill([0,"Sigue cargado el ejemplo: crea tu propio mapa."]);
  const nf=M.f.length,nom=nf?M.f.filter(f=>words(f.n)>=2).length/nf:0,fu=nf?M.f.filter(f=>(f.o||"").trim().length>=10).length/nf:0,capas=new Set(M.f.map(f=>f.l)).size;

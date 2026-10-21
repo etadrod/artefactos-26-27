@@ -96,6 +96,12 @@ th.num{text-align:right}
 .rubdlg .rub-t b{font-size:1.4rem}
 .rubdlg .row-btn{display:flex;justify-content:flex-end}
 @media print{.rubfab{display:none}}
+.ayuda{position:static;display:inline-block;margin-left:.35rem;vertical-align:middle;font-weight:400}
+.ayuda .info{width:1.25rem;height:1.25rem;border-radius:50%;border:1.5px solid var(--navy);background:var(--surface);color:var(--navy);font:700 .8rem/1 Georgia,serif;font-style:italic;cursor:pointer;padding:0;display:inline-grid;place-items:center}
+.ayuda .info[aria-expanded="true"]{background:var(--navy);color:var(--navy-ink)}
+.ayuda .tip{position:absolute;left:0;top:calc(100% + .35rem);z-index:40;width:min(20rem,calc(100vw - 48px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:var(--radius);padding:.6rem .75rem;box-shadow:0 6px 18px rgba(0,0,0,.18);font-size:.88rem;line-height:1.4;text-transform:none;letter-spacing:0;white-space:normal;text-align:left}
+th .ayuda .tip{font-weight:400}
+.ayuda-row{display:inline-flex;align-items:center;gap:0;position:relative}
 
 .ronda{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,20rem);gap:1rem;align-items:start}
 @media (max-width:900px){.ronda{grid-template-columns:1fr}}
@@ -265,6 +271,12 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
   const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
   saveFile(fn,doc.output("blob"))}}
+/* Ayuda flotante: ayuda({"#id-del-campo o selector de cabecera": "texto"}) añade un icono «i» junto a la etiqueta */
+function ayuda(map){Object.entries(map).forEach(([sel,txt])=>{const el=document.querySelector(sel);if(!el)return;const host=el.closest("label")||el;
+ const w=document.createElement("span");w.className="ayuda";w.innerHTML=`<button type="button" class="info" aria-label="Ayuda" aria-expanded="false">i</button><span class="tip" role="tooltip" hidden></span>`;w.querySelector(".tip").textContent=txt;
+ const tn=[...host.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(tn){const row=document.createElement("span");row.className="ayuda-row";tn.replaceWith(row);row.append(tn,w)}else host.appendChild(w);
+ const b=w.querySelector(".info"),t=w.querySelector(".tip");b.onclick=e=>{e.preventDefault();e.stopPropagation();const open=t.hidden;document.querySelectorAll(".ayuda .tip").forEach(x=>{x.hidden=true;x.previousElementSibling.setAttribute("aria-expanded","false")});t.hidden=!open;b.setAttribute("aria-expanded",open)}});
+ if(!ayuda._b){ayuda._b=1;document.addEventListener("click",e=>{if(!e.target.closest(".ayuda"))document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)});document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)})}}
 
 "use strict";
 /* [id, nombre, x, y, observación correcta, observación con deficiencia, tipo de deficiencia] */
