@@ -111,6 +111,7 @@ th .ayuda .tip{font-weight:400}
 <section id="panel" hidden>
  <div id="lista"></div>
  <div class="row"><button class="btn" id="bPub">Publicar cambios</button><button class="btn" id="bOut" style="background:transparent;color:var(--ink);border-color:var(--line)">Salir</button></div>
+ <p class="small muted">La clave de GitHub queda guardada en este navegador para no tener que volver a pegarla. <button class="btn" id="bOlv" style="background:transparent;color:var(--ink);border-color:var(--line);padding:.2rem .6rem">Olvidar la clave en este dispositivo</button></p>
 </section>
 <p id="msg" class="small muted" style="margin-top:1rem" aria-live="polite"></p>
 </main>
@@ -123,7 +124,7 @@ const H=()=>({Authorization:'Bearer '+tok,Accept:'application/vnd.github+json'})
 async function cargar(){
   msg('Cargando…');
   const r=await fetch(API+'?t='+Date.now(),{headers:H()});
-  if(r.status==401||r.status==403){msg('La clave no es válida o no tiene permiso de escritura en el repositorio.');return salir(false)}
+  if(r.status==401||r.status==403){msg('La clave no es válida o no tiene permiso de escritura en el repositorio.');tok='';try{localStorage.removeItem('gh_tok')}catch(e){};$('panel').hidden=true;$('login').hidden=false;return}
   if(r.ok){const j=await r.json();sha=j.sha;vis=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))))}
   else if(r.status!=404){msg('Error al leer la configuración ('+r.status+').');return}
   $('login').hidden=true;$('panel').hidden=false;pintar();msg('');
@@ -147,9 +148,11 @@ async function publicar(){
     msg('Publicado. El alumnado lo verá en 1 a 10 minutos (lo que tarde GitHub en actualizar).');
   }catch(e){msg('Sin conexión: no se ha publicado nada.')}finally{$('bPub').disabled=false}
 }
-function salir(borrar=true){tok='';if(borrar)try{localStorage.removeItem('gh_tok');sessionStorage.removeItem('doc_ok')}catch(e){};$('panel').hidden=true;$('login').hidden=!!borrar;$('pin').hidden=!borrar}
+// Salir cierra la sesión del panel pero conserva la clave de GitHub guardada en este navegador
+function salir(){try{sessionStorage.removeItem('doc_ok')}catch(e){};$('panel').hidden=true;$('login').hidden=true;$('pin').hidden=false;$('cod').value=''}
 $('bTok').onclick=()=>{tok=$('tok').value.trim();if(!tok)return;try{localStorage.setItem('gh_tok',tok)}catch(e){};cargar()};
-$('bPub').onclick=publicar;$('bOut').onclick=()=>{salir();msg('Sesión cerrada en este navegador.')};
+$('bPub').onclick=publicar;$('bOut').onclick=()=>{salir();msg('Sesión cerrada. La próxima vez solo te pedirá el código.')};
+$('bOlv').onclick=()=>{tok='';try{localStorage.removeItem('gh_tok')}catch(e){};salir();msg('Clave de GitHub borrada de este navegador.')};
 // shortcut: el código solo oculta el panel (la web es pública); lo que protege la publicación es la clave de GitHub.
 const PIN='6c8f4c40e57cfdb9e934b46b9b1b54ec714fd36841e273e170f027766ccda77a';
 async function h(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('artefactos-26-27:'+t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
