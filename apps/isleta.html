@@ -172,6 +172,12 @@ body.pres .mk-layers h3{display:none}
 
 
   <section class="panel">
+    <h3>Medidas no estructurales de reducción del riesgo</h3>
+    <p class="muted">Propón al menos tres medidas no estructurales para cada tipo de riesgo que hayas incluido en el mapa: divulgación, fomento de la autoprotección, sistemas de aviso, zonificación, planificación, formación, etc. Concreta a quién va dirigida, quién la aplica y dónde.</p>
+    <div id="med"></div>
+  </section>
+
+  <section class="panel">
     <h3>Mantenimiento del mapa y de la base de datos (RA2 f)</h3>
     <div class="grid3">
       <label class="f">Responsable de la actualización<input type="text" id="d-resp"></label>
@@ -301,9 +307,19 @@ const CFG={key:"isl_v1",file:"mapa_isleta",hideBtns:["mk-sample","mk-nobg"],ar:.
    {id:"i6",l:"hi",n:"Ejemplo · hidrante 1",p:[[640,560]],o:""},
    {id:"i7",l:"bs",n:"Ejemplo · parque de bomberos",p:[[180,640]],o:""},
    {id:"i8",l:"pr",n:"Ejemplo · punto de reunión",p:[[460,420]],o:""}]},
- onLoad(M){M.d=M.d||{};bind(M)},onRender(M){sum(M)}};
+ onLoad(M){M.d=M.d||{};bind(M);medK=null;med(M)},onRender(M){sum(M);med(M)}};
 const K=["resp","per","fec","fue","cam"];
 function bind(M){K.forEach(k=>{const el=$("#d-"+k);el.value=M.d[k]||"";el.oninput=()=>{M.d[k]=el.value;MK.save()}})}
+// medidas no estructurales: 3 por cada tipo de riesgo presente (los flujos de MMPP cuentan como riesgo tecnológico)
+const TR=[["T","Riesgo tecnológico",["rt","mt","mm"]],["N","Riesgo natural",["rn"]],["A","Riesgo antrópico",["ra"]]];
+const CAT=["Divulgación e información","Fomento de la autoprotección","Sistemas de aviso y alerta","Zonificación y ordenación del territorio","Planificación (planes de emergencia o autoprotección)","Formación y simulacros","Normativa, inspección y control","Otra"];
+const tipos=M=>TR.filter(t=>M.f.some(f=>t[2].includes(f.l)));
+let medK=null;
+function med(M){const ts=tipos(M),k=ts.map(t=>t[0]).join();if(k===medK)return;medK=k;M.d=M.d||{};M.d.med=M.d.med||{};
+ $("#med").innerHTML=ts.length?ts.map(([id,n])=>`<h4>${n}</h4>`+[...Array(Math.max(3,(M.d.med[id]||[]).length)).keys()].map(i=>{const m=(M.d.med[id]||[])[i]||{};return `<div class="grid3" style="grid-template-columns:minmax(0,1fr) minmax(0,2fr);align-items:start"><label class="f">Medida ${i+1} · tipo<select data-mc="${id}:${i}"><option value="">Elige…</option>${CAT.map(c=>`<option${m.c===c?" selected":""}>${c}</option>`).join("")}</select></label><label class="f">Descripción<textarea rows="2" data-mt="${id}:${i}">${esc(m.t||"")}</textarea></label></div>`}).join("")+`<button class="btn ghost sm" type="button" data-madd="${id}">+ Añadir medida</button>`).join(""):`<p class="muted small">Cuando sitúes riesgos en el mapa aparecerán aquí sus casillas.</p>`;
+ const up=(el,f)=>{const[id,i]=el.dataset[f].split(":");const a=M.d.med[id]=M.d.med[id]||[];a[i]=a[i]||{};a[i][f==="mc"?"c":"t"]=el.value;MK.save()};
+ $$("[data-madd]").forEach(b=>b.onclick=()=>{const a=M.d.med[b.dataset.madd]=M.d.med[b.dataset.madd]||[];while(a.length<3)a.push({});a.push({});MK.save();medK=null;med(M)});
+ $$("[data-mc]").forEach(e=>e.onchange=()=>up(e,"mc"));$$("[data-mt]").forEach(e=>e.oninput=()=>up(e,"mt"))}
 function sum(M){const n=ids=>M.f.filter(f=>ids.includes(f.l)).length,sin=M.f.filter(f=>!(f.o||"").trim()).length;
  $("#sumK").innerHTML=[["Riesgos",n(["rt","rn","ra"])],["Flujos MMPP",n(["mt","mm"])],["Recursos",n(["hi","bs","pr"])],["Población (hab.)",M.f.filter(f=>f.l==="po").reduce((a,f)=>a+(+f.pob||0),0).toLocaleString("es-ES")],["Sin fuente anotada",sin]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("")}
 /* Editor de mapa sobre imagen: capas de puntos y líneas, escala, exportación. CFG la define cada página. */
@@ -414,7 +430,7 @@ rubrica({btn:"docB",label:"Descarga PDF",auto(){const M=MK.M,d=M.d||{},n=ids=>M.
   [(clamp01(n(["mt","mm"])/3)+nom+clamp01(capas/5))/3,`${n(["mt","mm"])} flujos de MMPP, ${capas} capas usadas, ${Math.round(nom*100)} % de elementos con nombre descriptivo.`],
   [fu,`${Math.round(fu*100)} % de los elementos con fuente y fecha anotadas.`],
   [(mf/4+clamp01(words(d.cam)/15))/2,`Plan de mantenimiento: ${mf} de 4 datos completados; cambios a vigilar en ${words(d.cam)} palabras.`]]},
- resumen(){const M=MK.M;return[["Elementos del mapa",String(M.f.length)],["Riesgos",String(M.f.filter(f=>["rt","rn","ra"].includes(f.l)).length)],["Recursos",String(M.f.filter(f=>["hi","bs","pr"].includes(f.l)).length)],["Zonas de población",M.f.filter(f=>f.l==="po").map(f=>`${f.n}: ≈${f.pob||"?"} hab. (${MK.fmtA(MK.area(f.p))})`).join("; ")||"ninguna"]]}});
+ resumen(){const M=MK.M;const md=M.d.med||{};return[["Elementos del mapa",String(M.f.length)],...tipos(M).map(([id,n])=>["Medidas no estructurales · "+n,(md[id]||[]).filter(m=>m&&(m.t||"").trim()).map((m,i)=>`${i+1}. ${m.c?m.c+": ":""}${m.t.trim()}`).join("\n")||"Sin medidas"]),["Riesgos",String(M.f.filter(f=>["rt","rn","ra"].includes(f.l)).length)],["Recursos",String(M.f.filter(f=>["hi","bs","pr"].includes(f.l)).length)],["Zonas de población",M.f.filter(f=>f.l==="po").map(f=>`${f.n}: ≈${f.pob||"?"} hab. (${MK.fmtA(MK.area(f.p))})`).join("; ")||"ninguna"]]}});
 </script>
 
 </body></html>
