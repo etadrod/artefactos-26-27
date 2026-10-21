@@ -86,6 +86,7 @@ th.num{text-align:right}
 @media (max-width:600px){.top{position:static}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .rubfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:999px;padding:.7rem 1.1rem;background:var(--signal);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+.btn.rubin{background:var(--signal);border-color:var(--signal);color:#fff}
 .rubdlg{width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--ink);padding:1rem}
 .rubdlg::backdrop{background:rgba(10,20,40,.55)}
 .rubdlg .rub-h{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
@@ -269,7 +270,8 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   const s=st.self[i]||{},ok=s.n!=null&&words(s.j)>=12,n=ok?s.n:0;
   return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
- const b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b);
+ // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
   dl.innerHTML=`<div class="rub-h"><div><p class="eyebrow">${esc(RB.aev)} · ${esc(RB.mod)}</p><h3>${esc(RB.titulo)}</h3><p class="small muted">${esc(RB.ra_ce)}</p></div><button type="button" class="rub-x" aria-label="Cerrar">×</button></div>
