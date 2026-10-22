@@ -116,7 +116,7 @@ th .ayuda .tip{font-weight:400}
 <p id="msg" class="small muted" style="margin-top:1rem" aria-live="polite"></p>
 </main>
 <script>
-const ITEMS=[["evb:AEV2.1", "EVB 1502", "AEV2.1", "Mapa de Riesgos de La Isleta"], ["evb:AEV3.1 · 5.1", "EVB 1502", "AEV3.1 · 5.1", "Taller de Análisis de Riesgos"], ["evb:AEV3.3", "EVB 1502", "AEV3.3", "Sala 1-1-2"], ["evb:AEV4.1", "EVB 1502", "AEV4.1", "Inspección digital"], ["evb:AEV6.1", "EVB 1502", "AEV6.1", "Generador de Pliego Técnico"], ["ge6:AEV3.1", "GE6 1510", "AEV3.1", "Chequeo diario"], ["ge6:AEV4.1", "GE6 1510", "AEV4.1", "Planificador de turnos"], ["ge6:AEV5.1", "GE6 1510", "AEV5.1", "Panel de indicadores"], ["ge6:AEV6.1", "GE6 1510", "AEV6.1", "Inspección digital"]], API='https://api.github.com/repos/etadrod/artefactos-26-27/contents/visibilidad.json';
+const ITEMS=[["evb:AEV1.1", "EVB 1502", "AEV1.1", "Ficha de riesgos del barrio"], ["evb:AEV3.1 · 5.1", "EVB 1502", "AEV3.1 · 5.1", "Taller de Análisis de Riesgos"], ["evb:AEV3.3", "EVB 1502", "AEV3.3", "Sala 1-1-2"], ["evb:AEV4.1", "EVB 1502", "AEV4.1", "Inspección digital"], ["evb:AEV6.1", "EVB 1502", "AEV6.1", "Generador de Pliego Técnico"], ["ge6:AEV3.1", "GE6 1510", "AEV3.1", "Chequeo diario"], ["ge6:AEV4.1", "GE6 1510", "AEV4.1", "Planificador de turnos"], ["ge6:AEV5.1", "GE6 1510", "AEV5.1", "Panel de indicadores"], ["ge6:AEV6.1", "GE6 1510", "AEV6.1", "Inspección digital"]], API='https://api.github.com/repos/etadrod/artefactos-26-27/contents/visibilidad.json';
 const $=id=>document.getElementById(id), msg=t=>$('msg').textContent=t;
 let tok='', sha=null, vis={};
 try{tok=localStorage.getItem('gh_tok')||''}catch(e){}

@@ -1,0 +1,575 @@
+<!doctype html><html lang="es"><head><script>(function(){var d=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};var t=g("evb_theme"),z=+g("evb_scale")||1;function ap(){if(t)d.setAttribute("data-theme",t);d.style.fontSize=(16*z)+"px"}ap();document.addEventListener("DOMContentLoaded",function(){var w=document.createElement("div");w.setAttribute("role","group");w.setAttribute("aria-label","Accesibilidad");w.style.cssText="display:flex;gap:.3rem;align-items:center;flex-wrap:wrap";var bs="background:transparent;color:inherit;border:1px solid currentColor;border-radius:6px;padding:.2rem .55rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;line-height:1.4;opacity:.9";function b(txt,lab,fn){var e=document.createElement("button");e.type="button";e.textContent=txt;e.setAttribute("aria-label",lab);e.style.cssText=bs;e.onclick=fn;w.appendChild(e);return e}var dk=function(){return d.getAttribute("data-theme")==="dark"||(!d.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches)};b("A−","Reducir texto",function(){z=Math.max(.9,+(z-.1).toFixed(2));s("evb_scale",z);ap()});b("A+","Aumentar texto",function(){z=Math.min(1.4,+(z+.1).toFixed(2));s("evb_scale",z);ap()});var tb=b("","",function(){t=dk()?"light":"dark";s("evb_theme",t);ap();lt()});function lt(){var k=dk();tb.textContent=k?"☀ Claro":"☾ Oscuro";tb.setAttribute("aria-label",k?"Cambiar a modo claro":"Cambiar a modo oscuro")}lt();var dc=document.querySelector("header.top a.doc");if(dc){dc.style.position="static";w.appendChild(dc)}var h=document.querySelector("header.top .top-in");if(h){h.appendChild(w)}else{w.style.cssText+=";position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;background:var(--surface,#fff);color:var(--ink,#111);padding:.3rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2)";document.body.appendChild(w)}})})()</script><script>(function(){var K=["evb:AEV1.1"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});if(K.length&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p></main>";show()})})()</script><script>window.RUBRICAS={"evb:AEV1.1": {"titulo": "Identificación básica de riesgos y medidas de protección de un entorno urbano", "ra_ce": "RA1: a, b · RA2: a · RA3: a · RA4: b, d · RA5: c, e", "peso": "7,50%", "rub": [["Población y vulnerabilidad del barrio", "RA1 b", 1.6, ["Describe la población sin datos ni fuentes y no valora la vulnerabilidad.", "Aporta datos básicos de población con alguna fuente, pero la valoración de la vulnerabilidad es genérica.", "Aporta datos de población y densidad con fuentes e identifica los grupos vulnerables principales.", "Datos completos y citados, identifica grupos vulnerables y justifica un grado de vulnerabilidad razonado."]], ["Identificación y clasificación de riesgos", "RA1 a · RA2 a · RA3 a", 2, ["Identifica pocos riesgos y no los clasifica.", "Identifica riesgos de algún tipo, con una clasificación incompleta o errónea.", "Identifica riesgos naturales, tecnológicos (incluidos los flujos de MMPP) y antrópicos y los clasifica correctamente.", "Identificación completa y clasificada, con la descripción del peligro y de a quién afecta, apoyada en el mapa."]], ["Medidas preventivas no estructurales", "RA4 b", 1.6, ["No propone medidas o confunde estructurales y no estructurales.", "Propone medidas no estructurales genéricas, no ligadas a los riesgos del barrio.", "Propone tres medidas adecuadas y ligadas a los riesgos identificados.", "Propone medidas adecuadas, viables y justificadas, incluyendo autoprotección y sistemas de aviso."]], ["Medidas de protección en emergencia", "RA4 d", 1.6, ["No define medidas de protección o son incorrectas para el riesgo.", "Define evacuación o confinamiento sin justificar su elección.", "Elige la medida adecuada para cada riesgo y la justifica.", "Elige y justifica la medida, e indica condiciones de aplicación (quién, cuándo, a dónde)."]], ["Mecanismos y cauces de comunicación de alertas", "RA5 c", 1.6, ["No identifica cauces de comunicación de la alerta.", "Cita algún canal sin relacionarlo con la activación de la respuesta.", "Identifica los cauces de información y su relación con la activación de los planes.", "Identifica los cauces, quién los activa y cómo se cumple el diseño para todos."]], ["Canales de difusión a la población y mensaje de alerta", "RA5 e", 1.6, ["No redacta el mensaje o es confuso y no da instrucciones de autoprotección.", "Redacta un mensaje comprensible pero incompleto (falta qué hacer o a quién se dirige).", "Mensaje claro, con instrucciones de autoprotección y canal adecuado.", "Mensaje claro y breve, con versión en lectura fácil y combinación de canales accesibles."]]], "art": "Ficha de riesgos del barrio: mapa, población, medidas, avisos y mensaje ES-Alert.", "aev": "AEV1.1", "mod": "EVB 1502 · Evaluación de riesgos y medidas preventivas"}}</script><script>document.addEventListener("DOMContentLoaded",function(){var V={"evb:AEV1.1": "../coordinacion/evb/index.html"},q=new URLSearchParams(location.search).get("aev"),u=V[q]||V[Object.keys(V)[0]],h=document.querySelector("header.top");if(!u||!h)return;var a=document.createElement("a");a.href=u;a.textContent="← Volver al módulo";a.style.cssText="display:inline-block;margin:.5rem 0 0 max(16px,env(safe-area-inset-left,0px));color:inherit;font-weight:600;font-size:.9rem;text-decoration:none;opacity:.9";h.insertBefore(a,h.firstChild)})</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Ficha de riesgos del barrio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.rubfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:999px;padding:.7rem 1.1rem;background:var(--signal);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+.btn.rubin{background:var(--signal);border-color:var(--signal);color:#fff}
+.rubdlg{width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--ink);padding:1rem}
+.rubdlg::backdrop{background:rgba(10,20,40,.55)}
+.rubdlg .rub-h{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.rubdlg .rub-x{border:0;background:none;color:inherit;font-size:1.6rem;cursor:pointer;line-height:1}
+.rubdlg textarea,.rubdlg select{width:100%;margin-top:.3rem;font:inherit;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);padding:.35rem}
+.rubdlg .rub-t{display:flex;justify-content:space-between;align-items:center;margin:.8rem 0;padding:.6rem .8rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.rubdlg .rub-t b{font-size:1.4rem}
+.rubdlg .row-btn{display:flex;justify-content:flex-end}
+@media print{.rubfab{display:none}}
+.ayuda{position:static;display:inline-block;margin-left:.35rem;vertical-align:middle;font-weight:400}
+.ayuda .info{width:1.25rem;height:1.25rem;border-radius:50%;border:1.5px solid var(--navy);background:var(--surface);color:var(--navy);font:700 .8rem/1 Georgia,serif;font-style:italic;cursor:pointer;padding:0;display:inline-grid;place-items:center}
+.ayuda .info[aria-expanded="true"]{background:var(--navy);color:var(--navy-ink)}
+.ayuda .tip{position:absolute;left:0;top:calc(100% + .35rem);z-index:40;width:min(20rem,calc(100vw - 48px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:var(--radius);padding:.6rem .75rem;box-shadow:0 6px 18px rgba(0,0,0,.18);font-size:.88rem;line-height:1.4;text-transform:none;letter-spacing:0;white-space:normal;text-align:left}
+th .ayuda .tip{font-weight:400}
+.ayuda-row{display:inline-flex;align-items:center;gap:0;position:relative}
+
+.mk-tools{display:flex;flex-wrap:wrap;gap:.4rem}
+.mk-t{display:inline-flex;gap:.4rem;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.25rem .7rem .25rem .3rem;cursor:pointer;font-weight:600;font-size:.88rem}
+.mk-t i,.sw{width:1.1rem;height:1.1rem;border-radius:50%;display:inline-block;flex:none;vertical-align:middle}
+.mk-t[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset}
+.mk-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.mk-svg{display:block;width:100%;height:auto;max-width:100%;cursor:crosshair;touch-action:manipulation}
+.mk-svg .sel{filter:drop-shadow(0 0 4px var(--signal))}
+.mk-cal{display:flex;gap:.6rem;align-items:end;flex-wrap:wrap}.mk-cal label{max-width:16rem}
+.mk-cols{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:1rem}
+@media (max-width:760px){.mk-cols{grid-template-columns:1fr}}
+.mk-layers{display:grid;gap:.35rem}
+.chk{display:flex;gap:.45rem;align-items:center;cursor:pointer}
+.mk-tab input{min-width:8rem}
+.mk-tab tr.cur td{background:color-mix(in srgb,var(--signal) 10%,var(--surface))}
+
+.mk-zoom{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-bottom:.4rem}
+.mk-svg{touch-action:pinch-zoom}
+.mk-svg.pan{cursor:grab}.mk-svg.pan.drag,.mk-svg.drag{cursor:grabbing}
+
+body.pres main>:not(.mk){display:none}
+body.pres #mk-tools,body.pres #mk-hint,body.pres .mk>.btns,body.pres .mk-cols .tbl,body.pres #mk-calbox{display:none!important}
+body.pres .mk-cols{grid-template-columns:1fr}
+body.pres .mk-layers{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem}
+body.pres .mk-layers h3{display:none}
+#presB{background:var(--surface);color:var(--ink);border-color:var(--surface)}
+.intro{max-width:none}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:.7rem;align-items:start}
+.row3{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,2fr);gap:.7rem;align-items:start}
+@media (max-width:640px){.row2,.row3{grid-template-columns:1fr}}
+.chkrow{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;margin:.3rem 0 .6rem}
+.cnt{font-size:.85rem;text-align:right}
+.cnt.ko{color:var(--ko);font-weight:700}
+.panel h4{margin:.9rem 0 .3rem}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Ficha de riesgos del barrio</b><span>Población, riesgos, medidas y avisos · Curso 2026-2027</span></div>
+    <div class="chips"><em>EVB · AEV1.1</em><em>RA1 · RA4 · RA5</em><button class="btn ghost sm" id="presB" type="button">Modo presentación</button></div>
+  </div>
+</header>
+
+<main>
+  <div class="intro"><p class="eyebrow">Identificación básica de riesgos y medidas de protección de un entorno urbano</p><h2>Ficha divulgativa de riesgos de tu barrio</h2>
+    <p class="muted">El ayuntamiento quiere una ficha divulgativa de riesgos para un barrio concreto. Elige el barrio, dibuja su límite en el mapa y sitúa sus riesgos naturales, tecnológicos y antrópicos (los flujos de mercancías peligrosas cuentan como riesgo tecnológico). Después completa la población, la clasificación de los riesgos, las medidas, los avisos y el mensaje de alerta. El mapa base cubre La Isleta, el Puerto y Guanarteme con una cuadrícula de 500 m; para otro barrio, cambia el fondo por una captura del Visor GRAFCAN y calibra la escala. Al terminar, descarga la ficha-informe en PDF.</p></div>
+
+  <section class="panel">
+    <h3>1. Barrio</h3>
+    <div class="grid3">
+      <label class="f">Barrio elegido<select id="d-barrio"><option value="">Elige…</option><option>La Isleta</option><option>Guanarteme</option><option>Otro barrio</option></select></label>
+      <label class="f" id="otroL" hidden>Nombre del barrio<input type="text" id="d-barrioOtro"></label>
+    </div>
+  </section>
+
+  <section class="panel mk" aria-label="Editor de mapa">
+  <div class="mk-bar">
+    <div class="mk-tools" id="mk-tools" role="group" aria-label="Capas para dibujar"></div>
+  </div>
+  <p class="small" id="mk-hint" role="status"></p>
+  <div class="mk-zoom" role="group" aria-label="Zoom"><button class="btn ghost sm" id="mk-zin" type="button" aria-label="Acercar">+</button><button class="btn ghost sm" id="mk-zout" type="button" aria-label="Alejar">−</button><button class="btn ghost sm" id="mk-zfit" type="button">Ver todo</button><span class="small muted">Rueda del ratón para acercar; arrastra para moverte.</span></div>
+  <div class="mk-wrap"><svg id="mk-svg" class="mk-svg" role="img" aria-label="Mapa de trabajo"></svg></div>
+  <div class="btns">
+    <button class="btn ghost sm" id="mk-end" type="button" hidden>Terminar línea</button>
+    <button class="btn ghost sm" id="mk-undo" type="button">Deshacer</button>
+    <button class="btn ghost sm" id="mk-cal" type="button">Calibrar escala</button>
+    <span class="small muted" id="mk-scale"></span>
+    <span class="spacer"></span>
+    <label class="btn ghost sm" for="mk-bg" style="cursor:pointer">Cambiar fondo (captura del mapa)</label><input type="file" id="mk-bg" accept="image/*" hidden>
+    <button class="btn ghost sm" id="mk-nobg" type="button">Fondo neutro</button>
+  </div>
+  <div class="mk-cal" id="mk-calbox" hidden><label class="f">Metros entre los dos puntos<input type="number" id="mk-calm" min="1"></label><button class="btn sm" id="mk-calok" type="button">Guardar escala</button></div>
+  <div class="mk-cols">
+    <div><h3>Capas visibles</h3><div class="mk-layers" id="mk-layers"></div></div>
+    <div class="tbl"><h3>Elementos</h3><table class="mk-tab"><thead><tr><th>Capa</th><th>Nombre</th><th>Nota</th><th class="num">Medida</th><th></th></tr></thead><tbody id="mk-list"></tbody></table></div>
+  </div>
+  <div class="btns">
+    <button class="btn ghost" id="mk-png" type="button">Imagen del mapa (.jpg)</button>
+    <button class="btn ghost" id="mk-json" type="button">Guardar trabajo (.json)</button>
+    <label class="btn ghost" for="mk-open" style="cursor:pointer">Cargar trabajo (.json)</label><input type="file" id="mk-open" accept=".json" hidden>
+    <button class="btn warn" id="mk-sample" type="button">Cargar ejemplo</button>
+  </div>
+</section>
+
+
+  <section class="panel">
+    <h3>2. Población y vulnerabilidad (RA1 b)</h3>
+    <div class="grid3">
+      <label class="f">Habitantes (aprox.)<input type="number" min="0" step="1" id="d-hab"></label>
+      <label class="f">Fuente del dato<select id="d-hfue"><option value="">Elige…</option><option>ISTAC</option><option>Padrón municipal</option><option>INE</option><option>Otra</option></select></label>
+      <label class="f">Año o fecha del dato<input type="text" id="d-hfec"></label>
+    </div>
+    <label class="f" id="hfueOL" hidden>Otra fuente<input type="text" id="d-hfueO"></label>
+    <div class="grid3" id="densK"></div>
+    <h4>Grupos vulnerables</h4>
+    <p class="muted small">Indica la cifra o el porcentaje y de dónde sale. Deja vacío lo que no apliques.</p>
+    <div id="vg"></div>
+    <div class="grid3">
+      <label class="f">Grado de vulnerabilidad<select id="d-vul"><option value="">Elige…</option><option>Baja</option><option>Media</option><option>Alta</option></select></label>
+    </div>
+    <label class="f">Justificación del grado de vulnerabilidad<textarea id="d-vulJ" rows="3"></textarea></label>
+  </section>
+
+  <section class="panel">
+    <h3>3. Riesgos identificados y su clasificación</h3>
+    <p class="muted">Aparecen aquí los riesgos y flujos de MMPP que sitúes en el mapa. Clasifica cada uno dentro de su tipo y describe en qué consiste el peligro.</p>
+    <div id="rk"></div>
+  </section>
+
+  <section class="panel">
+    <h3>4. Medidas no estructurales de reducción del riesgo (RA4 b)</h3>
+    <p class="muted">Propón al menos una medida no estructural para cada tipo de riesgo que hayas identificado (divulgación, fomento de la autoprotección, sistemas de aviso, zonificación…). Puedes añadir más: se valoran.</p>
+    <div id="med"></div>
+  </section>
+
+  <section class="panel">
+    <h3>5. Medidas de protección en emergencia (RA4 d)</h3>
+    <p class="muted">Para dos riesgos del barrio, elige qué medida de protección se aplicaría en emergencia y explica por qué, quién la ordena, cuándo y a dónde.</p>
+    <div id="prot"></div>
+  </section>
+
+  <section class="panel">
+    <h3>6. Mecanismos y canales de aviso a la población (RA5 c)</h3>
+    <p class="muted small">Marca los canales que usarías.</p>
+    <div class="chkrow" id="can"></div>
+    <label class="f" id="canOL" hidden>Otro canal<input type="text" id="d-canO"></label>
+    <label class="f">¿Quién activa el aviso y en qué plan se basa?<textarea id="d-quien" rows="2"></textarea></label>
+    <label class="f">Diseño para todos: ¿cómo garantizas que el mensaje llega a todas las personas?<textarea id="d-dpt" rows="3"></textarea></label>
+  </section>
+
+  <section class="panel">
+    <h3>7. Mensaje de alerta (RA5 e)</h3>
+    <div class="grid3"><label class="f">Riesgo del mensaje<select id="d-msgR"></select></label></div>
+    <label class="f">Mensaje ES-Alert<textarea id="d-es" rows="6"></textarea></label>
+    <div class="cnt" id="esCnt"></div>
+    <label class="f">Versión en lectura fácil<textarea id="d-lf" rows="5"></textarea></label>
+  </section>
+
+  <section class="panel">
+    <h3>8. Fuentes citadas y mantenimiento de la ficha</h3>
+    <label class="f">Fuentes de datos<small>Organismos, visores, planes y fecha de consulta</small><textarea id="d-fue" rows="3"></textarea></label>
+    <div class="grid3">
+      <label class="f">Responsable de la actualización<input type="text" id="d-resp"></label>
+      <label class="f">Periodicidad<input type="text" id="d-per"></label>
+      <label class="f">Fecha de la última revisión<input type="date" id="d-fec"></label>
+    </div>
+    <label class="f">Cambios a vigilar<textarea id="d-cam" rows="2"></textarea></label>
+    <div class="grid3" id="sumK"></div>
+    <div class="btns"><button class="btn" id="docB" type="button">Descarga PDF</button></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+/* Rúbrica de la AEV + informe PDF. Solo se activa en la web, donde site.py inyecta window.RUBRICAS.
+   auto(key) devuelve, por criterio, [r 0..1, evidencia] o null (lo autoevalúa el alumno con justificación). */
+const words=s=>String(s??"").trim().split(/\s+/).filter(Boolean).length;
+const clamp01=x=>Math.max(0,Math.min(1,x||0));
+function rubrica(o){const R=window.RUBRICAS;if(!R)return;
+ const keys=Object.keys(R),q=new URLSearchParams(location.search).get("aev"),key=keys.includes(q)?q:keys[0],RB=R[key];
+ const NIV=["Insuficiente","Suficiente","Notable","Sobresaliente"],F=[.25,.5,.75,1],lv=r=>r<.35?0:r<.6?1:r<.85?2:3;
+ const SK="rub_"+key;let st=store.get(SK,{al:"",gr:"",self:{}});const sv=()=>store.set(SK,st);
+ function calc(){const A=o.auto(key)||[];return RB.rub.map(([t,ce,max,d],i)=>{const a=A[i];
+  if(a){const n=lv(clamp01(a[0]));return{t,ce,max,d,n,auto:true,ev:a[1]||"",pts:max*F[n]}}
+  const s=st.self[i]||{},ok=s.n!=null&&words(s.j)>=12,n=ok?s.n:0;
+  return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
+ const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
+ // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
+ let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
+ const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
+ function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
+  dl.innerHTML=`<div class="rub-h"><div><p class="eyebrow">${esc(RB.aev)} · ${esc(RB.mod)}</p><h3>${esc(RB.titulo)}</h3><p class="small muted">${esc(RB.ra_ce)}</p></div><button type="button" class="rub-x" aria-label="Cerrar">×</button></div>
+  <div class="grid2"><label class="f">Nombre y apellidos<input type="text" id="rubAl" value="${esc(st.al)}"></label><label class="f">Grupo<input type="text" id="rubGr" value="${esc(st.gr)}"></label></div>
+  <p class="small muted">«Auto» = lo calcula la herramienta con tu trabajo. En el resto elige tu nivel y justifícalo (mínimo 12 palabras); sin justificación cuenta como Insuficiente. El docente valida la nota final.</p>
+  <div class="tbl"><table><thead><tr><th>Criterio</th><th>Nivel</th><th class="num">Puntos</th></tr></thead><tbody>${C.map((c,i)=>`<tr><td><b>${esc(c.t)}</b><div class="small muted">${esc(c.ce)} · máx. ${fmt(c.max)}</div>
+   ${c.auto?`<div class="small">${esc(c.ev)}</div>`:`<textarea rows="2" data-j="${i}" placeholder="Justifica tu nivel con lo que has hecho">${esc(c.ev)}</textarea>`}<div class="small muted">${esc(c.d[c.n])}</div></td>
+   <td>${c.auto?`<span class="pill">Auto</span> ${NIV[c.n]}`:`<select data-n="${i}" aria-label="Nivel"><option value="">Elige…</option>${NIV.map((n,k)=>`<option value="${k}" ${c.sel===k?"selected":""}>${n}</option>`).join("")}</select>${c.sel!=null&&!c.ok?'<div class="small" style="color:var(--ko)">Falta justificar</div>':""}`}</td>
+   <td class="num">${fmt(c.pts)}</td></tr>`).join("")}</tbody></table></div>
+  <div class="rub-t"><span>Nota propuesta</span><b>${fmt(tot)} / 10</b></div>
+  <div class="row-btn"><button type="button" class="btn" id="rubPdf">Descargar informe PDF</button></div>`;
+  dl.querySelector(".rub-x").onclick=()=>dl.close();
+  dl.querySelector("#rubAl").oninput=e=>{st.al=e.target.value;sv()};dl.querySelector("#rubGr").oninput=e=>{st.gr=e.target.value;sv()};
+  dl.querySelectorAll("[data-n]").forEach(s=>s.onchange=()=>{const i=s.dataset.n;st.self[i]={...(st.self[i]||{}),n:s.value===""?null:+s.value};sv();draw()});
+  dl.querySelectorAll("[data-j]").forEach(t=>{t.oninput=()=>{const i=t.dataset.j;st.self[i]={...(st.self[i]||{}),j:t.value};sv()};t.onchange=draw});
+  dl.querySelector("#rubPdf").onclick=()=>pdf(calc())}
+ b.onclick=()=>{draw();dl.showModal?dl.showModal():dl.setAttribute("open","")};
+ const load=src=>new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
+ async function libs(){if(window.jspdf?.jsPDF?.API?.autoTable)return;
+  try{await load("../vendor/jspdf.umd.min.js");await load("../vendor/jspdf.plugin.autotable.min.js")}
+  catch(e){await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js")}}
+ // helvetica de jsPDF solo trae Latin-1/WinAnsi
+ const T=s=>String(s??"").replace(/[≥]/g,">=").replace(/[≤]/g,"<=").replace(/[→]/g,"->").replace(/[✓]/g,"OK").replace(/[✗]/g,"X").replace(/[‑‒]/g,"-").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
+ async function pdf(C){if(!st.al.trim()){toast("Escribe tu nombre antes de descargar el informe");dl.querySelector("#rubAl").focus();return}
+  try{await libs()}catch(e){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"}),M=16,W=210,tot=C.reduce((a,c)=>a+c.pts,0);let y=0;
+  doc.setFillColor(31,58,104);doc.rect(0,0,W,24,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text(T("Informe de evaluación · "+RB.aev),M,11);
+  doc.setFont("helvetica","normal");doc.setFontSize(9);doc.text(T(RB.mod),M,18);y=32;doc.setTextColor(20,32,51);
+  doc.setFont("helvetica","bold");doc.setFontSize(12);doc.splitTextToSize(T(RB.titulo),W-2*M).forEach(l=>{doc.text(l,M,y);y+=5.5});
+  const tb=o2=>{doc.autoTable(Object.assign({startY:y,margin:{left:M,right:M},theme:"grid",styles:{font:"helvetica",fontSize:8.5,cellPadding:1.8,textColor:[20,32,51],lineColor:[211,218,228],lineWidth:.2},headStyles:{fillColor:[31,58,104],textColor:255}},o2));y=doc.lastAutoTable.finalY+6};
+  y+=2;tb({body:[["Alumno/a",T(st.al)],["Grupo",T(st.gr||"—")],["Fecha",new Date().toLocaleDateString("es-ES")],["Herramienta",T(document.title)],["RA y CE",T(RB.ra_ce)]],columnStyles:{0:{fontStyle:"bold",cellWidth:35}}});
+  tb({head:[["Criterio (RA · CE)","Nivel","Origen","Puntos"]],body:C.map(c=>[T(c.t+"\n"+c.ce),NIV[c.n],c.auto?"Herramienta":c.ok?"Autoevaluación":"Sin justificar",fmt(c.pts)+" / "+fmt(c.max)]).concat([[{content:"Nota propuesta",colSpan:3,styles:{fontStyle:"bold",halign:"right"}},{content:fmt(tot)+" / 10",styles:{fontStyle:"bold"}}]]),columnStyles:{3:{halign:"right",cellWidth:24},1:{cellWidth:26},2:{cellWidth:28}}});
+  tb({head:[["Criterio","Evidencia o justificación","Descriptor del nivel alcanzado"]],body:C.map(c=>[T(c.t),T(c.ev||"—"),T(c.d[c.n])]),columnStyles:{0:{cellWidth:38}}});
+  // o.img: imagen opcional (p. ej. el mapa) en una página propia antes del resumen
+  if(o.img){let u=null;try{u=await o.img()}catch(e){}if(u){const ip=doc.getImageProperties(u),w=W-2*M,h=Math.min(245,w*ip.height/ip.width),ww=h*ip.width/ip.height;doc.addPage();doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor(20,32,51);doc.text(T(o.imgT||"Mapa"),M,18);doc.addImage(u,"JPEG",M,24,ww,h);doc.addPage();y=20}}
+  const rs=o.resumen?o.resumen(key):[];if(rs.length)tb({head:[["Resumen del trabajo en la herramienta",""]],body:rs.map(r=>[T(r[0]),T(r[1])]),columnStyles:{0:{fontStyle:"bold",cellWidth:55}}});
+  if(y>250){doc.addPage();y=20}
+  doc.setFontSize(8.5);doc.setFont("helvetica","normal");doc.splitTextToSize(T("Nota propuesta por la herramienta según la rúbrica de la AEV (cada criterio suma el 25 %, 50 %, 75 % o 100 % de su valor). Los criterios autoevaluados y la calificación final los valida el docente."),W-2*M).forEach(l=>{doc.text(l,M,y);y+=4});
+  const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
+  const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
+  saveFile(fn,doc.output("blob"))}}
+/* Ayuda flotante: ayuda({"#id-del-campo o selector de cabecera": "texto"}) añade un icono «i» junto a la etiqueta */
+function ayuda(map){Object.entries(map).forEach(([sel,txt])=>{const el=document.querySelector(sel);if(!el)return;const host=el.closest("label")||el;
+ const w=document.createElement("span");w.className="ayuda";w.innerHTML=`<button type="button" class="info" aria-label="Ayuda" aria-expanded="false">i</button><span class="tip" role="tooltip" hidden></span>`;w.querySelector(".tip").textContent=txt;
+ const tn=[...host.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(tn){const row=document.createElement("span");row.className="ayuda-row";tn.replaceWith(row);row.append(tn,w)}else host.appendChild(w);
+ const b=w.querySelector(".info"),t=w.querySelector(".tip");b.onclick=e=>{e.preventDefault();e.stopPropagation();const open=t.hidden;document.querySelectorAll(".ayuda .tip").forEach(x=>{x.hidden=true;x.previousElementSibling.setAttribute("aria-expanded","false")});t.hidden=!open;b.setAttribute("aria-expanded",open)}});
+ if(!ayuda._b){ayuda._b=1;document.addEventListener("click",e=>{if(!e.target.closest(".ayuda"))document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)});document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)})}}
+
+"use strict";
+const CFG={key:"barrio_v1",file:"ficha_riesgos_barrio",hideBtns:["mk-sample","mk-nobg"],ar:.9,ik:.4,osm:{z:16,x0:29955,y0:27417,nx:11,ny:14,grid:500,mpp:156543.03392*Math.cos(28.155*Math.PI/180)/65536},
+ layers:[{id:"ba",n:"Límite del barrio",t:"area",col:"#C2185B",hex:"#C2185B",pob:false},
+  {id:"rn",n:"Riesgo natural",t:"point",col:"var(--r2)",hex:"#1F5AAA",sym:"N"},{id:"rt",n:"Riesgo tecnológico",t:"point",col:"var(--ko)",hex:"#B3261E",sym:"T"},{id:"ra",n:"Riesgo antrópico",t:"point",col:"var(--r4)",hex:"#7A3FA0",sym:"A"},
+  {id:"mt",n:"Flujo MMPP terrestre",t:"line",col:"var(--warn)",hex:"#B98A12"},{id:"mm",n:"Flujo MMPP marítimo",t:"line",col:"var(--r2)",hex:"#1F5AAA",dash:true},
+  {id:"hi",n:"Hidrante",t:"point",col:"var(--signal)",hex:"#D2551E",sym:"H"},{id:"bs",n:"Base o parque",t:"point",col:"var(--navy)",hex:"#1F3A68",sym:"B"},{id:"pr",n:"Punto de reunión",t:"point",col:"var(--ok)",hex:"#2F7D4F",sym:"R"}],
+ sample:{ej:true,bg:null,scale:5,hide:{},d:{},f:[]},
+ onLoad(M){M.d=M.d||{};bind(M);dynK=null;dyn(M)},onRender(M){sum(M);dyn(M)}};
+
+// tipos de riesgo: los flujos de MMPP cuentan como riesgo tecnológico
+const TR=[["N","Riesgo natural",["rn"]],["T","Riesgo tecnológico",["rt","mt","mm"]],["A","Riesgo antrópico",["ra"]]];
+const SUB={N:["Geológico (desprendimientos, sismos, volcánico)","Meteorológico (lluvias, viento, calor, temporal costero)","Hidrológico (inundaciones, barrancos)","Incendio forestal","Otro"],
+ T:["Químico o industrial","Transporte de mercancías peligrosas","Incendio o explosión en instalaciones","Fallo de suministros básicos (luz, agua, gas)","Otro"],
+ A:["Concentración de personas","Accidentes de tráfico","Incendio urbano","Colapso de edificios o estructuras","Otro"]};
+const CAT=["Divulgación e información","Fomento de la autoprotección","Sistemas de aviso y alerta","Zonificación y ordenación del territorio","Planificación (planes de emergencia o autoprotección)","Formación y simulacros","Normativa, inspección y control","Otra"];
+const PROT=["Evacuación","Confinamiento","Alejamiento","Información a la población","Autoprotección individual","Control de accesos y acordonamiento","Asistencia sanitaria","Albergue y realojamiento","Abastecimiento (agua, alimentos)","Seguridad ciudadana","Otra"];
+const CAN=[["es","ES-Alert"],["sir","Sirenas y megafonía"],["med","Medios de comunicación (radio, TV)"],["red","Redes sociales y web oficiales"],["int","Intermediadores sociales (asociaciones, centros, servicios sociales)"],["otr","Otro"]];
+const VG=[["may","Mayores de 65 años"],["men","Menores"],["flo","Población flotante (turistas, trabajadores, visitantes)"],["dis","Personas con discapacidad o dependencia"],["idi","Personas que no hablan español"],["otr","Otros grupos"]];
+const ESMAX=1395;
+const K=["barrio","barrioOtro","hab","hfue","hfueO","hfec","vul","vulJ","canO","quien","dpt","msgR","es","lf","fue","resp","per","fec","cam"];
+const tipos=M=>TR.filter(t=>M.f.some(f=>t[2].includes(f.l)));
+const riesgos=M=>M.f.filter(f=>TR.some(t=>t[2].includes(f.l)));
+const tipoDe=f=>TR.find(t=>t[2].includes(f.l));
+const supKm2=M=>M.scale?M.f.filter(f=>f.l==="ba"&&f.p.length>2).reduce((a,f)=>a+MK.area(f.p),0)*M.scale*M.scale/1e6:0;
+const nomBarrio=d=>d.barrio==="Otro barrio"?(d.barrioOtro||"otro barrio"):(d.barrio||"");
+
+function bind(M){const d=M.d;K.forEach(k=>{const el=$("#d-"+k);if(!el)return;el.value=d[k]||"";el.oninput=el.onchange=()=>{d[k]=el.value;MK.save();vis(M);if(["hab"].includes(k))sum(M);if(k==="es")cnt()}});
+ d.vg=d.vg||{};d.can=d.can||{};d.rk=d.rk||{};d.med=d.med||{};d.prot=d.prot||[];
+ $("#vg").innerHTML=VG.map(([k,n])=>`<div class="row2"><label class="f">${n}<input type="text" data-vg="${k}" value="${esc(d.vg[k]||"")}" placeholder="cifra o %"></label><label class="f">Fuente u observación<input type="text" data-vgo="${k}" value="${esc(d.vg[k+"_o"]||"")}"></label></div>`).join("");
+ $$("[data-vg]").forEach(e=>e.oninput=()=>{d.vg[e.dataset.vg]=e.value;MK.save()});$$("[data-vgo]").forEach(e=>e.oninput=()=>{d.vg[e.dataset.vgo+"_o"]=e.value;MK.save()});
+ $("#can").innerHTML=CAN.map(([k,n])=>`<label class="chk"><input type="checkbox" data-can="${k}" ${d.can[k]?"checked":""}> ${n}</label>`).join("");
+ $$("[data-can]").forEach(e=>e.onchange=()=>{d.can[e.dataset.can]=e.checked;MK.save();vis(M)});
+ vis(M);cnt()}
+function vis(M){const d=M.d;$("#otroL").hidden=d.barrio!=="Otro barrio";$("#hfueOL").hidden=d.hfue!=="Otra";$("#canOL").hidden=!d.can.otr}
+function cnt(){const n=($("#d-es").value||"").length,e=$("#esCnt");e.textContent=`${n.toLocaleString("es-ES")} / ${ESMAX.toLocaleString("es-ES")} caracteres`;e.classList.toggle("ko",n>ESMAX)}
+
+// secciones que dependen de los elementos del mapa: se redibujan solo si cambian los riesgos
+let dynK=null;
+function dyn(M){const d=M.d,rs=riesgos(M),k=rs.map(f=>f.id+":"+f.n).join("|");if(k===dynK)return;dynK=k;
+ d.rk=d.rk||{};d.med=d.med||{};d.prot=d.prot||[];
+ $("#rk").innerHTML=rs.length?TR.map(([t,n,ls])=>{const fs=rs.filter(f=>ls.includes(f.l));return fs.length?`<h4>${n}</h4>`+fs.map(f=>{const r=d.rk[f.id]||{},st=r.st||(f.l==="mt"||f.l==="mm"?"Transporte de mercancías peligrosas":"");return `<div class="row2"><label class="f">${esc(f.n)} · subtipo<select data-rst="${f.id}"><option value="">Elige…</option>${SUB[t].map(o=>`<option${st===o?" selected":""}>${o}</option>`).join("")}</select></label><label class="f">¿En qué consiste el peligro y a quién afecta?<textarea rows="2" data-rds="${f.id}">${esc(r.ds||"")}</textarea></label></div>`}).join(""):""}).join(""):`<p class="muted small">Sitúa riesgos en el mapa y aparecerán aquí.</p>`;
+ $$("[data-rst]").forEach(e=>{const r=d.rk[e.dataset.rst]=d.rk[e.dataset.rst]||{};if(!r.st&&e.value)r.st=e.value;e.onchange=()=>{r.st=e.value;MK.save()}});
+ $$("[data-rds]").forEach(e=>e.oninput=()=>{(d.rk[e.dataset.rds]=d.rk[e.dataset.rds]||{}).ds=e.value;MK.save()});
+ const ts=tipos(M);
+ $("#med").innerHTML=ts.length?ts.map(([id,n])=>`<h4>${n}</h4>`+[...Array(Math.max(1,(d.med[id]||[]).length)).keys()].map(i=>{const m=(d.med[id]||[])[i]||{};return `<div class="row2"><label class="f">Medida ${i+1} · tipo<select data-mc="${id}:${i}"><option value="">Elige…</option>${CAT.map(c=>`<option${m.c===c?" selected":""}>${c}</option>`).join("")}</select></label><label class="f">Descripción: qué, a quién va dirigida, quién la aplica y dónde<textarea rows="2" data-mt="${id}:${i}">${esc(m.t||"")}</textarea></label></div>`}).join("")+`<button class="btn ghost sm" type="button" data-madd="${id}">+ Añadir medida</button>`).join(""):`<p class="muted small">Cuando sitúes riesgos en el mapa aparecerán aquí sus casillas.</p>`;
+ const up=(el,f)=>{const[id,i]=el.dataset[f].split(":");const a=d.med[id]=d.med[id]||[];a[i]=a[i]||{};a[i][f==="mc"?"c":"t"]=el.value;MK.save()};
+ $$("[data-madd]").forEach(b=>b.onclick=()=>{const a=d.med[b.dataset.madd]=d.med[b.dataset.madd]||[];if(!a.length)a.push({});a.push({});MK.save();dynK=null;dyn(M)});
+ $$("[data-mc]").forEach(e=>e.onchange=()=>up(e,"mc"));$$("[data-mt]").forEach(e=>e.oninput=()=>up(e,"mt"));
+ const opt=v=>`<option value="">Elige…</option>`+rs.map(f=>`<option${v===f.n?" selected":""}>${esc(f.n)}</option>`).join("");
+ $("#prot").innerHTML=[...Array(Math.max(2,d.prot.length)).keys()].map(i=>{const p=d.prot[i]||{};return `<h4>Riesgo ${i+1}</h4><div class="row3"><label class="f">Riesgo<select data-pr="${i}">${opt(p.r)}</select></label><label class="f">Medida de protección<select data-pm="${i}"><option value="">Elige…</option>${PROT.map(o=>`<option${p.m===o?" selected":""}>${o}</option>`).join("")}</select><input type="text" data-po="${i}" value="${esc(p.o||"")}" placeholder="Si eliges «Otra», escríbela" ${p.m==="Otra"?"":"hidden"}></label><label class="f">¿Por qué? Quién la ordena, cuándo y a dónde<textarea rows="3" data-pj="${i}">${esc(p.j||"")}</textarea></label></div>`}).join("")+`<button class="btn ghost sm" type="button" id="padd">+ Añadir riesgo</button>`;
+ const P=i=>d.prot[i]=d.prot[i]||{};
+ $$("[data-pr]").forEach(e=>e.onchange=()=>{P(e.dataset.pr).r=e.value;MK.save()});
+ $$("[data-pm]").forEach(e=>e.onchange=()=>{P(e.dataset.pm).m=e.value;$(`[data-po="${e.dataset.pm}"]`).hidden=e.value!=="Otra";MK.save()});
+ $$("[data-po]").forEach(e=>e.oninput=()=>{P(e.dataset.po).o=e.value;MK.save()});
+ $$("[data-pj]").forEach(e=>e.oninput=()=>{P(e.dataset.pj).j=e.value;MK.save()});
+ $("#padd").onclick=()=>{while(d.prot.length<2)d.prot.push({});d.prot.push({});MK.save();dynK=null;dyn(M)};
+ $("#d-msgR").innerHTML=opt(d.msgR);$("#d-msgR").onchange=e=>{d.msgR=e.target.value;MK.save()}}
+
+function sum(M){const d=M.d,n=ids=>M.f.filter(f=>ids.includes(f.l)).length,km=supKm2(M),hab=+d.hab||0;
+ $("#densK").innerHTML=[["Superficie dibujada",km?km.toFixed(2).replace(".",",")+" km²":"dibuja el límite"],["Densidad",km&&hab?Math.round(hab/km).toLocaleString("es-ES")+" hab./km²":"—"]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("");
+ $("#sumK").innerHTML=[["Riesgos naturales",n(["rn"])],["Riesgos tecnológicos",n(["rt","mt","mm"])],["Riesgos antrópicos",n(["ra"])],["Recursos",n(["hi","bs","pr"])]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("")}
+
+// ---- rúbrica (orden de rubricas.json evb:AEV1.1) ----
+const medOk=m=>m&&m.c&&words(m.t)>=8;
+function rPob(M){const d=M.d,vg=VG.filter(([k])=>(d.vg[k]||"").trim()).length,fue=d.hfue&&(d.hfue!=="Otra"||(d.hfueO||"").trim());
+ const r=((+d.hab>0)+(fue?1:0)+(supKm2(M)>0)+clamp01(vg/3)+(d.vul?1:0)+clamp01(words(d.vulJ)/25))/6;
+ return[r,`Habitantes ${+d.hab>0?"sí":"no"}, fuente ${fue?"sí":"no"}, límite del barrio ${supKm2(M)>0?"dibujado":"sin dibujar"}, ${vg} grupos vulnerables, grado «${d.vul||"sin elegir"}» con justificación de ${words(d.vulJ)} palabras.`]}
+function rRiesgos(M){const d=M.d,rs=riesgos(M),ts=tipos(M).length,cl=rs.filter(f=>(d.rk[f.id]||{}).st).length,ds=rs.filter(f=>words((d.rk[f.id]||{}).ds)>=8).length,n=rs.length||1,mp=M.f.some(f=>f.l==="mt"||f.l==="mm");
+ const r=(ts/3+clamp01(rs.length/6)+cl/n+ds/n+(mp?1:0))/5;
+ return[r,`${rs.length} riesgos de ${ts} tipos; ${cl} clasificados por subtipo y ${ds} descritos; flujos de MMPP ${mp?"incluidos":"no incluidos"}.`]}
+function rMed(M){const ts=tipos(M),md=M.d.med||{};if(!ts.length)return[0,"No hay riesgos en el mapa, así que no hay medidas que valorar."];
+ const v=ts.map(([id,n])=>({n,k:(md[id]||[]).filter(medOk).length})),tot=v.reduce((a,x)=>a+x.k,0),cats=new Set(ts.flatMap(([id])=>(md[id]||[]).filter(medOk).map(m=>m.c))).size;
+ const r=v.filter(x=>x.k>=1).length/v.length*.6+clamp01(tot/(v.length*2))*.25+clamp01(cats/4)*.15;
+ return[r,v.map(x=>`${x.n}: ${x.k}`).join("; ")+` medidas completas; ${cats} tipos de medida distintos.`]}
+function rProt(M){const ok=(M.d.prot||[]).filter(p=>p&&p.r&&p.m&&(p.m!=="Otra"||(p.o||"").trim())&&words(p.j)>=12);
+ const det=ok.filter(p=>words(p.j)>=25).length;
+ return[clamp01(ok.length/2)*.8+clamp01(det/2)*.2,`${ok.length} riesgos con medida de protección justificada (${det} con explicación detallada).`]}
+function rCauces(M){const d=M.d,c=CAN.filter(([k])=>d.can[k]).length;
+ return[(clamp01(c/3)+clamp01(words(d.quien)/12)+clamp01(words(d.dpt)/25))/3,`${c} canales marcados; quién activa el aviso en ${words(d.quien)} palabras; diseño para todos en ${words(d.dpt)} palabras.`]}
+function rMsg(M){const d=M.d,es=(d.es||"").trim(),n=es.length,multi=/\b(the|you|your|stay|leave|go|area|please|do not|avoid)\b/i.test(es),ok=n>0&&n<=ESMAX;
+ const lf=(d.lf||"").trim(),fr=lf.split(/[.!?\n]+/).filter(s=>s.trim()),lfOk=words(lf)>=15&&fr.length&&words(lf)/fr.length<=15;
+ const r=((d.msgR?1:0)+(ok&&words(es)>=20?1:0)+(multi?1:0)+(lfOk?1:0)+(CAN.filter(([k])=>d.can[k]).length>=2?1:0))/5;
+ return[r,`Mensaje ES-Alert de ${n} caracteres${n>ESMAX?" (supera el límite de 1.395)":""}; traducción ${multi?"incluida":"no detectada"}; lectura fácil ${lfOk?"correcta":"incompleta o con frases largas"}.`]}
+
+/* Editor de mapa sobre imagen: capas de puntos y líneas, escala, exportación. CFG la define cada página. */
+const MK=(()=>{
+ const W0=1200,H0=760;
+ let M=store.get(CFG.key,null)||JSON.parse(JSON.stringify(CFG.sample));
+ if(!M.bg)M.bg=null;M.hide=M.hide||{};M.f=M.f||[];
+ let tool=null,draft=null,selId=null,cal=null,V=null,drag=null,noClick=false;
+ // CFG.osm={z,x0,y0,nx,ny,mpp}: fondo de teselas de OpenStreetMap (solo con conexión; no se guarda la imagen)
+ const osmBg=()=>({osm:CFG.osm,w:CFG.osm.nx*256,h:CFG.osm.ny*256});
+ if(CFG.osm&&!M.bg&&(M.ej||!M.f.length)){M.bg=osmBg();M.scale=CFG.osm.mpp;if(M.ej){M.f=[];M.ej=false}}
+ // si cambia el encuadre del mapa base, se desplazan los elementos ya dibujados para que no se muevan sobre el terreno
+ if(CFG.osm&&M.bg&&M.bg.osm&&(M.bg.osm.x0!==CFG.osm.x0||M.bg.osm.y0!==CFG.osm.y0||M.bg.osm.nx!==CFG.osm.nx||M.bg.osm.ny!==CFG.osm.ny)){const dx=(M.bg.osm.x0-CFG.osm.x0)*256,dy=(M.bg.osm.y0-CFG.osm.y0)*256;M.f.forEach(f=>f.p=f.p.map(([x,y])=>[x+dx,y+dy]));M.bg=osmBg();M.scale=CFG.osm.mpp}
+ const tiles=()=>{const o=M.bg.osm,a=[];for(let j=0;j<o.ny;j++)for(let i=0;i<o.nx;i++)a.push([i*256,j*256,`https://tile.openstreetmap.org/${o.z}/${o.x0+i}/${o.y0+j}.png`]);return a};
+ const bgSvg=()=>M.bg.osm?tiles().map(([x,y,u])=>`<image href="${u}" x="${x}" y="${y}" width="256.5" height="256.5"/>`).join("")+gridSvg()+`<text x="${M.bg.w-8}" y="${M.bg.h-8}" text-anchor="end" font-size="14" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">© OpenStreetMap contributors</text>`:`<image href="${esc(M.bg.src)}" x="0" y="0" width="${M.bg.w}" height="${M.bg.h}"/>`;
+ // cuadrícula de referencia (CFG.osm.grid metros): columnas A, B, C… y filas 1, 2, 3…
+ function gridSvg(){const o=CFG.osm;if(!o||!o.grid||!M.bg||!M.bg.osm)return"";const g=o.grid/o.mpp,W=M.bg.w,H=M.bg.h;let s="";
+  for(let i=0,x=0;x<=W;i++,x+=g){s+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="2"/>`;if(x+g/2<W)s+=`<text x="${x+g/2}" y="26" text-anchor="middle" font-size="22" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="4" paint-order="stroke" font-family="Arial,sans-serif">${String.fromCharCode(65+i)}</text>`}
+  for(let j=0,y=0;y<=H;j++,y+=g){s+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="2"/>`;if(y+g/2<H)s+=`<text x="10" y="${y+g/2+8}" font-size="22" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="4" paint-order="stroke" font-family="Arial,sans-serif">${j+1}</text>`}
+  return s+`<text x="10" y="${H-12}" font-size="16" fill="#1F3A68" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">Cuadrícula de ${o.grid} m</text>`}
+ // CFG.ar: max alto/ancho de la ventana; si el mapa es más alto se recorta y se desplaza arrastrando
+ const AR=()=>{const d=dims();return Math.min(d.h/d.w,CFG.ar||Infinity)};
+ const vb=()=>{const d=dims(),h=d.w*AR();return V||{x:0,y:0,w:d.w,h}};
+ function zoom(f,cx,cy){const d=dims(),v=vb(),w=Math.min(d.w,Math.max(d.w/8,v.w/f)),h=w*AR();cx=cx??v.x+v.w/2;cy=cy??v.y+v.h/2;
+  const x=Math.min(d.w-w,Math.max(0,cx-(cx-v.x)*w/v.w)),y=Math.min(d.h-h,Math.max(0,cy-(cy-v.y)*h/v.h));V=w>=d.w&&h>=d.h?null:{x,y,w,h};$("#mk-svg").setAttribute("viewBox",`${vb().x} ${vb().y} ${vb().w} ${vb().h}`)}
+ const sv=()=>{try{localStorage.setItem(CFG.key,JSON.stringify(M))}catch(e){toast("Memoria llena: la imagen de fondo es muy grande. Guarda en .json.",5000)}};
+ const L=id=>CFG.layers.find(l=>l.id===id);
+ const dims=()=>M.bg?{w:M.bg.w,h:M.bg.h}:{w:W0,h:H0};
+ const len=pts=>pts.slice(1).reduce((a,p,i)=>a+Math.hypot(p[0]-pts[i][0],p[1]-pts[i][1]),0);
+ const meters=px=>M.scale?px*M.scale:null;
+ const area=pts=>Math.abs(pts.reduce((a,p,i)=>{const q=pts[(i+1)%pts.length];return a+p[0]*q[1]-q[0]*p[1]},0))/2;
+ const fmtA=px=>{const m=M.scale?px*M.scale*M.scale:null;return m==null?"sin escala":m>=1e4?(m/1e4).toFixed(2).replace(".",",")+" ha":Math.round(m)+" m²"};
+ const fmtL=px=>{const m=meters(px);return m==null?"sin escala":m>=1000?(m/1000).toFixed(2).replace(".",",")+" km":Math.round(m)+" m"};
+ function svgFeatures(forExport){const d=dims(),k=Math.max(d.w,d.h)/1200;let s="";
+  [...M.f].sort((a,b)=>(L(b.l)?.t==="area")-(L(a.l)?.t==="area")).forEach(f=>{const l=L(f.l);if(!l||M.hide[l.id])return;const c=forExport?l.hex:l.col;
+   if(l.t==="line"&&f.p.length>1){s+=`<polyline points="${f.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${c}" stroke-width="${6*k}" stroke-linecap="round" stroke-linejoin="round" ${l.dash?`stroke-dasharray="${14*k} ${10*k}"`:""} ${!forExport&&f.id===selId?'class="sel"':""} data-f="${f.id}"/>`;
+    const m=f.p[Math.floor(f.p.length/2)];const ki=k*(CFG.ik||1);s+=`<text x="${m[0]}" y="${m[1]-10*ki}" text-anchor="middle" font-size="${15*ki}" font-weight="700" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*ki}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n||l.n)}</text>`}
+   if(l.t==="area"&&f.p.length>2){const[cx,cy]=f.p.reduce((a,p)=>[a[0]+p[0]/f.p.length,a[1]+p[1]/f.p.length],[0,0]),ki=k*(CFG.ik||1);s+=`<g data-f="${f.id}" ${!forExport&&f.id===selId?'class="sel"':""}><polygon points="${f.p.map(p=>p.join(",")).join(" ")}" fill="${c}" fill-opacity=".22" stroke="${c}" stroke-width="${2*k}" stroke-linejoin="round"/><text x="${cx}" y="${cy}" text-anchor="middle" font-size="${14*ki}" font-weight="700" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*ki}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n)}${f.pob?" · ≈"+esc(f.pob)+" hab.":""}</text></g>`}
+   if(l.t==="point"&&f.p.length){const ki=k*(CFG.ik||1);const[x,y]=f.p[0];s+=`<g data-f="${f.id}" ${!forExport&&f.id===selId?'class="sel"':""}><circle cx="${x}" cy="${y}" r="${13*ki}" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${3*ki}"/><text x="${x}" y="${y+5*ki}" text-anchor="middle" font-size="${13*ki}" font-weight="700" fill="#fff" font-family="IBM Plex Mono,monospace">${esc(l.sym)}</text><text x="${x+18*ki}" y="${y+5*ki}" font-size="${14*ki}" font-weight="700" fill="${forExport?"#142033":"var(--ink)"}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*ki}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n)}</text></g>`}});
+  return s}
+ function grid(){const d=dims();let g=`<rect width="${d.w}" height="${d.h}" fill="var(--sunk)"/>`;for(let x=0;x<=d.w;x+=60)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${d.h}" stroke="var(--line)"/>`;for(let y=0;y<=d.h;y+=60)g+=`<line x1="0" y1="${y}" x2="${d.w}" y2="${y}" stroke="var(--line)"/>`;
+  return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
+ function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);
+  let s=M.bg?bgSvg():grid();s+=svgFeatures(false);
+  if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${l.col}"/>`).join("")}
+  if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="none" stroke="var(--signal)" stroke-width="3"/>`).join("");
+  sv_.innerHTML=s;sv_.classList.toggle("pan",!tool&&!cal);
+  $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":l.t==="area"?"superficie":"punto"}</span></button>`).join("");
+  $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
+  $("#mk-layers").innerHTML=CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
+  $$("[data-h]").forEach(c=>c.onchange=()=>{M.hide[c.dataset.h]=!c.checked;sv();render()});
+  $("#mk-list").innerHTML=M.f.length?M.f.map(f=>{const l=L(f.l);return `<tr ${f.id===selId?'class="cur"':""}><td><i class="sw" style="background:${l.col}"></i> ${esc(l.n)}</td><td><input type="text" value="${esc(f.n)}" data-n="${f.id}" aria-label="Nombre"></td><td><input type="text" value="${esc(f.o||"")}" data-o="${f.id}" aria-label="Nota"></td><td class="num">${l.t==="line"?fmtL(len(f.p)):l.t==="area"&&l.pob===false?fmtA(area(f.p)):l.t==="area"?`<span style="display:inline-flex;align-items:center;gap:.4em;white-space:nowrap">${fmtA(area(f.p))} ·<input type="number" min="0" step="1" value="${esc(f.pob||"")}" data-pob="${f.id}" aria-label="Población aproximada" placeholder="0" style="width:6.5em">hab.</span>`:""}</td><td><button class="btn ghost sm" type="button" data-del="${f.id}">Quitar</button></td></tr>`}).join(""):`<tr><td colspan="5" class="muted">Elige una capa y pulsa en el mapa para añadir elementos.</td></tr>`;
+  $$("[data-n]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.n).n=i.value;sv();render()});
+  $$("[data-pob]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.pob).pob=i.value;sv();render()});
+  $$("[data-o]").forEach(i=>i.oninput=()=>{M.f.find(f=>f.id===i.dataset.o).o=i.value;sv()});
+  $$("[data-del]").forEach(b=>b.onclick=()=>{M.f=M.f.filter(f=>f.id!==b.dataset.del);sv();render()});
+  $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
+  if(CFG.onRender)CFG.onRender(M)}
+ function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:l.t==="area"?`Pulsa para marcar los vértices de «${l.n}». Doble clic o «Terminar» para cerrarla; después indica la población en la tabla.`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t!=="point");$("#mk-end").textContent=l&&l.t==="area"?"Terminar superficie":"Terminar línea"}
+ function pt(e){const s=$("#mk-svg"),r=s.getBoundingClientRect(),v=vb();return[Math.round(v.x+(e.clientX-r.left)/r.width*v.w),Math.round(v.y+(e.clientY-r.top)/r.height*v.h)]}
+ const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
+ function finish(){if(draft&&draft.p.length>(L(draft.l).t==="area"?2:1)){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n+" "+(M.f.filter(f=>f.l===draft.l).length+1),p:draft.p});sv()}draft=null}
+ function bind(){const s=$("#mk-svg");
+ s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.1:1/1.1,p[0],p[1])},{passive:false});
+  s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
+  s.addEventListener("pointermove",e=>{if(!drag||(drag.v.w>=dims().w&&drag.v.h>=dims().h))return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;s.classList.add("drag");
+   const r=s.getBoundingClientRect(),d=dims(),k=drag.v.w/r.width;V={...drag.v,x:Math.min(d.w-drag.v.w,Math.max(0,drag.v.x-dx*k)),y:Math.min(d.h-drag.v.h,Math.max(0,drag.v.y-dy*k))};s.setAttribute("viewBox",`${V.x} ${V.y} ${V.w} ${V.h}`)});
+  addEventListener("pointerup",()=>{if(drag&&drag.m)noClick=true;drag=null;s.classList.remove("drag")});
+  $("#mk-zin").onclick=()=>zoom(1.25);$("#mk-zout").onclick=()=>zoom(1/1.25);(CFG.hideBtns||[]).forEach(id=>{const e=$("#"+id);if(e)e.hidden=true});$("#mk-zfit").onclick=()=>{V=null;render()};
+  if(CFG.osm){const b=document.createElement("button");b.className="btn ghost sm";b.type="button";b.textContent="Mapa base de La Isleta";b.onclick=()=>{M.bg=osmBg();M.scale=CFG.osm.mpp;V=null;sv();render()};$("#mk-nobg").after(b)}
+  s.addEventListener("click",e=>{if(noClick){noClick=false;return}const p=pt(e);
+   if(cal){cal.push(p);if(cal.length===2){$("#mk-calbox").hidden=false;$("#mk-calm").focus()}render();return}
+   const hit=e.target.closest("[data-f]");if(!tool){selId=hit?hit.dataset.f:null;render();return}
+   const l=L(tool);if(l.t==="point"){const n=M.f.filter(f=>f.l===l.id).length+1;M.f.push({id:nid(),l:l.id,n:l.n+" "+n,p:[p]});sv();render()}else{draft=draft&&draft.l===l.id?draft:{l:l.id,p:[]};draft.p.push(p);render()}});
+  s.addEventListener("dblclick",e=>{e.preventDefault();if(draft&&draft.p.length>2)draft.p.pop();finish();render()});
+  $("#mk-end").onclick=()=>{finish();render()};
+  $("#mk-undo").onclick=()=>{if(draft&&draft.p.length){draft.p.pop();render()}else{M.f.pop();sv();render()}};
+  $("#mk-cal").onclick=()=>{finish();tool=null;cal=[];hint();render()};
+  $("#mk-calok").onclick=()=>{const m=+$("#mk-calm").value;if(!(m>0)||!cal||cal.length<2){toast("Indica los metros entre los dos puntos.");return}const px=Math.hypot(cal[1][0]-cal[0][0],cal[1][1]-cal[0][1]);M.scale=m/px;cal=null;$("#mk-calbox").hidden=true;sv();hint();render();toast("Escala guardada")};
+  $("#mk-bg").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1800/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+   M.bg={src:c.toDataURL("image/jpeg",.8),w:c.width,h:c.height};M.scale=null;M.f=[];V=null;sv();render();toast("Fondo cargado. Calibra la escala con un tramo conocido.",4000)};im.src=r.result};r.readAsDataURL(f);e.target.value=""};
+  $("#mk-nobg").onclick=()=>{M.bg=null;M.scale=null;V=null;sv();render()};
+  $("#mk-json").onclick=()=>saveFile(CFG.file+".json",JSON.stringify(M));
+  $("#mk-open").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t);if(!Array.isArray(o.f))throw 0;M=o;M.hide=M.hide||{};sv();render();if(CFG.onLoad)CFG.onLoad(M);toast("Abierto")}).catch(()=>toast("Ese archivo no es de esta herramienta."));e.target.value=""};
+  $("#mk-sample").onclick=()=>{const b=$("#mk-sample");if(b.dataset.sure){M=JSON.parse(JSON.stringify(CFG.sample));sv();render();if(CFG.onLoad)CFG.onLoad(M);delete b.dataset.sure;b.textContent="Cargar ejemplo"}else{b.dataset.sure=1;b.textContent="Se borrará tu mapa. Pulsa otra vez"}};
+  $("#mk-png").onclick=async()=>{const u=await png();if(u)saveFile(CFG.file+".jpg",d2b(u))};
+  hint()}
+ const d2b=u=>{const s=atob(u.split(",")[1]),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return new Blob([a])};
+ const loadIm=u=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u});
+ async function png(){const d=dims(),T=M.bg&&M.bg.osm?await Promise.all(tiles().map(async([x,y,u])=>[x,y,await loadIm(u)])):[];return new Promise(ok=>{const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${d.w}" height="${d.h}" viewBox="0 0 ${d.w} ${d.h}">${M.bg&&!M.bg.osm?`<image href="${esc(M.bg.src)}" width="${d.w}" height="${d.h}"/>`:M.bg?"":`<rect width="${d.w}" height="${d.h}" fill="#E8ECF2"/>`}${M.bg&&M.bg.osm?gridSvg():""}${svgFeatures(true)}${M.bg&&M.bg.osm?`<text x="${d.w-8}" y="${d.h-8}" text-anchor="end" font-size="14" fill="#333" font-family="Arial">© OpenStreetMap contributors</text>`:""}</svg>`;
+  const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=d.w;c.height=d.h;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,d.w,d.h);T.forEach(([x,y,t])=>{if(t)g.drawImage(t,x,y)});g.drawImage(im,0,0);ok(c.toDataURL("image/jpeg",.88))};im.onerror=()=>{toast("No se pudo generar la imagen.");ok(null)};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)})}
+ return{init(){bind();render();if(CFG.onLoad)CFG.onLoad(M)},render,png,get M(){return M},save:sv,L,len,fmtL,fmtA,area,dims};
+})();
+
+$("#presB").onclick=()=>{const on=document.body.classList.toggle("pres");$("#presB").textContent=on?"Salir de la presentación":"Modo presentación";$("#presB").setAttribute("aria-pressed",on)};
+MK.init();
+ayuda({"#d-barrio":"¿Qué barrio de Las Palmas de Gran Canaria vais a estudiar y por qué lo habéis elegido?",
+ "#d-hab":"¿Cuántas personas viven aproximadamente en el barrio según una fuente oficial (ISTAC, padrón, INE)?",
+ "#d-hfue":"¿De qué fuente oficial sale el número de habitantes?",
+ "#d-hfec":"¿A qué año o fecha corresponde ese dato?",
+ "#d-vul":"Teniendo en cuenta la densidad y los grupos vulnerables, ¿cómo de vulnerable es la población del barrio?",
+ "#d-vulJ":"¿Qué datos de la población, de los edificios y de los grupos vulnerables te llevan a ese grado de vulnerabilidad?",
+ "#d-quien":"¿Qué organismo o cargo decide enviar el aviso (CECOES 1-1-2, ayuntamiento, Dirección General de Emergencias…) y qué plan de emergencia lo prevé?",
+ "#d-dpt":"¿Cómo llegará el aviso a personas mayores sin móvil, personas sordas o ciegas, turistas que no hablan español o personas con discapacidad intelectual?",
+ "#d-msgR":"¿Para qué riesgo del barrio vas a redactar el mensaje de alerta?",
+ "#d-es":"Redacta tu mensaje indicando: qué pasa, dónde y qué hacer (órdenes directas en imperativo). Estilo: claro, sin tecnicismos ni formalismos. Incluye traducción multilingüe.",
+ "#d-lf":"¿Cómo lo dirías con frases cortas, palabras sencillas y una idea por frase para que lo entienda cualquier persona?",
+ "#d-fue":"¿De qué organismos, visores, planes o webs habéis sacado los datos de la ficha, y en qué fecha los consultasteis?",
+ "#d-resp":"¿Qué cargo u organismo de la Administración se encargaría de revisar esta ficha para que no quede obsoleta? Responde con cargos u órganos, no con nombres de personas.",
+ "#d-per":"¿Cada cuánto tiempo debería revisarse la ficha de forma ordinaria, y qué sucesos o cambios obligarían a revisarla antes?",
+ "#d-fec":"¿En qué fecha comprobasteis por última vez que los datos siguen siendo correctos?",
+ "#d-cam":"¿Qué cambios en el barrio (nuevas viviendas, obras, actividades, eventos) harían que esta ficha dejara de ser válida?",
+ ".mk-tab thead th:nth-child(2)":"¿Qué es exactamente este elemento y dónde está, de forma que cualquiera lo identifique sin mirar el mapa?",
+ ".mk-tab thead th:nth-child(3)":"¿Qué información útil añadirías sobre él?"});
+rubrica({btn:"docB",label:"Descarga PDF",imgT:"Mapa de riesgos del barrio",img:()=>Promise.race([MK.png(),new Promise(r=>setTimeout(()=>r(null),8000))]),auto(){const M=MK.M;if(M.ej&&!M.f.length)return Array(6).fill([0,"Todavía no has empezado la ficha."]);
+ return[rPob(M),rRiesgos(M),rMed(M),rProt(M),rCauces(M),rMsg(M)]},
+ resumen(){const M=MK.M,d=M.d,km=supKm2(M),hab=+d.hab||0,L=(a)=>a.filter(Boolean).join("\n");
+  return[["Barrio",nomBarrio(d)||"sin elegir"],
+   ["Población",`${hab?hab.toLocaleString("es-ES")+" hab.":"sin dato"} · fuente: ${d.hfue==="Otra"?(d.hfueO||"otra"):(d.hfue||"sin fuente")}${d.hfec?" ("+d.hfec+")":""}`],
+   ["Superficie y densidad",km?`${km.toFixed(2).replace(".",",")} km² · ${hab?Math.round(hab/km).toLocaleString("es-ES")+" hab./km²":"—"}`:"límite sin dibujar"],
+   ["Grupos vulnerables",L(VG.map(([k,n])=>(d.vg[k]||"").trim()?`${n}: ${d.vg[k]}${d.vg[k+"_o"]?" ("+d.vg[k+"_o"]+")":""}`:""))||"sin datos"],
+   ["Vulnerabilidad",`${d.vul||"sin elegir"}. ${(d.vulJ||"").trim()}`],
+   ["Riesgos identificados",L(riesgos(M).map(f=>{const r=d.rk[f.id]||{};return `${tipoDe(f)[1]} · ${r.st||"sin subtipo"} · ${f.n}: ${(r.ds||"").trim()}`}))||"ninguno"],
+   ...tipos(M).map(([id,n])=>["Medidas no estructurales · "+n,L((d.med[id]||[]).filter(m=>m&&(m.t||"").trim()).map((m,i)=>`${i+1}. ${m.c?m.c+": ":""}${m.t.trim()}`))||"sin medidas"]),
+   ["Medidas de protección",L((d.prot||[]).filter(p=>p&&p.r).map(p=>`${p.r} → ${p.m==="Otra"?(p.o||"otra"):(p.m||"sin medida")}. ${(p.j||"").trim()}`))||"sin definir"],
+   ["Canales de aviso",CAN.filter(([k])=>d.can[k]).map(([k,n])=>k==="otr"?(d.canO||"otro"):n).join(", ")||"ninguno"],
+   ["Quién activa el aviso",(d.quien||"").trim()||"—"],["Diseño para todos",(d.dpt||"").trim()||"—"],
+   ["Mensaje ES-Alert"+(d.msgR?" · "+d.msgR:""),(d.es||"").trim()||"—"],["Mensaje en lectura fácil",(d.lf||"").trim()||"—"],
+   ["Elementos del mapa",L(M.f.map(f=>`${MK.L(f.l).n} · ${f.n}${(f.o||"").trim()?": "+f.o.trim():""}`))||"ninguno"],
+   ["Fuentes citadas",(d.fue||"").trim()||"—"],
+   ["Mantenimiento",L([d.resp&&"Responsable: "+d.resp,d.per&&"Periodicidad: "+d.per,d.fec&&"Última revisión: "+fmtD(d.fec),d.cam&&"Cambios a vigilar: "+d.cam])||"—"]]}});
+</script>
+
+</body></html>
