@@ -535,6 +535,7 @@ const MK=(()=>{
 })();
 
 MK.init();
+{const q=x=>document.querySelector(x);q("#docB").after(q("#mk-json"),q('label[for="mk-open"]'),q("#mk-open"))}
 document.querySelectorAll(".spl").forEach(w=>{const g=w.querySelector(".gut"),k="barrio_sp_"+w.dataset.sp,set=v=>{v=Math.min(75,Math.max(15,v));w.style.setProperty("--sp",v+"%");return v};
  try{const v=+localStorage.getItem(k);if(v)set(v)}catch(e){}
  const save=v=>{try{localStorage.setItem(k,v)}catch(e){}};
