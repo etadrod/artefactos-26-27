@@ -125,7 +125,13 @@ th .ayuda .tip{font-weight:400}
 .intro{max-width:none}
 .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:.7rem;align-items:start}
 .row3{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,2fr);gap:.7rem;align-items:start}
+.spl{position:relative;isolation:isolate;--sp:33%}
+.spl .row2{grid-template-columns:minmax(0,calc(var(--sp) - .35rem)) minmax(0,1fr)}
+.spl>.gut{position:absolute;top:0;bottom:0;left:calc(var(--sp) - .45rem);width:.9rem;cursor:col-resize;z-index:2;touch-action:none}
+.spl>.gut::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%);background:var(--line,#ccc);opacity:.6}
+.spl>.gut:hover::before,.spl>.gut.on::before,.spl>.gut:focus-visible::before{background:var(--navy);opacity:1;width:4px}
 @media (max-width:640px){.row2,.row3{grid-template-columns:1fr}}
+@media (max-width:640px){.spl>.gut{display:none}.spl .row2{grid-template-columns:1fr}}
 .chkrow{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;margin:.3rem 0 .6rem}
 .cnt{font-size:.85rem;text-align:right}
 .cnt.ko{color:var(--ko);font-weight:700}
@@ -202,13 +208,13 @@ th .ayuda .tip{font-weight:400}
   <section class="panel">
     <h3>3. Riesgos identificados y su clasificación</h3>
     <p class="muted">Aparecen aquí los riesgos y flujos de MMPP que sitúes en el mapa. Clasifica cada uno dentro de su tipo y describe en qué consiste el peligro.</p>
-    <div id="rk"></div>
+    <div class="spl" data-sp="rk"><div class="gut" title="Arrastra a izquierda o derecha para ajustar el ancho de las columnas" role="separator" aria-orientation="vertical" tabindex="0"></div><div id="rk"></div></div>
   </section>
 
   <section class="panel">
     <h3>4. Medidas no estructurales de reducción del riesgo (RA4 b)</h3>
     <p class="muted">Propón al menos una medida no estructural para cada tipo de riesgo que hayas identificado (divulgación, fomento de la autoprotección, sistemas de aviso, zonificación…). Puedes añadir más: se valoran.</p>
-    <div id="med"></div>
+    <div class="spl" data-sp="med"><div class="gut" title="Arrastra a izquierda o derecha para ajustar el ancho de las columnas" role="separator" aria-orientation="vertical" tabindex="0"></div><div id="med"></div></div>
   </section>
 
   <section class="panel">
@@ -529,6 +535,14 @@ const MK=(()=>{
 })();
 
 MK.init();
+document.querySelectorAll(".spl").forEach(w=>{const g=w.querySelector(".gut"),k="barrio_sp_"+w.dataset.sp,set=v=>{v=Math.min(75,Math.max(15,v));w.style.setProperty("--sp",v+"%");return v};
+ try{const v=+localStorage.getItem(k);if(v)set(v)}catch(e){}
+ const save=v=>{try{localStorage.setItem(k,v)}catch(e){}};
+ g.onpointerdown=e=>{g.setPointerCapture(e.pointerId);g.classList.add("on");e.preventDefault()};
+ g.onpointermove=e=>{if(!g.classList.contains("on"))return;const r=w.getBoundingClientRect();save(set((e.clientX-r.left)/r.width*100))};
+ g.onpointerup=g.onpointercancel=()=>g.classList.remove("on");
+ g.onkeydown=e=>{const d={ArrowLeft:-2,ArrowRight:2}[e.key];if(!d)return;e.preventDefault();save(set(parseFloat(getComputedStyle(w).getPropertyValue("--sp"))+d))};
+ g.ondblclick=()=>{w.style.removeProperty("--sp");try{localStorage.removeItem(k)}catch(e){}}});
 document.getElementById("delAll").onclick=()=>{if(!confirm("¿Eliminar todo el trabajo (mapa y ficha)? No se puede deshacer. Si lo quieres conservar, guárdalo antes en .json."))return;try{localStorage.removeItem(CFG.key)}catch(e){}location.reload()};
 ayuda({"#d-barrio":"¿Qué barrio de Las Palmas de Gran Canaria vais a estudiar y por qué lo habéis elegido?",
  "#d-hab":"¿Cuántas personas viven aproximadamente en el barrio según una fuente oficial (ISTAC, padrón, INE)?",
