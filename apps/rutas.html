@@ -361,13 +361,14 @@ const MK=(()=>{
   return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
  function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);
   let s=M.bg?bgSvg():grid();s+=svgFeatures(false);
-  if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${l.col}"/>`).join("")}
+  if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${i===0&&l.t==="area"?10*vb().w/1200:5}" fill="${l.col}" ${i===0&&l.t==="area"?'stroke="#fff" stroke-width="2"':""}/>`).join("")}
   if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="none" stroke="var(--signal)" stroke-width="3"/>`).join("");
   sv_.innerHTML=s;sv_.classList.toggle("pan",!tool&&!cal);
   $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":l.t==="area"?"superficie":"punto"}</span></button>`).join("");
   $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
-  $("#mk-layers").innerHTML=CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
+  $("#mk-layers").innerHTML=`<label class="chk"><input type="checkbox" id="mk-all" ${CFG.layers.every(l=>!M.hide[l.id])?"checked":""}> <b>Todas las capas</b></label>`+CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
   $$("[data-h]").forEach(c=>c.onchange=()=>{M.hide[c.dataset.h]=!c.checked;sv();render()});
+  $("#mk-all").onchange=e=>{CFG.layers.forEach(l=>M.hide[l.id]=!e.target.checked);sv();render()};
   $("#mk-list").innerHTML=M.f.length?M.f.map(f=>{const l=L(f.l);return `<tr ${f.id===selId?'class="cur"':""}><td><i class="sw" style="background:${l.col}"></i> ${esc(l.n)}</td><td><input type="text" value="${esc(f.n)}" data-n="${f.id}" aria-label="Nombre"></td><td><input type="text" value="${esc(f.o||"")}" data-o="${f.id}" aria-label="Nota"></td><td class="num">${l.t==="line"?fmtL(len(f.p)):l.t==="area"&&l.pob===false?fmtA(area(f.p)):l.t==="area"?`<span style="display:inline-flex;align-items:center;gap:.4em;white-space:nowrap">${fmtA(area(f.p))} ·<input type="number" min="0" step="1" value="${esc(f.pob||"")}" data-pob="${f.id}" aria-label="Población aproximada" placeholder="0" style="width:6.5em">hab.</span>`:""}</td><td><button class="btn ghost sm" type="button" data-del="${f.id}">Quitar</button></td></tr>`}).join(""):`<tr><td colspan="5" class="muted">Elige una capa y pulsa en el mapa para añadir elementos.</td></tr>`;
   $$("[data-n]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.n).n=i.value;sv();render()});
   $$("[data-pob]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.pob).pob=i.value;sv();render()});
@@ -375,7 +376,7 @@ const MK=(()=>{
   $$("[data-del]").forEach(b=>b.onclick=()=>{M.f=M.f.filter(f=>f.id!==b.dataset.del);sv();render()});
   $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
   if(CFG.onRender)CFG.onRender(M)}
- function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:l.t==="area"?`Pulsa para marcar los vértices de «${l.n}». Doble clic o «Terminar» para cerrarla; después indica la población en la tabla.`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t!=="point");$("#mk-end").textContent=l&&l.t==="area"?"Terminar superficie":"Terminar línea"}
+ function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:l.t==="area"?`Pulsa para marcar los vértices de «${l.n}». Para cerrarla pulsa de nuevo en el primer vértice, haz doble clic o usa «Terminar superficie»${l.pob===false?".":"; después indica la población en la tabla."}`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t!=="point");$("#mk-end").textContent=l&&l.t==="area"?"Terminar superficie":"Terminar línea"}
  function pt(e){const s=$("#mk-svg"),r=s.getBoundingClientRect(),v=vb();return[Math.round(v.x+(e.clientX-r.left)/r.width*v.w),Math.round(v.y+(e.clientY-r.top)/r.height*v.h)]}
  const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
  function finish(){if(draft&&draft.p.length>(L(draft.l).t==="area"?2:1)){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n+" "+(M.f.filter(f=>f.l===draft.l).length+1),p:draft.p});sv()}draft=null}
@@ -390,7 +391,9 @@ const MK=(()=>{
   s.addEventListener("click",e=>{if(noClick){noClick=false;return}const p=pt(e);
    if(cal){cal.push(p);if(cal.length===2){$("#mk-calbox").hidden=false;$("#mk-calm").focus()}render();return}
    const hit=e.target.closest("[data-f]");if(!tool){selId=hit?hit.dataset.f:null;render();return}
-   const l=L(tool);if(l.t==="point"){const n=M.f.filter(f=>f.l===l.id).length+1;M.f.push({id:nid(),l:l.id,n:l.n+" "+n,p:[p]});sv();render()}else{draft=draft&&draft.l===l.id?draft:{l:l.id,p:[]};draft.p.push(p);render()}});
+   const l=L(tool);if(l.one&&!draft&&M.f.some(f=>f.l===l.id)){toast(`Solo se puede dibujar un «${l.n}». Quita el actual en la tabla para dibujar otro.`,4000);return}
+   if(l.t==="area"&&draft&&draft.l===l.id&&draft.p.length>2){const r=$("#mk-svg").getBoundingClientRect(),k=vb().w/r.width,q=draft.p[0];if(Math.hypot(p[0]-q[0],p[1]-q[1])<=14*k){finish();render();toast("Superficie cerrada");return}}
+   if(l.t==="point"){const n=M.f.filter(f=>f.l===l.id).length+1;M.f.push({id:nid(),l:l.id,n:l.n+" "+n,p:[p]});sv();render()}else{draft=draft&&draft.l===l.id?draft:{l:l.id,p:[]};draft.p.push(p);render()}});
   s.addEventListener("dblclick",e=>{e.preventDefault();if(draft&&draft.p.length>2)draft.p.pop();finish();render()});
   $("#mk-end").onclick=()=>{finish();render()};
   $("#mk-undo").onclick=()=>{if(draft&&draft.p.length){draft.p.pop();render()}else{M.f.pop();sv();render()}};

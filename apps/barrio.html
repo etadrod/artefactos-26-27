@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><script>(function(){var d=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};var t=g("evb_theme"),z=+g("evb_scale")||1;function ap(){if(t)d.setAttribute("data-theme",t);d.style.fontSize=(16*z)+"px"}ap();document.addEventListener("DOMContentLoaded",function(){var w=document.createElement("div");w.setAttribute("role","group");w.setAttribute("aria-label","Accesibilidad");w.style.cssText="display:flex;gap:.3rem;align-items:center;flex-wrap:wrap";var bs="background:transparent;color:inherit;border:1px solid currentColor;border-radius:6px;padding:.2rem .55rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;line-height:1.4;opacity:.9";function b(txt,lab,fn){var e=document.createElement("button");e.type="button";e.textContent=txt;e.setAttribute("aria-label",lab);e.style.cssText=bs;e.onclick=fn;w.appendChild(e);return e}var dk=function(){return d.getAttribute("data-theme")==="dark"||(!d.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches)};b("A−","Reducir texto",function(){z=Math.max(.9,+(z-.1).toFixed(2));s("evb_scale",z);ap()});b("A+","Aumentar texto",function(){z=Math.min(1.4,+(z+.1).toFixed(2));s("evb_scale",z);ap()});var tb=b("","",function(){t=dk()?"light":"dark";s("evb_theme",t);ap();lt()});function lt(){var k=dk();tb.textContent=k?"☀ Claro":"☾ Oscuro";tb.setAttribute("aria-label",k?"Cambiar a modo claro":"Cambiar a modo oscuro")}lt();var dc=document.querySelector("header.top a.doc");if(dc){dc.style.position="static";w.appendChild(dc)}var h=document.querySelector("header.top .top-in");if(h){h.appendChild(w)}else{w.style.cssText+=";position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;background:var(--surface,#fff);color:var(--ink,#111);padding:.3rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2)";document.body.appendChild(w)}})})()</script><script>(function(){var K=["evb:AEV1.1"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});if(K.length&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p></main>";show()})})()</script><script>window.RUBRICAS={"evb:AEV1.1": {"titulo": "Identificación básica de riesgos y medidas de protección de un entorno urbano", "ra_ce": "RA1: a, b · RA2: a · RA3: a · RA4: b, d · RA5: c, e", "peso": "7,50%", "rub": [["Población y vulnerabilidad del barrio", "RA1 b", 1.6, ["Describe la población sin datos ni fuentes y no valora la vulnerabilidad.", "Aporta datos básicos de población con alguna fuente, pero la valoración de la vulnerabilidad es genérica.", "Aporta datos de población y densidad con fuentes e identifica los grupos vulnerables principales.", "Datos completos y citados, identifica grupos vulnerables y justifica un grado de vulnerabilidad razonado."]], ["Identificación y clasificación de riesgos", "RA1 a · RA2 a · RA3 a", 2, ["Identifica pocos riesgos y no los clasifica.", "Identifica riesgos de algún tipo, con una clasificación incompleta o errónea.", "Identifica riesgos naturales, tecnológicos (incluidos los flujos de MMPP) y antrópicos y los clasifica correctamente.", "Identificación completa y clasificada, con la descripción del peligro y de a quién afecta, apoyada en el mapa."]], ["Medidas preventivas no estructurales", "RA4 b", 1.6, ["No propone medidas o confunde estructurales y no estructurales.", "Propone medidas no estructurales genéricas, no ligadas a los riesgos del barrio.", "Propone tres medidas adecuadas y ligadas a los riesgos identificados.", "Propone medidas adecuadas, viables y justificadas, incluyendo autoprotección y sistemas de aviso."]], ["Medidas de protección en emergencia", "RA4 d", 1.6, ["No define medidas de protección o son incorrectas para el riesgo.", "Define evacuación o confinamiento sin justificar su elección.", "Elige la medida adecuada para cada riesgo y la justifica.", "Elige y justifica la medida, e indica condiciones de aplicación (quién, cuándo, a dónde)."]], ["Mecanismos y cauces de comunicación de alertas", "RA5 c", 1.6, ["No identifica cauces de comunicación de la alerta.", "Cita algún canal sin relacionarlo con la activación de la respuesta.", "Identifica los cauces de información y su relación con la activación de los planes.", "Identifica los cauces, quién los activa y cómo se cumple el diseño para todos."]], ["Canales de difusión a la población y mensaje de alerta", "RA5 e", 1.6, ["No redacta el mensaje o es confuso y no da instrucciones de autoprotección.", "Redacta un mensaje comprensible pero incompleto (falta qué hacer o a quién se dirige).", "Mensaje claro, con instrucciones de autoprotección y canal adecuado.", "Mensaje claro y breve, con versión en lectura fácil y combinación de canales accesibles."]]], "art": "Ficha de riesgos del barrio: mapa, población, medidas, avisos y mensaje ES-Alert.", "aev": "AEV1.1", "mod": "EVB 1502 · Evaluación de riesgos y medidas preventivas"}}</script><script>document.addEventListener("DOMContentLoaded",function(){var V={"evb:AEV1.1": "../coordinacion/evb/index.html"},q=new URLSearchParams(location.search).get("aev"),u=V[q]||V[Object.keys(V)[0]],h=document.querySelector("header.top");if(!u||!h)return;var a=document.createElement("a");a.href=u;a.textContent="← Volver al módulo";a.style.cssText="display:inline-block;margin:.5rem 0 0 max(16px,env(safe-area-inset-left,0px));color:inherit;font-weight:600;font-size:.9rem;text-decoration:none;opacity:.9";h.insertBefore(a,h.firstChild)})</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<!doctype html><html lang="es"><head><script>(function(){var d=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};var t=g("evb_theme"),z=+g("evb_scale")||1;function ap(){if(t)d.setAttribute("data-theme",t);d.style.fontSize=(16*z)+"px"}ap();document.addEventListener("DOMContentLoaded",function(){var w=document.createElement("div");w.setAttribute("role","group");w.setAttribute("aria-label","Accesibilidad");w.style.cssText="display:flex;gap:.3rem;align-items:center;flex-wrap:wrap";var bs="background:transparent;color:inherit;border:1px solid currentColor;border-radius:6px;padding:.2rem .55rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;line-height:1.4;opacity:.9";function b(txt,lab,fn){var e=document.createElement("button");e.type="button";e.textContent=txt;e.setAttribute("aria-label",lab);e.style.cssText=bs;e.onclick=fn;w.appendChild(e);return e}var dk=function(){return d.getAttribute("data-theme")==="dark"||(!d.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches)};b("A−","Reducir texto",function(){z=Math.max(.9,+(z-.1).toFixed(2));s("evb_scale",z);ap()});b("A+","Aumentar texto",function(){z=Math.min(1.4,+(z+.1).toFixed(2));s("evb_scale",z);ap()});var tb=b("","",function(){t=dk()?"light":"dark";s("evb_theme",t);ap();lt()});function lt(){var k=dk();tb.textContent=k?"☀ Claro":"☾ Oscuro";tb.setAttribute("aria-label",k?"Cambiar a modo claro":"Cambiar a modo oscuro")}lt();var dc=document.querySelector("header.top a.doc");if(dc){dc.style.position="static";w.appendChild(dc)}var h=document.querySelector("header.top .top-in");if(h){h.appendChild(w)}else{w.style.cssText+=";position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;background:var(--surface,#fff);color:var(--ink,#111);padding:.3rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2)";document.body.appendChild(w)}})})()</script><script>(function(){var K=["evb:AEV1.1"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});if(K.length&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p></main>";show()})})()</script><script>window.RUBRICAS={"evb:AEV1.1": {"titulo": "Identificación básica de riesgos y medidas de protección de un entorno urbano", "ra_ce": "RA1: a, b · RA2: a · RA3: a · RA4: b, d · RA5: c, e", "peso": "7,50%", "rub": [["Población y vulnerabilidad del barrio", "RA1 b", 1.6, ["Describe la población sin datos ni fuentes y no valora la vulnerabilidad.", "Aporta datos básicos de población con alguna fuente, pero la valoración de la vulnerabilidad es genérica.", "Aporta datos de población y densidad con fuentes e identifica los grupos vulnerables principales.", "Datos completos y citados, identifica grupos vulnerables y justifica un grado de vulnerabilidad razonado."]], ["Identificación y clasificación de riesgos", "RA1 a · RA2 a · RA3 a", 2, ["Identifica pocos riesgos y no los clasifica.", "Identifica riesgos de algún tipo, con una clasificación incompleta o errónea.", "Identifica riesgos naturales, tecnológicos (incluidos los flujos de MMPP) y antrópicos y los clasifica correctamente.", "Identificación completa y clasificada, con la descripción del peligro y de a quién afecta, apoyada en el mapa."]], ["Medidas preventivas no estructurales", "RA4 b", 1.6, ["No propone medidas o confunde estructurales y no estructurales.", "Propone medidas no estructurales genéricas, no ligadas a los riesgos del barrio.", "Propone tres medidas adecuadas y ligadas a los riesgos identificados.", "Propone medidas adecuadas, viables y justificadas, incluyendo autoprotección y sistemas de aviso."]], ["Medidas de protección en emergencia", "RA4 d", 1.6, ["No define medidas de protección o son incorrectas para el riesgo.", "Define evacuación o confinamiento sin justificar su elección.", "Elige la medida adecuada para cada riesgo y la justifica.", "Elige y justifica la medida, e indica condiciones de aplicación (quién, cuándo, a dónde)."]], ["Mecanismos y cauces de comunicación de alertas", "RA5 c", 1.6, ["No identifica cauces de comunicación de la alerta.", "Cita algún canal sin relacionarlo con la activación de la respuesta.", "Identifica los cauces de información y su relación con la activación de los planes.", "Identifica los cauces, quién los activa y cómo se cumple el diseño para todos."]], ["Canales de difusión a la población y mensaje de alerta", "RA5 e", 1.6, ["No redacta el mensaje o es confuso y no da instrucciones de autoprotección.", "Redacta un mensaje comprensible pero incompleto (falta qué hacer o a quién se dirige).", "Mensaje claro, con instrucciones de autoprotección y canal adecuado.", "Mensaje claro y breve, con traducción multilingüe y combinación de canales accesibles."]]], "art": "Ficha de riesgos del barrio: mapa, población, medidas, avisos y mensaje ES-Alert.", "aev": "AEV1.1", "mod": "EVB 1502 · Evaluación de riesgos y medidas preventivas"}}</script><script>document.addEventListener("DOMContentLoaded",function(){var V={"evb:AEV1.1": "../coordinacion/evb/index.html"},q=new URLSearchParams(location.search).get("aev"),u=V[q]||V[Object.keys(V)[0]],h=document.querySelector("header.top");if(!u||!h)return;var a=document.createElement("a");a.href=u;a.textContent="← Volver al módulo";a.style.cssText="display:inline-block;margin:.5rem 0 0 max(16px,env(safe-area-inset-left,0px));color:inherit;font-weight:600;font-size:.9rem;text-decoration:none;opacity:.9";h.insertBefore(a,h.firstChild)})</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
 <title>Ficha de riesgos del barrio</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -122,12 +122,6 @@ th .ayuda .tip{font-weight:400}
 .mk-svg{touch-action:pinch-zoom}
 .mk-svg.pan{cursor:grab}.mk-svg.pan.drag,.mk-svg.drag{cursor:grabbing}
 
-body.pres main>:not(.mk){display:none}
-body.pres #mk-tools,body.pres #mk-hint,body.pres .mk>.btns,body.pres .mk-cols .tbl,body.pres #mk-calbox{display:none!important}
-body.pres .mk-cols{grid-template-columns:1fr}
-body.pres .mk-layers{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem}
-body.pres .mk-layers h3{display:none}
-#presB{background:var(--surface);color:var(--ink);border-color:var(--surface)}
 .intro{max-width:none}
 .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:.7rem;align-items:start}
 .row3{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,2fr);gap:.7rem;align-items:start}
@@ -141,7 +135,7 @@ body.pres .mk-layers h3{display:none}
 <header class="top">
   <div class="top-in">
     <div><b>Ficha de riesgos del barrio</b><span>Población, riesgos, medidas y avisos · Curso 2026-2027</span></div>
-    <div class="chips"><em>EVB · AEV1.1</em><em>RA1 · RA4 · RA5</em><button class="btn ghost sm" id="presB" type="button">Modo presentación</button></div>
+    <div class="chips"><em>EVB · AEV1.1</em><em>RA1 · RA4 · RA5</em></div>
   </div>
 </header>
 
@@ -152,7 +146,7 @@ body.pres .mk-layers h3{display:none}
   <section class="panel">
     <h3>1. Barrio</h3>
     <div class="grid3">
-      <label class="f">Barrio elegido<select id="d-barrio"><option value="">Elige…</option><option>La Isleta</option><option>Guanarteme</option><option>Otro barrio</option></select></label>
+      <label class="f">Barrio elegido<select id="d-barrio"><option value="">Elige…</option><option>La Isleta</option><option>Puerto</option><option>Guanarteme</option><option>Otro barrio</option></select></label>
       <label class="f" id="otroL" hidden>Nombre del barrio<input type="text" id="d-barrioOtro"></label>
     </div>
   </section>
@@ -237,7 +231,6 @@ body.pres .mk-layers h3{display:none}
     <div class="grid3"><label class="f">Riesgo del mensaje<select id="d-msgR"></select></label></div>
     <label class="f">Mensaje ES-Alert<textarea id="d-es" rows="6"></textarea></label>
     <div class="cnt" id="esCnt"></div>
-    <label class="f">Versión en lectura fácil<textarea id="d-lf" rows="5"></textarea></label>
   </section>
 
   <section class="panel">
@@ -246,7 +239,6 @@ body.pres .mk-layers h3{display:none}
     <div class="grid3">
       <label class="f">Responsable de la actualización<input type="text" id="d-resp"></label>
       <label class="f">Periodicidad<input type="text" id="d-per"></label>
-      <label class="f">Fecha de la última revisión<input type="date" id="d-fec"></label>
     </div>
     <label class="f">Cambios a vigilar<textarea id="d-cam" rows="2"></textarea></label>
     <div class="grid3" id="sumK"></div>
@@ -359,7 +351,7 @@ function ayuda(map){Object.entries(map).forEach(([sel,txt])=>{const el=document.
 
 "use strict";
 const CFG={key:"barrio_v1",file:"ficha_riesgos_barrio",hideBtns:["mk-sample","mk-nobg"],ar:.9,ik:.4,osm:{z:16,x0:29955,y0:27417,nx:11,ny:14,grid:500,mpp:156543.03392*Math.cos(28.155*Math.PI/180)/65536},
- layers:[{id:"ba",n:"Límite del barrio",t:"area",col:"#C2185B",hex:"#C2185B",pob:false},
+ layers:[{id:"ba",n:"Límite del barrio",t:"area",col:"#C2185B",hex:"#C2185B",pob:false,one:true},
   {id:"rn",n:"Riesgo natural",t:"point",col:"var(--r2)",hex:"#1F5AAA",sym:"N"},{id:"rt",n:"Riesgo tecnológico",t:"point",col:"var(--ko)",hex:"#B3261E",sym:"T"},{id:"ra",n:"Riesgo antrópico",t:"point",col:"var(--r4)",hex:"#7A3FA0",sym:"A"},
   {id:"mt",n:"Flujo MMPP terrestre",t:"line",col:"var(--warn)",hex:"#B98A12"},{id:"mm",n:"Flujo MMPP marítimo",t:"line",col:"var(--r2)",hex:"#1F5AAA",dash:true},
   {id:"hi",n:"Hidrante",t:"point",col:"var(--signal)",hex:"#D2551E",sym:"H"},{id:"bs",n:"Base o parque",t:"point",col:"var(--navy)",hex:"#1F3A68",sym:"B"},{id:"pr",n:"Punto de reunión",t:"point",col:"var(--ok)",hex:"#2F7D4F",sym:"R"}],
@@ -376,7 +368,7 @@ const PROT=["Evacuación","Confinamiento","Alejamiento","Información a la pobla
 const CAN=[["es","ES-Alert"],["sir","Sirenas y megafonía"],["med","Medios de comunicación (radio, TV)"],["red","Redes sociales y web oficiales"],["int","Intermediadores sociales (asociaciones, centros, servicios sociales)"],["otr","Otro"]];
 const VG=[["may","Mayores de 65 años"],["men","Menores"],["flo","Población flotante (turistas, trabajadores, visitantes)"],["dis","Personas con discapacidad o dependencia"],["idi","Personas que no hablan español"],["otr","Otros grupos"]];
 const ESMAX=1395;
-const K=["barrio","barrioOtro","hab","hfue","hfueO","hfec","vul","vulJ","canO","quien","dpt","msgR","es","lf","fue","resp","per","fec","cam"];
+const K=["barrio","barrioOtro","hab","hfue","hfueO","hfec","vul","vulJ","canO","quien","dpt","msgR","es","fue","resp","per","cam"];
 const tipos=M=>TR.filter(t=>M.f.some(f=>t[2].includes(f.l)));
 const riesgos=M=>M.f.filter(f=>TR.some(t=>t[2].includes(f.l)));
 const tipoDe=f=>TR.find(t=>t[2].includes(f.l));
@@ -437,9 +429,8 @@ function rProt(M){const ok=(M.d.prot||[]).filter(p=>p&&p.r&&p.m&&(p.m!=="Otra"||
 function rCauces(M){const d=M.d,c=CAN.filter(([k])=>d.can[k]).length;
  return[(clamp01(c/3)+clamp01(words(d.quien)/12)+clamp01(words(d.dpt)/25))/3,`${c} canales marcados; quién activa el aviso en ${words(d.quien)} palabras; diseño para todos en ${words(d.dpt)} palabras.`]}
 function rMsg(M){const d=M.d,es=(d.es||"").trim(),n=es.length,multi=/\b(the|you|your|stay|leave|go|area|please|do not|avoid)\b/i.test(es),ok=n>0&&n<=ESMAX;
- const lf=(d.lf||"").trim(),fr=lf.split(/[.!?\n]+/).filter(s=>s.trim()),lfOk=words(lf)>=15&&fr.length&&words(lf)/fr.length<=15;
- const r=((d.msgR?1:0)+(ok&&words(es)>=20?1:0)+(multi?1:0)+(lfOk?1:0)+(CAN.filter(([k])=>d.can[k]).length>=2?1:0))/5;
- return[r,`Mensaje ES-Alert de ${n} caracteres${n>ESMAX?" (supera el límite de 1.395)":""}; traducción ${multi?"incluida":"no detectada"}; lectura fácil ${lfOk?"correcta":"incompleta o con frases largas"}.`]}
+ const r=((d.msgR?1:0)+(ok&&words(es)>=20?1:0)+(multi?1:0)+(CAN.filter(([k])=>d.can[k]).length>=2?1:0))/4;
+ return[r,`Mensaje ES-Alert de ${n} caracteres${n>ESMAX?" (supera el límite de 1.395)":""}; traducción ${multi?"incluida":"no detectada"}.`]}
 
 /* Editor de mapa sobre imagen: capas de puntos y líneas, escala, exportación. CFG la define cada página. */
 const MK=(()=>{
@@ -483,13 +474,14 @@ const MK=(()=>{
   return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
  function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);
   let s=M.bg?bgSvg():grid();s+=svgFeatures(false);
-  if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${l.col}"/>`).join("")}
+  if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${i===0&&l.t==="area"?10*vb().w/1200:5}" fill="${l.col}" ${i===0&&l.t==="area"?'stroke="#fff" stroke-width="2"':""}/>`).join("")}
   if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="none" stroke="var(--signal)" stroke-width="3"/>`).join("");
   sv_.innerHTML=s;sv_.classList.toggle("pan",!tool&&!cal);
   $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":l.t==="area"?"superficie":"punto"}</span></button>`).join("");
   $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
-  $("#mk-layers").innerHTML=CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
+  $("#mk-layers").innerHTML=`<label class="chk"><input type="checkbox" id="mk-all" ${CFG.layers.every(l=>!M.hide[l.id])?"checked":""}> <b>Todas las capas</b></label>`+CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
   $$("[data-h]").forEach(c=>c.onchange=()=>{M.hide[c.dataset.h]=!c.checked;sv();render()});
+  $("#mk-all").onchange=e=>{CFG.layers.forEach(l=>M.hide[l.id]=!e.target.checked);sv();render()};
   $("#mk-list").innerHTML=M.f.length?M.f.map(f=>{const l=L(f.l);return `<tr ${f.id===selId?'class="cur"':""}><td><i class="sw" style="background:${l.col}"></i> ${esc(l.n)}</td><td><input type="text" value="${esc(f.n)}" data-n="${f.id}" aria-label="Nombre"></td><td><input type="text" value="${esc(f.o||"")}" data-o="${f.id}" aria-label="Nota"></td><td class="num">${l.t==="line"?fmtL(len(f.p)):l.t==="area"&&l.pob===false?fmtA(area(f.p)):l.t==="area"?`<span style="display:inline-flex;align-items:center;gap:.4em;white-space:nowrap">${fmtA(area(f.p))} ·<input type="number" min="0" step="1" value="${esc(f.pob||"")}" data-pob="${f.id}" aria-label="Población aproximada" placeholder="0" style="width:6.5em">hab.</span>`:""}</td><td><button class="btn ghost sm" type="button" data-del="${f.id}">Quitar</button></td></tr>`}).join(""):`<tr><td colspan="5" class="muted">Elige una capa y pulsa en el mapa para añadir elementos.</td></tr>`;
   $$("[data-n]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.n).n=i.value;sv();render()});
   $$("[data-pob]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.pob).pob=i.value;sv();render()});
@@ -497,7 +489,7 @@ const MK=(()=>{
   $$("[data-del]").forEach(b=>b.onclick=()=>{M.f=M.f.filter(f=>f.id!==b.dataset.del);sv();render()});
   $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
   if(CFG.onRender)CFG.onRender(M)}
- function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:l.t==="area"?`Pulsa para marcar los vértices de «${l.n}». Doble clic o «Terminar» para cerrarla; después indica la población en la tabla.`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t!=="point");$("#mk-end").textContent=l&&l.t==="area"?"Terminar superficie":"Terminar línea"}
+ function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:l.t==="area"?`Pulsa para marcar los vértices de «${l.n}». Para cerrarla pulsa de nuevo en el primer vértice, haz doble clic o usa «Terminar superficie»${l.pob===false?".":"; después indica la población en la tabla."}`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t!=="point");$("#mk-end").textContent=l&&l.t==="area"?"Terminar superficie":"Terminar línea"}
  function pt(e){const s=$("#mk-svg"),r=s.getBoundingClientRect(),v=vb();return[Math.round(v.x+(e.clientX-r.left)/r.width*v.w),Math.round(v.y+(e.clientY-r.top)/r.height*v.h)]}
  const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
  function finish(){if(draft&&draft.p.length>(L(draft.l).t==="area"?2:1)){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n+" "+(M.f.filter(f=>f.l===draft.l).length+1),p:draft.p});sv()}draft=null}
@@ -512,7 +504,9 @@ const MK=(()=>{
   s.addEventListener("click",e=>{if(noClick){noClick=false;return}const p=pt(e);
    if(cal){cal.push(p);if(cal.length===2){$("#mk-calbox").hidden=false;$("#mk-calm").focus()}render();return}
    const hit=e.target.closest("[data-f]");if(!tool){selId=hit?hit.dataset.f:null;render();return}
-   const l=L(tool);if(l.t==="point"){const n=M.f.filter(f=>f.l===l.id).length+1;M.f.push({id:nid(),l:l.id,n:l.n+" "+n,p:[p]});sv();render()}else{draft=draft&&draft.l===l.id?draft:{l:l.id,p:[]};draft.p.push(p);render()}});
+   const l=L(tool);if(l.one&&!draft&&M.f.some(f=>f.l===l.id)){toast(`Solo se puede dibujar un «${l.n}». Quita el actual en la tabla para dibujar otro.`,4000);return}
+   if(l.t==="area"&&draft&&draft.l===l.id&&draft.p.length>2){const r=$("#mk-svg").getBoundingClientRect(),k=vb().w/r.width,q=draft.p[0];if(Math.hypot(p[0]-q[0],p[1]-q[1])<=14*k){finish();render();toast("Superficie cerrada");return}}
+   if(l.t==="point"){const n=M.f.filter(f=>f.l===l.id).length+1;M.f.push({id:nid(),l:l.id,n:l.n+" "+n,p:[p]});sv();render()}else{draft=draft&&draft.l===l.id?draft:{l:l.id,p:[]};draft.p.push(p);render()}});
   s.addEventListener("dblclick",e=>{e.preventDefault();if(draft&&draft.p.length>2)draft.p.pop();finish();render()});
   $("#mk-end").onclick=()=>{finish();render()};
   $("#mk-undo").onclick=()=>{if(draft&&draft.p.length){draft.p.pop();render()}else{M.f.pop();sv();render()}};
@@ -533,7 +527,6 @@ const MK=(()=>{
  return{init(){bind();render();if(CFG.onLoad)CFG.onLoad(M)},render,png,get M(){return M},save:sv,L,len,fmtL,fmtA,area,dims};
 })();
 
-$("#presB").onclick=()=>{const on=document.body.classList.toggle("pres");$("#presB").textContent=on?"Salir de la presentación":"Modo presentación";$("#presB").setAttribute("aria-pressed",on)};
 MK.init();
 ayuda({"#d-barrio":"¿Qué barrio de Las Palmas de Gran Canaria vais a estudiar y por qué lo habéis elegido?",
  "#d-hab":"¿Cuántas personas viven aproximadamente en el barrio según una fuente oficial (ISTAC, padrón, INE)?",
@@ -545,11 +538,9 @@ ayuda({"#d-barrio":"¿Qué barrio de Las Palmas de Gran Canaria vais a estudiar 
  "#d-dpt":"¿Cómo llegará el aviso a personas mayores sin móvil, personas sordas o ciegas, turistas que no hablan español o personas con discapacidad intelectual?",
  "#d-msgR":"¿Para qué riesgo del barrio vas a redactar el mensaje de alerta?",
  "#d-es":"Redacta tu mensaje indicando: qué pasa, dónde y qué hacer (órdenes directas en imperativo). Estilo: claro, sin tecnicismos ni formalismos. Incluye traducción multilingüe.",
- "#d-lf":"¿Cómo lo dirías con frases cortas, palabras sencillas y una idea por frase para que lo entienda cualquier persona?",
  "#d-fue":"¿De qué organismos, visores, planes o webs habéis sacado los datos de la ficha, y en qué fecha los consultasteis?",
  "#d-resp":"¿Qué cargo u organismo de la Administración se encargaría de revisar esta ficha para que no quede obsoleta? Responde con cargos u órganos, no con nombres de personas.",
  "#d-per":"¿Cada cuánto tiempo debería revisarse la ficha de forma ordinaria, y qué sucesos o cambios obligarían a revisarla antes?",
- "#d-fec":"¿En qué fecha comprobasteis por última vez que los datos siguen siendo correctos?",
  "#d-cam":"¿Qué cambios en el barrio (nuevas viviendas, obras, actividades, eventos) harían que esta ficha dejara de ser válida?",
  ".mk-tab thead th:nth-child(2)":"¿Qué es exactamente este elemento y dónde está, de forma que cualquiera lo identifique sin mirar el mapa?",
  ".mk-tab thead th:nth-child(3)":"¿Qué información útil añadirías sobre él?"});
@@ -566,10 +557,10 @@ rubrica({btn:"docB",label:"Descarga PDF",imgT:"Mapa de riesgos del barrio",img:(
    ["Medidas de protección",L((d.prot||[]).filter(p=>p&&p.r).map(p=>`${p.r} → ${p.m==="Otra"?(p.o||"otra"):(p.m||"sin medida")}. ${(p.j||"").trim()}`))||"sin definir"],
    ["Canales de aviso",CAN.filter(([k])=>d.can[k]).map(([k,n])=>k==="otr"?(d.canO||"otro"):n).join(", ")||"ninguno"],
    ["Quién activa el aviso",(d.quien||"").trim()||"—"],["Diseño para todos",(d.dpt||"").trim()||"—"],
-   ["Mensaje ES-Alert"+(d.msgR?" · "+d.msgR:""),(d.es||"").trim()||"—"],["Mensaje en lectura fácil",(d.lf||"").trim()||"—"],
+   ["Mensaje ES-Alert"+(d.msgR?" · "+d.msgR:""),(d.es||"").trim()||"—"],
    ["Elementos del mapa",L(M.f.map(f=>`${MK.L(f.l).n} · ${f.n}${(f.o||"").trim()?": "+f.o.trim():""}`))||"ninguno"],
    ["Fuentes citadas",(d.fue||"").trim()||"—"],
-   ["Mantenimiento",L([d.resp&&"Responsable: "+d.resp,d.per&&"Periodicidad: "+d.per,d.fec&&"Última revisión: "+fmtD(d.fec),d.cam&&"Cambios a vigilar: "+d.cam])||"—"]]}});
+   ["Mantenimiento",L([d.resp&&"Responsable: "+d.resp,d.per&&"Periodicidad: "+d.per,d.cam&&"Cambios a vigilar: "+d.cam])||"—"]]}});
 </script>
 
 </body></html>
