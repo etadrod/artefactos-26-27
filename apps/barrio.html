@@ -242,7 +242,7 @@ th .ayuda .tip{font-weight:400}
     </div>
     <label class="f">Cambios a vigilar<textarea id="d-cam" rows="2"></textarea></label>
     <div class="grid3" id="sumK"></div>
-    <div class="btns"><button class="btn" id="docB" type="button">Descarga PDF</button></div>
+    <div class="btns"><button class="btn" id="docB" type="button">Descarga PDF</button><button class="btn" id="delAll" type="button" style="background:#c62828;border-color:#c62828;color:#fff;margin-left:auto">Eliminar todo</button></div>
   </section>
 </main>
 <div class="toast" id="toast" hidden role="status"></div>
@@ -529,6 +529,7 @@ const MK=(()=>{
 })();
 
 MK.init();
+document.getElementById("delAll").onclick=()=>{if(!confirm("¿Eliminar todo el trabajo (mapa y ficha)? No se puede deshacer. Si lo quieres conservar, guárdalo antes en .json."))return;try{localStorage.removeItem(CFG.key)}catch(e){}location.reload()};
 ayuda({"#d-barrio":"¿Qué barrio de Las Palmas de Gran Canaria vais a estudiar y por qué lo habéis elegido?",
  "#d-hab":"¿Cuántas personas viven aproximadamente en el barrio según una fuente oficial (ISTAC, padrón, INE)?",
  "#d-hfue":"¿De qué fuente oficial sale el número de habitantes?",
