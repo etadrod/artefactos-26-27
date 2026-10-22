@@ -371,7 +371,7 @@ const MK=(()=>{
   $("#mk-list").innerHTML=M.f.length?M.f.map(f=>{const l=L(f.l);return `<tr ${f.id===selId?'class="cur"':""}><td><i class="sw" style="background:${l.col}"></i> ${esc(l.n)}</td><td><input type="text" value="${esc(f.n)}" data-n="${f.id}" aria-label="Nombre"></td><td><input type="text" value="${esc(f.o||"")}" data-o="${f.id}" aria-label="Nota"></td><td class="num">${l.t==="line"?fmtL(len(f.p)):l.t==="area"&&l.pob===false?fmtA(area(f.p)):l.t==="area"?`<span style="display:inline-flex;align-items:center;gap:.4em;white-space:nowrap">${fmtA(area(f.p))} ·<input type="number" min="0" step="1" value="${esc(f.pob||"")}" data-pob="${f.id}" aria-label="Población aproximada" placeholder="0" style="width:6.5em">hab.</span>`:""}</td><td><button class="btn ghost sm" type="button" data-del="${f.id}">Quitar</button></td></tr>`}).join(""):`<tr><td colspan="5" class="muted">Elige una capa y pulsa en el mapa para añadir elementos.</td></tr>`;
   $$("[data-n]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.n).n=i.value;sv();render()});
   $$("[data-pob]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.pob).pob=i.value;sv();render()});
-  $$("[data-o]").forEach(i=>i.oninput=()=>{M.f.find(f=>f.id===i.dataset.o).o=i.value;sv()});
+  $$("[data-o]").forEach(i=>{i.oninput=()=>{M.f.find(f=>f.id===i.dataset.o).o=i.value;sv()};i.onchange=()=>render()});
   $$("[data-del]").forEach(b=>b.onclick=()=>{M.f=M.f.filter(f=>f.id!==b.dataset.del);sv();render()});
   $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
   if(CFG.onRender)CFG.onRender(M)}

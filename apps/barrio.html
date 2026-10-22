@@ -373,6 +373,7 @@ const tipos=M=>TR.filter(t=>M.f.some(f=>t[2].includes(f.l)));
 const riesgos=M=>M.f.filter(f=>TR.some(t=>t[2].includes(f.l)));
 const tipoDe=f=>TR.find(t=>t[2].includes(f.l));
 const supKm2=M=>M.scale?M.f.filter(f=>f.l==="ba"&&f.p.length>2).reduce((a,f)=>a+MK.area(f.p),0)*M.scale*M.scale/1e6:0;
+const rl=f=>esc(f.n)+((f.o||"").trim()?" — "+esc(f.o.trim()):"");
 const nomBarrio=d=>d.barrio==="Otro barrio"?(d.barrioOtro||"otro barrio"):(d.barrio||"");
 
 function bind(M){const d=M.d;K.forEach(k=>{const el=$("#d-"+k);if(!el)return;el.value=d[k]||"";el.oninput=el.onchange=()=>{d[k]=el.value;MK.save();vis(M);if(["hab"].includes(k))sum(M);if(k==="es")cnt()}});
@@ -387,13 +388,13 @@ function cnt(){const n=($("#d-es").value||"").length,e=$("#esCnt");e.textContent
 
 // secciones que dependen de los elementos del mapa: se redibujan solo si cambian los riesgos
 let dynK=null;
-function dyn(M){const d=M.d,rs=riesgos(M),k=rs.map(f=>f.id+":"+f.n).join("|");if(k===dynK)return;dynK=k;
+function dyn(M){const d=M.d,rs=riesgos(M),k=rs.map(f=>f.id+":"+f.n+":"+(f.o||"")).join("|");if(k===dynK)return;dynK=k;
  d.rk=d.rk||{};d.med=d.med||{};d.prot=d.prot||[];
- $("#rk").innerHTML=rs.length?TR.map(([t,n,ls])=>{const fs=rs.filter(f=>ls.includes(f.l));return fs.length?`<h4>${n}</h4>`+fs.map(f=>{const r=d.rk[f.id]||{},st=r.st||(f.l==="mt"||f.l==="mm"?"Transporte de mercancías peligrosas":"");return `<div class="row2"><label class="f">${esc(f.n)} · subtipo<select data-rst="${f.id}"><option value="">Elige…</option>${SUB[t].map(o=>`<option${st===o?" selected":""}>${o}</option>`).join("")}</select></label><label class="f">¿En qué consiste el peligro y a quién afecta?<textarea rows="2" data-rds="${f.id}">${esc(r.ds||"")}</textarea></label></div>`}).join(""):""}).join(""):`<p class="muted small">Sitúa riesgos en el mapa y aparecerán aquí.</p>`;
+ $("#rk").innerHTML=rs.length?TR.map(([t,n,ls])=>{const fs=rs.filter(f=>ls.includes(f.l));return fs.length?`<h4>${n}</h4>`+fs.map(f=>{const r=d.rk[f.id]||{},st=r.st||(f.l==="mt"||f.l==="mm"?"Transporte de mercancías peligrosas":"");return `<div class="row2"><label class="f">${rl(f)}<select data-rst="${f.id}"><option value="">Elige…</option>${SUB[t].map(o=>`<option${st===o?" selected":""}>${o}</option>`).join("")}</select></label><label class="f">¿En qué consiste el peligro y a quién afecta?<textarea rows="2" data-rds="${f.id}">${esc(r.ds||"")}</textarea></label></div>`}).join(""):""}).join(""):`<p class="muted small">Sitúa riesgos en el mapa y aparecerán aquí.</p>`;
  $$("[data-rst]").forEach(e=>{const r=d.rk[e.dataset.rst]=d.rk[e.dataset.rst]||{};if(!r.st&&e.value)r.st=e.value;e.onchange=()=>{r.st=e.value;MK.save()}});
  $$("[data-rds]").forEach(e=>e.oninput=()=>{(d.rk[e.dataset.rds]=d.rk[e.dataset.rds]||{}).ds=e.value;MK.save()});
- const ts=tipos(M);
- $("#med").innerHTML=ts.length?ts.map(([id,n])=>`<h4>${n}</h4>`+[...Array(Math.max(1,(d.med[id]||[]).length)).keys()].map(i=>{const m=(d.med[id]||[])[i]||{};return `<div class="row2"><label class="f">Medida ${i+1} · tipo<select data-mc="${id}:${i}"><option value="">Elige…</option>${CAT.map(c=>`<option${m.c===c?" selected":""}>${c}</option>`).join("")}</select></label><label class="f">Descripción: qué, a quién va dirigida, quién la aplica y dónde<textarea rows="2" data-mt="${id}:${i}">${esc(m.t||"")}</textarea></label></div>`}).join("")+`<button class="btn ghost sm" type="button" data-madd="${id}">+ Añadir medida</button>`).join(""):`<p class="muted small">Cuando sitúes riesgos en el mapa aparecerán aquí sus casillas.</p>`;
+// medidas no estructurales por riesgo concreto (clave: id del elemento del mapa), agrupadas por tipo
+ $("#med").innerHTML=rs.length?TR.map(([t,n,ls])=>{const fs=rs.filter(f=>ls.includes(f.l));return fs.length?`<h4>${n}</h4>`+fs.map(f=>{const a=d.med[f.id]||[];return [...Array(Math.max(1,a.length)).keys()].map(i=>{const m=a[i]||{};return `<div class="row2"><label class="f">${rl(f)}${i?` · medida ${i+1}`:""}<select data-mc="${f.id}:${i}"><option value="">Tipo de medida…</option>${CAT.map(c=>`<option${m.c===c?" selected":""}>${c}</option>`).join("")}</select></label><label class="f">Descripción: qué, a quién va dirigida, quién la aplica y dónde<textarea rows="2" data-mt="${f.id}:${i}">${esc(m.t||"")}</textarea></label></div>`}).join("")+`<button class="btn ghost sm" type="button" data-madd="${f.id}">+ Añadir otra medida para este riesgo</button>`}).join(""):""}).join(""):`<p class="muted small">Cuando sitúes riesgos en el mapa aparecerán aquí sus casillas.</p>`;
  const up=(el,f)=>{const[id,i]=el.dataset[f].split(":");const a=d.med[id]=d.med[id]||[];a[i]=a[i]||{};a[i][f==="mc"?"c":"t"]=el.value;MK.save()};
  $$("[data-madd]").forEach(b=>b.onclick=()=>{const a=d.med[b.dataset.madd]=d.med[b.dataset.madd]||[];if(!a.length)a.push({});a.push({});MK.save();dynK=null;dyn(M)});
  $$("[data-mc]").forEach(e=>e.onchange=()=>up(e,"mc"));$$("[data-mt]").forEach(e=>e.oninput=()=>up(e,"mt"));
@@ -419,10 +420,10 @@ function rPob(M){const d=M.d,vg=VG.filter(([k])=>(d.vg[k]||"").trim()).length,fu
 function rRiesgos(M){const d=M.d,rs=riesgos(M),ts=tipos(M).length,cl=rs.filter(f=>(d.rk[f.id]||{}).st).length,ds=rs.filter(f=>words((d.rk[f.id]||{}).ds)>=8).length,n=rs.length||1,mp=M.f.some(f=>f.l==="mt"||f.l==="mm");
  const r=(ts/3+clamp01(rs.length/6)+cl/n+ds/n+(mp?1:0))/5;
  return[r,`${rs.length} riesgos de ${ts} tipos; ${cl} clasificados por subtipo y ${ds} descritos; flujos de MMPP ${mp?"incluidos":"no incluidos"}.`]}
-function rMed(M){const ts=tipos(M),md=M.d.med||{};if(!ts.length)return[0,"No hay riesgos en el mapa, así que no hay medidas que valorar."];
- const v=ts.map(([id,n])=>({n,k:(md[id]||[]).filter(medOk).length})),tot=v.reduce((a,x)=>a+x.k,0),cats=new Set(ts.flatMap(([id])=>(md[id]||[]).filter(medOk).map(m=>m.c))).size;
+function rMed(M){const ts=tipos(M),md=M.d.med||{},rs=riesgos(M);if(!ts.length)return[0,"No hay riesgos en el mapa, así que no hay medidas que valorar."];
+ const ok=f=>(md[f.id]||[]).filter(medOk),v=ts.map(([t,n,ls])=>({n,k:rs.filter(f=>ls.includes(f.l)).reduce((a,f)=>a+ok(f).length,0)})),tot=v.reduce((a,x)=>a+x.k,0),cats=new Set(rs.flatMap(f=>ok(f).map(m=>m.c))).size,cub=rs.filter(f=>ok(f).length).length;
  const r=v.filter(x=>x.k>=1).length/v.length*.6+clamp01(tot/(v.length*2))*.25+clamp01(cats/4)*.15;
- return[r,v.map(x=>`${x.n}: ${x.k}`).join("; ")+` medidas completas; ${cats} tipos de medida distintos.`]}
+ return[r,v.map(x=>`${x.n}: ${x.k}`).join("; ")+` medidas completas; ${cub} de ${rs.length} riesgos con medida; ${cats} tipos de medida distintos.`]}
 function rProt(M){const ok=(M.d.prot||[]).filter(p=>p&&p.r&&p.m&&(p.m!=="Otra"||(p.o||"").trim())&&words(p.j)>=12);
  const det=ok.filter(p=>words(p.j)>=25).length;
  return[clamp01(ok.length/2)*.8+clamp01(det/2)*.2,`${ok.length} riesgos con medida de protección justificada (${det} con explicación detallada).`]}
@@ -485,7 +486,7 @@ const MK=(()=>{
   $("#mk-list").innerHTML=M.f.length?M.f.map(f=>{const l=L(f.l);return `<tr ${f.id===selId?'class="cur"':""}><td><i class="sw" style="background:${l.col}"></i> ${esc(l.n)}</td><td><input type="text" value="${esc(f.n)}" data-n="${f.id}" aria-label="Nombre"></td><td><input type="text" value="${esc(f.o||"")}" data-o="${f.id}" aria-label="Nota"></td><td class="num">${l.t==="line"?fmtL(len(f.p)):l.t==="area"&&l.pob===false?fmtA(area(f.p)):l.t==="area"?`<span style="display:inline-flex;align-items:center;gap:.4em;white-space:nowrap">${fmtA(area(f.p))} ·<input type="number" min="0" step="1" value="${esc(f.pob||"")}" data-pob="${f.id}" aria-label="Población aproximada" placeholder="0" style="width:6.5em">hab.</span>`:""}</td><td><button class="btn ghost sm" type="button" data-del="${f.id}">Quitar</button></td></tr>`}).join(""):`<tr><td colspan="5" class="muted">Elige una capa y pulsa en el mapa para añadir elementos.</td></tr>`;
   $$("[data-n]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.n).n=i.value;sv();render()});
   $$("[data-pob]").forEach(i=>i.onchange=()=>{M.f.find(f=>f.id===i.dataset.pob).pob=i.value;sv();render()});
-  $$("[data-o]").forEach(i=>i.oninput=()=>{M.f.find(f=>f.id===i.dataset.o).o=i.value;sv()});
+  $$("[data-o]").forEach(i=>{i.oninput=()=>{M.f.find(f=>f.id===i.dataset.o).o=i.value;sv()};i.onchange=()=>render()});
   $$("[data-del]").forEach(b=>b.onclick=()=>{M.f=M.f.filter(f=>f.id!==b.dataset.del);sv();render()});
   $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
   if(CFG.onRender)CFG.onRender(M)}
@@ -553,7 +554,7 @@ rubrica({btn:"docB",label:"Descarga PDF",imgT:"Mapa de riesgos del barrio",img:(
    ["Grupos vulnerables",L(VG.map(([k,n])=>(d.vg[k]||"").trim()?`${n}: ${d.vg[k]}${d.vg[k+"_o"]?" ("+d.vg[k+"_o"]+")":""}`:""))||"sin datos"],
    ["Vulnerabilidad",`${d.vul||"sin elegir"}. ${(d.vulJ||"").trim()}`],
    ["Riesgos identificados",L(riesgos(M).map(f=>{const r=d.rk[f.id]||{};return `${tipoDe(f)[1]} · ${r.st||"sin subtipo"} · ${f.n}: ${(r.ds||"").trim()}`}))||"ninguno"],
-   ...tipos(M).map(([id,n])=>["Medidas no estructurales · "+n,L((d.med[id]||[]).filter(m=>m&&(m.t||"").trim()).map((m,i)=>`${i+1}. ${m.c?m.c+": ":""}${m.t.trim()}`))||"sin medidas"]),
+   ["Medidas no estructurales",L(riesgos(M).flatMap(f=>(d.med[f.id]||[]).filter(m=>m&&(m.t||"").trim()).map(m=>`${f.n} → ${m.c?m.c+": ":""}${m.t.trim()}`)))||"sin medidas"],
    ["Medidas de protección",L((d.prot||[]).filter(p=>p&&p.r).map(p=>`${p.r} → ${p.m==="Otra"?(p.o||"otra"):(p.m||"sin medida")}. ${(p.j||"").trim()}`))||"sin definir"],
    ["Canales de aviso",CAN.filter(([k])=>d.can[k]).map(([k,n])=>k==="otr"?(d.canO||"otro"):n).join(", ")||"ninguno"],
    ["Quién activa el aviso",(d.quien||"").trim()||"—"],["Diseño para todos",(d.dpt||"").trim()||"—"],
