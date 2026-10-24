@@ -143,6 +143,7 @@ async function publicar(){
   try{
     const body={message:'Visibilidad de herramientas (panel docente)',content:btoa(unescape(encodeURIComponent(JSON.stringify(vis,null,1)))),...(sha?{sha}:{})};
     const r=await fetch(API,{method:'PUT',headers:H(),body:JSON.stringify(body)});
+    if(r.status==401||r.status==403){msg('GitHub rechaza la clave ('+r.status+'): está caducada o no tiene permiso de escritura (Contents: Read and write) en artefactos-26-27. Introduce una clave nueva.');tok='';try{localStorage.removeItem('gh_tok')}catch(e){};$('panel').hidden=true;$('login').hidden=false;return}
     if(!r.ok){msg(r.status==409?'Otra edición se cruzó: recarga la página y repite.':'No se pudo publicar ('+r.status+').');return}
     sha=(await r.json()).content.sha;
     msg('Publicado. El alumnado lo verá en 1 a 10 minutos (lo que tarde GitHub en actualizar).');
