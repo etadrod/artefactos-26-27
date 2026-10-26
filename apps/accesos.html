@@ -162,7 +162,7 @@ th .ayuda .tip{font-weight:400}
   <section class="panel" aria-labelledby="hReg">
     <h3 id="hReg">Registro del puesto</h3>
     <div class="tbl"><table><thead><tr><th>Hora</th><th>Nombre</th><th>DNI</th><th>Tipo</th><th>Decisión</th><th>Motivo</th><th>Resultado</th></tr></thead><tbody id="reg"></tbody></table></div>
-    <div class="btns"><span id="score" class="pill"></span><span class="spacer"></span><button class="btn ghost" id="csvB" type="button">Registro (.csv)</button><button class="btn" id="docB" type="button">Parte de servicio (.docx)</button><button class="btn warn" id="newR" type="button">Nueva ronda</button></div>
+    <div class="btns"><span id="score" class="pill"></span><span class="spacer"></span><button class="btn ghost" id="csvB" type="button">Registro (.csv)</button><button class="btn" id="docB" type="button">Parte de servicio (.docx)</button><button class="btn ghost" id="impB" type="button">Imprimir identificaciones (PDF)</button><button class="btn warn" id="newR" type="button">Nueva ronda</button></div>
   </section>
 </main>
 <div class="toast" id="toast" hidden role="status"></div>
@@ -329,6 +329,42 @@ $("#docB").onclick=()=>{const D=DOCX,n=R.log.filter(l=>l.ok).length;let b=D.Titl
  b+=D.H1("Registro de accesos")+D.tbl(["Hora","Nombre","DNI","Tipo","Decisión","Motivo"],R.log.map(l=>[l.h,l.n,l.dni,l.t,l.d,l.m]));
  b+=D.H1("Incidencias")+(R.log.filter(l=>l.d!=="Permitir acceso").map(l=>D.P(`${l.h} · ${l.n}: ${l.d}. Motivo: ${l.m}.`)).join("")||D.P("Sin incidencias."))+D.H1("Autoevaluación")+R.log.filter(l=>!l.ok).map(l=>D.P(`${l.h} · ${l.n}: esperado «${l.exp}». ${l.why}`)).join("")+D.P("[Reflexión del alumno/a sobre las decisiones a mejorar]");
  saveFile("Parte_control_accesos.docx",D.build(b))};
+/* Juego imprimible de la ronda actual: tarjetas a tamaño DNI (85,6 × 54 mm) para recortar */
+$("#impB").onclick=async()=>{
+ const load=src=>new Promise((ok,ko)=>{const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=ko;document.head.appendChild(e)});
+ if(!window.jspdf?.jsPDF)try{await load("../vendor/jspdf.umd.min.js")}catch(e){try{await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")}catch(e2){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}}
+ const cv=document.createElement("canvas").getContext("2d",{willReadFrequently:true}),probe=document.createElement("i");document.body.appendChild(probe);
+ const rgb=c=>{probe.style.color=c;cv.clearRect(0,0,1,1);cv.fillStyle=getComputedStyle(probe).color;cv.fillRect(0,0,1,1);return[...cv.getImageData(0,0,1,1).data].slice(0,3)};
+ const T=x=>String(x??"").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
+ const {jsPDF}=window.jspdf,d=new jsPDF({unit:"mm",format:"a4"}),CW=85.6,CH=54,X0=17,X1=X0+CW+4.8,GAP=2.5,Y0=14;
+ const R4=["var(--r1)","var(--r2)","var(--r3)","var(--r4)"].map(rgb),GR=rgb("var(--muted)");
+ const box=(x,y)=>{d.setDrawColor(150);d.setLineWidth(.2);d.setLineDashPattern([1.5,1],0);d.roundedRect(x,y,CW,CH,3,3,"S");d.setLineDashPattern([],0)};
+ const ava=(x,y,c,ini)=>{d.setFillColor(...c);d.roundedRect(x,y,17,21,1.5,1.5,"F");d.setTextColor(255);d.setFont("helvetica","bold");d.setFontSize(15);d.text(ini,x+8.5,y+13,{align:"center"})};
+ const kv=(x,y,k,v,mono)=>{d.setTextColor(110);d.setFont("helvetica","normal");d.setFontSize(6);d.text(T(k.toUpperCase()),x,y);d.setTextColor(20);d.setFont(mono?"courier":"helvetica","bold");d.setFontSize(9);d.text(T(v),x,y+4)};
+ const num=(x,y,i)=>{d.setTextColor(120);d.setFont("helvetica","normal");d.setFontSize(7);d.text("Nº "+(i+1),x+CW-4,y+8,{align:"right"})};
+ const head=t=>{d.setTextColor(20);d.setFont("helvetica","bold");d.setFontSize(10);d.text(T(t),X0,9);d.setFont("helvetica","normal");d.setFontSize(7);d.setTextColor(110);d.text("Recorta por la línea discontinua",210-X0,9,{align:"right"})};
+ R.cases.forEach((c,i)=>{const r=i%5;if(!r){if(i)d.addPage();head("Puesto de Control de Accesos · Networking CIFP 2026 · Identificaciones")}
+  const y=Y0+r*(CH+GAP),p=c.p,col=rgb(TIPOS[p.tipo][0]),ini=(p.n[0]+p.a[0]).toUpperCase();
+  box(X0,y);d.setFillColor(...col);d.rect(X0+.4,y+.4,CW-.8,3,"F");num(X0,y,i);
+  d.setTextColor(110);d.setFont("helvetica","normal");d.setFontSize(6);d.text("ACREDITACIÓN · NETWORKING CIFP 2026",X0+4,y+8);
+  ava(X0+4,y+11,col,ini);d.setTextColor(20);d.setFont("helvetica","bold");d.setFontSize(10);d.text(T(p.n+" "+p.a),X0+24,y+16,{maxWidth:CW-28});
+  d.setFont("helvetica","normal");d.setFontSize(8);d.text(T(p.tipo),X0+24,y+21);d.setFont("courier","normal");d.text("DNI "+p.dni,X0+24,y+26);
+  kv(X0+4,y+40,"Válida hasta",fmtD(p.val),1);kv(X0+34,y+40,"Zonas",p.zonas,1);
+  const hx=X0+CW-10,hy=y+CH-10;if(p.holo)[5,3.9,2.8,1.6].forEach((rr,k)=>{d.setFillColor(...R4[k]);d.circle(hx,hy,rr,"F")});else{d.setDrawColor(...GR);d.setLineDashPattern([.8,.8],0);d.circle(hx,hy,5,"S");d.setLineDashPattern([],0)}
+  box(X1,y);num(X1,y,i);d.setTextColor(110);d.setFont("helvetica","normal");d.setFontSize(6);
+  if(c.doc){d.text("DOCUMENTO NACIONAL DE IDENTIDAD (SIMULADO)",X1+4,y+8);ava(X1+4,y+11,GR,ini);kv(X1+24,y+14,"Nombre",c.doc.n);kv(X1+24,y+24,"Apellidos",c.doc.a);kv(X1+4,y+40,"Número",c.doc.dni,1)}
+  else{d.text("DOCUMENTO DE IDENTIDAD",X1+4,y+8);d.setTextColor(60);d.setFont("helvetica","italic");d.setFontSize(9);d.text(T("Esta persona no presenta documento: «Me lo he dejado en el coche, pero tengo la acreditación»."),X1+4,y+20,{maxWidth:CW-8})}});
+ d.addPage();head("Fichas de llegada (se entregan junto a cada pareja de tarjetas)");
+ R.cases.forEach((c,i)=>{const x=i%2?X1:X0,y=Y0+Math.floor(i/2)*24;d.setDrawColor(150);d.setLineWidth(.2);d.setLineDashPattern([1.5,1],0);d.rect(x,y,CW,21);d.setLineDashPattern([],0);
+  d.setTextColor(20);d.setFont("helvetica","bold");d.setFontSize(9);d.text(`Nº ${i+1} · ${hora(i)}`,x+3,y+6);d.setFont("helvetica","normal");
+  d.text(T(`«Buenos días, vengo al Networking. Quiero ir a ${ZN[c.want]}${c.want==="A"?"":" (zona "+c.want+")"}».`),x+3,y+12,{maxWidth:CW-6})});
+ let y=Y0+5*24+8;d.setFont("helvetica","bold");d.setFontSize(10);d.setTextColor(20);d.text("Lista de acreditados",X0,y);d.setFont("helvetica","normal");d.setFontSize(7);d.setTextColor(110);
+ d.text("Zonas: A = stands y hall · B = salón de actos · C = zona organización (restringida).",210-X0,y,{align:"right"});y+=6;
+ const G=[...R.G].sort((a,b)=>a.a.localeCompare(b.a,"es"));d.setFontSize(9);d.setTextColor(20);
+ G.forEach((g,k)=>{const x=k<Math.ceil(G.length/2)?X0:X1,yy=y+(k%Math.ceil(G.length/2))*5.6;d.setFont("helvetica","normal");d.text(T(g.a+", "+g.n),x,yy);d.setFont("courier","normal");d.text(g.dni,x+CW-2,yy,{align:"right"})});
+ d.addPage();head("Clave de corrección (solo profesorado)");y=Y0+4;d.setFontSize(8.5);
+ R.cases.forEach((c,i)=>{const t=d.splitTextToSize(T(`Nº ${i+1} · ${c.p.n} ${c.p.a}: ${DEC.find(x=>x[0]===c.act)[1]} · ${c.mot}. ${c.why}`),210-2*X0);d.setTextColor(20);d.setFont("helvetica","normal");d.text(t,X0,y);y+=t.length*4+3});probe.remove();
+ saveFile("Identificaciones_control_accesos.pdf",d.output("blob"))};
 render();
 rubrica({btn:"docB",label:"Descarga PDF",auto(){const L=R.log,n=L.length;if(!n)return[[0,"No hay ninguna persona atendida en la ronda."],[0,"No hay ninguna persona atendida en la ronda."]];
  const ok=L.filter(l=>l.ok).length,fx=L.map((l,k)=>[l,R.cases[k]]).filter(([,c])=>c.act!=="ok"),fo=fx.filter(([l])=>l.ok).length;
