@@ -152,17 +152,20 @@ th .ayuda .tip{font-weight:400}
         <div id="fb"></div>
       </section>
     </div>
+    <div style="display:grid;gap:.8rem;align-content:start;min-width:0">
     <aside class="panel" aria-labelledby="hG">
       <h3 id="hG">Lista de acreditados</h3>
       <input type="text" id="gq" placeholder="Buscar por apellido o DNI" aria-label="Buscar en la lista">
       <div class="guest" id="guest"></div>
       <p class="small muted">Zonas: A = stands y hall · B = salón de actos · C = zona organización (restringida).</p>
     </aside>
+    <button class="btn" id="impB" type="button" style="justify-self:stretch">Imprimir identificaciones (PDF)</button>
+    </div>
   </div>
   <section class="panel" aria-labelledby="hReg">
     <h3 id="hReg">Registro del puesto</h3>
     <div class="tbl"><table><thead><tr><th>Hora</th><th>Nombre</th><th>DNI</th><th>Tipo</th><th>Decisión</th><th>Motivo</th><th>Resultado</th></tr></thead><tbody id="reg"></tbody></table></div>
-    <div class="btns"><span id="score" class="pill"></span><span class="spacer"></span><button class="btn ghost" id="csvB" type="button">Registro (.csv)</button><button class="btn" id="docB" type="button">Parte de servicio (.docx)</button><button class="btn ghost" id="impB" type="button">Imprimir identificaciones (PDF)</button><button class="btn warn" id="newR" type="button">Nueva ronda</button></div>
+    <div class="btns"><span id="score" class="pill"></span><span class="spacer"></span><button class="btn ghost" id="csvB" type="button">Registro (.csv)</button><button class="btn" id="docB" type="button">Parte de servicio (.docx)</button><button class="btn warn" id="newR" type="button">Nueva ronda</button></div>
   </section>
 </main>
 <div class="toast" id="toast" hidden role="status"></div>
