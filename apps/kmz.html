@@ -442,6 +442,23 @@ function aplicaFil(){if(!LG)return;const vis=[];MKS.forEach(([m,c,ll])=>{const o
  const t=$("#filT");if(t)t.innerHTML=FIL?`Mapa filtrado: ${FIL.size} medio(s) visible(s). <button class="btn ghost sm" type="button" id="filX">Ver todos</button>`:"Pulsa un medio para ver solo ese en el mapa (puedes elegir varios).";
  const x=$("#filX");if(x)x.onclick=()=>{FIL=null;aplicaFil()};
  if(FIL&&vis.length)MAP.fitBounds(vis,{padding:[25,25],maxZoom:12})}
+// comentario breve en segunda persona a partir de la evaluación (nota con los cambios manuales incluidos)
+function comentario(a,A){const E=a.E,nm=a.al.split(" ")[0]||a.al,n=nota(a),nf=String(n).replace(".",","),tema=ST.act==="AEV1.1"?"catálogo de medios aéreos y marítimos":"catálogo de recursos sanitarios terrestres";
+ if(E.msg)return `${nm}, no he podido revisar tu ${tema}: ${(m=>m.charAt(0).toLowerCase()+m.slice(1))(E.msg.replace(/^No se puede leer el archivo: /,""))} ${a.cap?"Tu captura sí ha llegado. ":""}Vuelve a exportarlo desde My Maps en KMZ y entrégalo de nuevo; seguro que con eso lo completas. Nota actual: ${nf}/10.`;
+ const ini=n>=9?`¡Excelente trabajo, ${nm}!`:n>=7?`Buen trabajo, ${nm}.`:n>=5?`Vas por buen camino, ${nm}.`:`${nm}, tienes una base sobre la que construir.`;
+ const bien=[],mej=[];
+ if(E.sep)bien.push("has organizado bien las capas");
+ const ok=A.capas.filter(([k])=>{const c=E.capas[k];return c.pre===c.tot&&!c.mal});
+ if(ok.length===2)bien.push("tus dos capas están completas y con los medios bien ubicados");else ok.forEach(([,t])=>bien.push(`tu ${t.replace("Capa ","capa de ").toLowerCase()} está completa y bien ubicada`));
+ if(E.info>=a.pms.length*.8)bien.push("las descripciones aportan datos útiles");
+ const falta=A.cats.filter(c=>E.st[c[0]].s==="n").map(c=>c[2]),dud=A.cats.filter(c=>E.st[c[0]].s==="w").length;
+ if(!a.cap)mej.push("adjunta la captura del mapa completo");
+ if(!E.sep)mej.push(`separa los medios en dos capas (${A.capas.map(c=>c[1].replace("Capa ","")).join(" y ")})`);
+ if(falta.length)mej.push(`añade ${falta.slice(0,3).join(", ")}${falta.length>3?` y ${falta.length-3} medio(s) más`:""}`);
+ if(dud)mej.push(`revisa la ubicación de ${dud===1?"un medio":dud+" medios"}`);
+ if(E.info<a.pms.length*.8)mej.push(ST.act==="AEV1.1"?"completa en cada descripción la autonomía, la velocidad y la capacidad":"completa en cada descripción el horario y la dotación");
+ const may=x=>x.charAt(0).toUpperCase()+x.slice(1),lista=x=>x.length>1?x.slice(0,-1).join(", ")+" y "+x[x.length-1]:x[0];
+ return `${ini} En tu ${tema} ${bien.length?lista(bien)+".":"ya tienes el trabajo planteado."} ${mej.length?`Para mejorar: ${lista(mej)}.`:"No veo nada que corregir."} ${n>=9?"¡Sigue así!":n>=5?"Con estos ajustes lo tendrás redondo.":"Ánimo: con estos cambios subirás la nota."} Nota: ${nf}/10.`.replace(/\s+/g," ").trim()}
 function ver(k){
  if(k!==SEL)FIL=null;SEL=k;draw();const a=ST.al[k],A=ACTS[ST.act],E=a.E;$("#who").textContent=a.al;ensureMap();
  const capaCol=c=>{const x=A.cats.find(z=>z[0]===c);return x?A.capas.find(z=>z[0]===x[1])[2]:"#757575"};
@@ -457,6 +474,7 @@ function ver(k){
  const Y=(ok,t)=>`<div><b class="${ok===true?"y":ok===false?"n":"w"}">${ok===true?"✓":ok===false?"✗":"!"}</b><span>${t}</span></div>`;
  let h=`<p class="eyebrow">${esc(a.file||"Sin KMZ")}</p><label class="btn ghost sm" style="cursor:pointer;justify-self:start">${a.cap?"Cambiar la captura":"Subir la captura del mapa"}<input type="file" id="capIn" hidden></label>${HUERF.length?`<label class="f small">Asignar una captura sin emparejar<select id="capH"><option value="">Elige…</option>${HUERF.map((f,j)=>`<option value="${j}">${esc(f.name)}</option>`).join("")}</select></label>`:""}`;
  h+=a.cap?(a.cap.th?`<a ${a._capUrl?`href="${a._capUrl}" target="_blank" rel="noopener"`:""} title="Abrir la captura"><img src="${a.cap.th}" alt="Captura del mapa entregada" style="max-width:100%;border:1px solid var(--line);border-radius:6px"></a>`:"")+Y(true,`Captura entregada: ${esc(a.cap.name)}${a.cap.th?"":a._capUrl?` · <a href="${a._capUrl}" target="_blank" rel="noopener">abrir</a> (sin vista previa en este formato)`:" (sin vista previa en este formato)"}`):Y(false,"Captura no entregada");
+ h+=`<div class="fb" style="display:grid;gap:.4rem"><b class="small">Comentario para el alumno</b><span id="comT">${esc(comentario(a,A))}</span><button class="btn ghost sm" type="button" id="comC" style="justify-self:start">Copiar texto</button></div>`;
  if(E.msg)h+=`<p class="fb ko">${esc(E.msg)}</p>`;
  else{
   h+=`<div class="small muted">${a.pms.length} puntos · capas de My Maps: ${esc([...new Set(a.pms.map(p=>p.ly))].join(", "))}</div>`;
@@ -471,6 +489,7 @@ function ver(k){
   if(E.sin.length)h+=`<h4 style="margin:.6rem 0 0">Sin reconocer (${E.sin.length})</h4><div class="small muted">${E.sin.slice(0,25).map(p=>esc(p.n||"(sin nombre)")).join(" · ")}${E.sin.length>25?" …":""}</div><p class="small muted">Si alguno es un medio exigido con otro nombre, ajusta a mano la puntuación de su capa.</p>`;
   h+=`<p class="small muted">Ubicación: ${ST.ref?`a menos de ${REF_KM} km de un punto del mismo medio en tu solución.`:"dentro de su isla (GC, LZ o FV) o, si no se pide isla, en tierra de la provincia de Las Palmas."}</p>`}
  $("#det").innerHTML=h;aplicaFil();
+ $("#comC").onclick=()=>copyText($("#comT").textContent);
  $$("#det [data-cat]").forEach(e=>{const go=()=>{const c=e.dataset.cat;if(!FIL)FIL=new Set([c]);else{FIL.has(c)?FIL.delete(c):FIL.add(c);if(!FIL.size)FIL=null}aplicaFil()};e.onclick=go;e.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();go()}}});
  $$("#det [data-ov]").forEach(b=>{b.onclick=ev=>{ev.stopPropagation();const id=b.dataset.ov,st=a.E.st[id],want=st.s==="y"?"n":"y";a.ov=a.ov||{};
   if(want===st.au)delete a.ov[id];else a.ov[id]=want==="y";a.E=evalua(a,A,REFC);sv();ver(k)};b.onkeydown=ev=>ev.stopPropagation()});
