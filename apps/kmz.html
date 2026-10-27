@@ -119,6 +119,7 @@ table.ev select.man{border-color:var(--warn);border-width:2px}
 .chk{display:grid;gap:.25rem;font-size:.9rem}
 .chk div{display:flex;gap:.4rem;align-items:baseline}
 .chk b.y{color:var(--ok)}.chk b.n{color:var(--ko)}.chk b.w{color:var(--warn)}
+.cl{cursor:pointer;border-radius:4px;padding:.05rem .3rem}.cl:hover{background:var(--sunk)}.cl.on{background:color-mix(in srgb,var(--navy) 16%,var(--surface));font-weight:700}
 .dot{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;flex:none}
 .leaflet-popup-content{font:14px var(--f-body)}
 .leaflet-container a.leaflet-popup-close-button{color:#555}
@@ -421,16 +422,23 @@ function draw(){
 let MAP=null,LG=null;
 function ensureMap(){if(MAP||!window.L)return;MAP=L.map("map").setView([28.55,-14.6],8);
  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© colaboradores de OpenStreetMap"}).addTo(MAP);LG=L.layerGroup().addTo(MAP)}
+// filtro del mapa: null = todo visible; Set = solo esos medios
+let FIL=null,MKS=[];
+function aplicaFil(){if(!LG)return;const vis=[];MKS.forEach(([m,c,ll])=>{const on=!FIL||FIL.has(c);if(on){m.addTo(LG);vis.push(ll)}else LG.removeLayer(m)});
+ $$("#det [data-cat]").forEach(e=>e.classList.toggle("on",!!FIL&&FIL.has(e.dataset.cat)));
+ const t=$("#filT");if(t)t.innerHTML=FIL?`Mapa filtrado: ${FIL.size} medio(s) visible(s). <button class="btn ghost sm" type="button" id="filX">Ver todos</button>`:"Pulsa un medio para ver solo ese en el mapa (puedes elegir varios).";
+ const x=$("#filX");if(x)x.onclick=()=>{FIL=null;aplicaFil()};
+ if(FIL&&vis.length)MAP.fitBounds(vis,{padding:[25,25],maxZoom:12})}
 function ver(k){
- SEL=k;draw();const a=ST.al[k],A=ACTS[ST.act],E=a.E;$("#who").textContent=a.al;ensureMap();
+ if(k!==SEL)FIL=null;SEL=k;draw();const a=ST.al[k],A=ACTS[ST.act],E=a.E;$("#who").textContent=a.al;ensureMap();
  const capaCol=c=>{const x=A.cats.find(z=>z[0]===c);return x?A.capas.find(z=>z[0]===x[1])[2]:"#757575"};
- if(LG){LG.clearLayers();const b=[];
+ if(LG){LG.clearLayers();MKS=[];const b=[];
   a.pms.forEach(p=>{const col=capaCol(p.c),ll=[p.lat,p.lon];b.push(ll);
    const mk=p.img?L.marker(ll,{icon:L.icon({iconUrl:p.img,iconSize:[26,26],iconAnchor:[13,13]})}):L.circleMarker(ll,{radius:7,color:p.c&&!p.ok?"#c62828":"#fff",weight:2,fillColor:col,fillOpacity:.9});
    const nm=A.cats.find(z=>z[0]===p.c);
    const pop=document.createElement("div");pop.innerHTML=`<b></b><div class="small"></div><div class="small" style="white-space:pre-wrap;max-height:9rem;overflow:auto;margin-top:.3rem"></div>`;
    pop.children[0].textContent=p.n||"(sin nombre)";pop.children[1].textContent=`Capa: ${p.ly} · ${nm?nm[2]:"sin reconocer"}${p.c?(p.ok?" · bien ubicado":" · ubicación dudosa"):""}`;pop.children[2].textContent=p.d||"(sin descripción)";
-   mk.bindPopup(pop);mk.addTo(LG)});
+   mk.bindPopup(pop);MKS.push([mk,p.c,ll])});
   if(ST.ref)ST.ref.pms.forEach(p=>L.circleMarker([p.lat,p.lon],{radius:4,color:"#000",weight:1,fillColor:"#ffeb3b",fillOpacity:.8}).bindTooltip("Solución: "+p.n).addTo(LG));
   if(b.length)MAP.fitBounds(b,{padding:[25,25],maxZoom:12});setTimeout(()=>MAP.invalidateSize(),50)}
  const Y=(ok,t)=>`<div><b class="${ok===true?"y":ok===false?"n":"w"}">${ok===true?"✓":ok===false?"✗":"!"}</b><span>${t}</span></div>`;
@@ -442,11 +450,14 @@ function ver(k){
   h+=Y(E.sep,`Capas separadas (${A.capas.map(c=>c[1].replace("Capa ","")).join(" / ")})${E.C.every(Boolean)?": "+E.C.map(c=>`«${esc(c.top)}» ${Math.round(c.pur*100)} %`).join(" · "):""}`);
   h+=`<div class="small muted">Iconos: compruébalos en el mapa (no se puntúan de forma automática).</div>`;
   h+=Y(E.info>=a.pms.length*.8?true:E.info?null:false,`Descripción con datos (${ST.act==="AEV1.1"?"autonomía, velocidad, carga…":"horario, dotación…"}): ${E.info} de ${a.pms.length}`);
-  A.capas.forEach(([k,n,col])=>{const c=E.capas[k];h+=`<h4 style="margin:.6rem 0 0;display:flex;gap:.4rem;align-items:center"><span class="dot" style="background:${col}"></span>${esc(n)}: ${c.pre}/${c.tot}${c.mal?` · ${c.mal} mal ubicados`:""}</h4>`;
-   A.cats.filter(z=>z[1]===k).forEach(([id,,nm])=>{const ps=E.cats[id]||[],bad=ps.filter(p=>!p.ok).length;h+=Y(!ps.length?false:bad?null:true,`${esc(nm)}${ps.length?` (${ps.length}${bad?`, ${bad} con ubicación dudosa`:""})`:""}`)})});
+  h+=`<p class="small muted" id="filT"></p>`;
+  A.capas.forEach(([k,n,col])=>{const c=E.capas[k];h+=`<h4 style="margin:.6rem 0 0;display:flex;gap:.4rem;align-items:center"><span class="dot" style="background:${col}"></span>${esc(n)}: ${c.pre}/${c.tot}${c.mal?` · ${c.mal} mal ubicados`:""}<button class="btn ghost sm" type="button" data-all="${k}" style="margin-left:auto">Todos visibles</button></h4>`;
+   A.cats.filter(z=>z[1]===k).forEach(([id,,nm])=>{const ps=E.cats[id]||[],bad=ps.filter(p=>!p.ok).length;h+=`<div class="cl" data-cat="${id}" role="button" tabindex="0" title="Ver solo este medio en el mapa">`+Y(!ps.length?false:bad?null:true,`${esc(nm)}${ps.length?` (${ps.length}${bad?`, ${bad} con ubicación dudosa`:""})`:""}`)+`</div>`})});
   if(E.sin.length)h+=`<h4 style="margin:.6rem 0 0">Sin reconocer (${E.sin.length})</h4><div class="small muted">${E.sin.slice(0,25).map(p=>esc(p.n||"(sin nombre)")).join(" · ")}${E.sin.length>25?" …":""}</div><p class="small muted">Si alguno es un medio exigido con otro nombre, ajusta a mano la puntuación de su capa.</p>`;
   h+=`<p class="small muted">Ubicación: ${ST.ref?`a menos de ${REF_KM} km de un punto del mismo medio en tu solución.`:"dentro de su isla (GC, LZ o FV) o, si no se pide isla, en tierra de la provincia de Las Palmas."}</p>`}
- $("#det").innerHTML=h;
+ $("#det").innerHTML=h;aplicaFil();
+ $$("#det [data-cat]").forEach(e=>{const go=()=>{const c=e.dataset.cat;if(!FIL)FIL=new Set([c]);else{FIL.has(c)?FIL.delete(c):FIL.add(c);if(!FIL.size)FIL=null}aplicaFil()};e.onclick=go;e.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();go()}}});
+ $$("#det [data-all]").forEach(b=>b.onclick=()=>{if(!FIL)return;A.cats.filter(z=>z[1]===b.dataset.all).forEach(z=>FIL.add(z[0]));if(FIL.size>=A.cats.length)FIL=null;aplicaFil()});
  $("#capIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;const j=HUERF.findIndex(x=>x.name===f.name);if(j>=0)HUERF.splice(j,1);await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)};
  const hs=$("#capH");if(hs)hs.onchange=async()=>{const f=HUERF.splice(+hs.value,1)[0];if(!f)return;await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)}}
 
