@@ -104,11 +104,12 @@ th.num{text-align:right}
 th .ayuda .tip{font-weight:400}
 .ayuda-row{display:inline-flex;align-items:center;gap:0;position:relative}
 
+:root{--maxw:min(1800px,100%)}
 .drop{border:2px dashed var(--line);border-radius:var(--radius);padding:1.2rem;text-align:center;display:grid;gap:.5rem;justify-items:center;background:var(--sunk)}
 .drop.on{border-color:var(--navy);background:color-mix(in srgb,var(--navy) 8%,var(--surface))}
-.lay{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,22rem);gap:1rem;align-items:start}
+.lay{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,28rem);gap:1rem;align-items:start}
 @media (max-width:900px){.lay{grid-template-columns:1fr}}
-#map{height:min(70vh,560px);border-radius:var(--radius);border:1px solid var(--line);z-index:0}
+#map{height:min(78vh,760px);border-radius:var(--radius);border:1px solid var(--line);z-index:0}
 table.ev{width:100%;border-collapse:collapse;font-size:.92rem}
 table.ev th,table.ev td{padding:.4rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
 table.ev tr.sel{background:color-mix(in srgb,var(--navy) 10%,var(--surface))}
