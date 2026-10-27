@@ -256,7 +256,29 @@ th .ayuda .tip{font-weight:400}
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+/* Sesión Alumno/Docente (herramientas con acceso()): el trabajo de cada usuario se guarda con su propio prefijo */
+let WHO=null;try{WHO=JSON.parse(sessionStorage.getItem("vib_who")||"null")}catch(e){}
+const kNom=n=>String(n).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+let UPRE="";const UK=k=>UPRE+k;
+const store={get(k,d){try{const v=localStorage.getItem(UK(k));return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(UK(k),JSON.stringify(v))}catch(e){}}};
+// o.doc(el): rellena el panel docente de la herramienta. Sin sesión muestra la entrada y detiene la app (throw).
+function acceso(o){o=o||{};const main=document.querySelector("main"),setWho=w=>{try{w?sessionStorage.setItem("vib_who",JSON.stringify(w)):sessionStorage.removeItem("vib_who")}catch(e){}};
+ if(!document.getElementById("acc-css")){const st=document.createElement("style");st.id="acc-css";st.textContent=`.acc-gate{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.1rem;max-width:52rem}.acc-gate form{display:grid;gap:.7rem;align-content:start}.acc-gate input{padding:.5rem;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:inherit;min-width:0}.acc-who{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between;background:var(--sunk);border-radius:6px;padding:.5rem .8rem;margin-bottom:1rem}`;document.head.appendChild(st)}
+ if(!WHO){[...main.children].forEach(c=>c.hidden=true);const g=document.createElement("section");g.setAttribute("aria-labelledby","accH");
+  g.innerHTML=`<div class="intro"><p class="eyebrow">Acceso</p><h2 id="accH">¿Quién entra?</h2><p class="muted">Cada alumno entra con su nombre: su trabajo se guarda por separado en este navegador.</p></div><div class="acc-gate"><form class="panel" id="accA"><h3>Alumno</h3><label class="f">Nombre y apellidos<input type="text" id="accN" autocomplete="name" required placeholder="Ej.: Nayra Santana Déniz"></label><button class="btn" type="submit">Entrar</button><p class="small muted" id="accAm"></p></form><form class="panel" id="accD"><h3>Docente</h3><label class="f">Código<input type="password" id="accC" inputmode="numeric" autocomplete="off"></label><button class="btn ghost" type="submit">Entrar como docente</button><p class="small muted" id="accDm"></p></form></div>`;
+  main.prepend(g);
+  $("#accA").onsubmit=e=>{e.preventDefault();const n=$("#accN").value.replace(/\s+/g," ").trim();if(n.split(" ").length<2){$("#accAm").textContent="Escribe tu nombre y al menos un apellido.";return}setWho({rol:"al",nom:n});location.reload()};
+  // shortcut: el código solo separa la vista docente (la web es pública)
+  $("#accD").onsubmit=async e=>{e.preventDefault();const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("artefactos-26-27:"+$("#accC").value.trim()));
+   if([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")!=="6c8f4c40e57cfdb9e934b46b9b1b54ec714fd36841e273e170f027766ccda77a"){$("#accDm").textContent="Código incorrecto.";return}
+   try{sessionStorage.setItem("doc_ok","1")}catch(x){}setWho({rol:"doc"});location.reload()};
+  throw new Error("acceso: esperando usuario")}
+ const doc=WHO.rol==="doc";UPRE=doc?"doc:":"u:"+kNom(WHO.nom)+":";
+ if(!doc&&window.RUBRICAS)Object.keys(window.RUBRICAS).forEach(k=>{const st=store.get("rub_"+k,{al:"",gr:"",self:{}});if(!st.al){st.al=WHO.nom;store.set("rub_"+k,st)}});
+ const w=document.createElement("div");w.className="acc-who";w.innerHTML=`<span>${doc?"<b>Docente</b> · ves la herramienta como el alumnado, con tu panel.":"<b>Alumno:</b> "+esc(WHO.nom)}</span><button class="btn ghost sm" type="button">Cambiar de usuario</button>`;
+ w.querySelector("button").onclick=()=>{setWho(null);location.reload()};main.prepend(w);
+ if(doc){const d=document.createElement("section");d.className="panel";d.setAttribute("aria-label","Panel docente");d.style.marginBottom="1rem";d.innerHTML=`<h3>Panel docente</h3><div id="accP"><p class="small muted">Aún no hay ajustes propios en esta herramienta.</p></div>`;w.after(d);if(o.doc)o.doc($("#accP"))}
+ return WHO}
 function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
 const today=()=>new Date().toISOString().slice(0,10);
 const fmtD=d=>d?d.split("-").reverse().join("/"):"";
@@ -451,18 +473,25 @@ const MK=(()=>{
  // si cambia el encuadre del mapa base, se desplazan los elementos ya dibujados para que no se muevan sobre el terreno
  if(CFG.osm&&M.bg&&M.bg.osm&&(M.bg.osm.x0!==CFG.osm.x0||M.bg.osm.y0!==CFG.osm.y0||M.bg.osm.nx!==CFG.osm.nx||M.bg.osm.ny!==CFG.osm.ny)){const dx=(M.bg.osm.x0-CFG.osm.x0)*256,dy=(M.bg.osm.y0-CFG.osm.y0)*256;M.f.forEach(f=>f.p=f.p.map(([x,y])=>[x+dx,y+dy]));M.bg=osmBg();M.scale=CFG.osm.mpp}
  const tiles=()=>{const o=M.bg.osm,a=[];for(let j=0;j<o.ny;j++)for(let i=0;i<o.nx;i++)a.push([i*256,j*256,`https://tile.openstreetmap.org/${o.z}/${o.x0+i}/${o.y0+j}.png`]);return a};
- const bgSvg=()=>M.bg.osm?tiles().map(([x,y,u])=>`<image href="${u}" x="${x}" y="${y}" width="256.5" height="256.5"/>`).join("")+gridSvg()+`<text x="${M.bg.w-8}" y="${M.bg.h-8}" text-anchor="end" font-size="14" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">© OpenStreetMap contributors</text>`:`<image href="${esc(M.bg.src)}" x="0" y="0" width="${M.bg.w}" height="${M.bg.h}"/>`;
+ const zf=()=>{const v=vb();return Math.min(1,v.w/dims().w)};
+ // teselas con más detalle al acercar: nivel z0+dz según los píxeles de pantalla por unidad del mapa, solo en la zona visible
+ function hdSvg(){const o=M.bg.osm,s_=$("#mk-svg");if(!s_)return"";const r=s_.getBoundingClientRect();if(!r.width)return"";const v=vb(),px=r.width/v.w*(window.devicePixelRatio||1);
+  const dz=Math.max(0,Math.min(19-o.z,Math.floor(Math.log2(px)+.3)));if(!dz)return"";const ts=256/2**dz,f=2**dz,a=[];
+  const i0=Math.max(0,Math.floor(v.x/ts)),i1=Math.min(o.nx*f-1,Math.floor((v.x+v.w)/ts)),j0=Math.max(0,Math.floor(v.y/ts)),j1=Math.min(o.ny*f-1,Math.floor((v.y+v.h)/ts));
+  if((i1-i0+1)*(j1-j0+1)>120)return"";
+  for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++)a.push(`<image href="https://tile.openstreetmap.org/${o.z+dz}/${o.x0*f+i}/${o.y0*f+j}.png" x="${i*ts}" y="${j*ts}" width="${ts*1.003}" height="${ts*1.003}"/>`);return a.join("")}
+ const bgSvg=()=>M.bg.osm?tiles().map(([x,y,u])=>`<image href="${u}" x="${x}" y="${y}" width="256.5" height="256.5"/>`).join("")+hdSvg()+gridSvg(zf())+`<text x="${vb().x+vb().w-8*zf()}" y="${vb().y+vb().h-8*zf()}" text-anchor="end" font-size="${14*zf()}" fill="#333" stroke="#fff" stroke-width="${3*zf()}" paint-order="stroke" font-family="Arial,sans-serif">© OpenStreetMap contributors</text>`:`<image href="${esc(M.bg.src)}" x="0" y="0" width="${M.bg.w}" height="${M.bg.h}"/>`;
  // cuadrícula de referencia (CFG.osm.grid metros): columnas A, B, C… y filas 1, 2, 3…
- function gridSvg(){const o=CFG.osm;if(!o||!o.grid||!M.bg||!M.bg.osm)return"";const g=o.grid/o.mpp,W=M.bg.w,H=M.bg.h;let s="";
-  for(let i=0,x=0;x<=W;i++,x+=g){s+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="2"/>`;if(x+g/2<W)s+=`<text x="${x+g/2}" y="26" text-anchor="middle" font-size="22" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="4" paint-order="stroke" font-family="Arial,sans-serif">${String.fromCharCode(65+i)}</text>`}
-  for(let j=0,y=0;y<=H;j++,y+=g){s+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="2"/>`;if(y+g/2<H)s+=`<text x="10" y="${y+g/2+8}" font-size="22" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="4" paint-order="stroke" font-family="Arial,sans-serif">${j+1}</text>`}
-  return s+`<text x="10" y="${H-12}" font-size="16" fill="#1F3A68" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial,sans-serif">Cuadrícula de ${o.grid} m</text>`}
+ function gridSvg(z){const VV=z?V:null;z=z||1;const o=CFG.osm;if(!o||!o.grid||!M.bg||!M.bg.osm)return"";const g=o.grid/o.mpp,W=M.bg.w,H=M.bg.h;let s="";
+  for(let i=0,x=0;x<=W;i++,x+=g){s+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="${2*z}"/>`;if(x+g/2<W)s+=`<text x="${x+g/2}" y="${(VV?VV.y:0)+26*z}" text-anchor="middle" font-size="${22*z}" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="${4*z}" paint-order="stroke" font-family="Arial,sans-serif">${String.fromCharCode(65+i)}</text>`}
+  for(let j=0,y=0;y<=H;j++,y+=g){s+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="${2*z}"/>`;if(y+g/2<H)s+=`<text x="${(VV?VV.x:0)+10*z}" y="${y+g/2+8*z}" font-size="${22*z}" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="${4*z}" paint-order="stroke" font-family="Arial,sans-serif">${j+1}</text>`}
+  return s+`<text x="${(VV?VV.x:0)+10*z}" y="${(VV?VV.y+VV.h:H)-12*z}" font-size="${16*z}" fill="#1F3A68" stroke="#fff" stroke-width="${3*z}" paint-order="stroke" font-family="Arial,sans-serif">Cuadrícula de ${o.grid} m</text>`}
  // CFG.ar: max alto/ancho de la ventana; si el mapa es más alto se recorta y se desplaza arrastrando
  const AR=()=>{const d=dims();return Math.min(d.h/d.w,CFG.ar||Infinity)};
  const vb=()=>{const d=dims(),h=d.w*AR();return V||{x:0,y:0,w:d.w,h}};
- function zoom(f,cx,cy){const d=dims(),v=vb(),w=Math.min(d.w,Math.max(d.w/8,v.w/f)),h=w*AR();cx=cx??v.x+v.w/2;cy=cy??v.y+v.h/2;
-  const x=Math.min(d.w-w,Math.max(0,cx-(cx-v.x)*w/v.w)),y=Math.min(d.h-h,Math.max(0,cy-(cy-v.y)*h/v.h));V=w>=d.w&&h>=d.h?null:{x,y,w,h};$("#mk-svg").setAttribute("viewBox",`${vb().x} ${vb().y} ${vb().w} ${vb().h}`)}
- const sv=()=>{try{localStorage.setItem(CFG.key,JSON.stringify(M))}catch(e){toast("Memoria llena: la imagen de fondo es muy grande. Guarda en .json.",5000)}};
+ function zoom(f,cx,cy){const d=dims(),v=vb(),w=Math.min(d.w,Math.max(d.w/(M.bg&&M.bg.osm?64:8),v.w/f)),h=w*AR();cx=cx??v.x+v.w/2;cy=cy??v.y+v.h/2;
+  const x=Math.min(d.w-w,Math.max(0,cx-(cx-v.x)*w/v.w)),y=Math.min(d.h-h,Math.max(0,cy-(cy-v.y)*h/v.h));V=w>=d.w&&h>=d.h?null:{x,y,w,h};$("#mk-svg").setAttribute("viewBox",`${vb().x} ${vb().y} ${vb().w} ${vb().h}`);redraw()}
+ const sv=()=>{try{localStorage.setItem(UK(CFG.key),JSON.stringify(M))}catch(e){toast("Memoria llena: la imagen de fondo es muy grande. Guarda en .json.",5000)}};
  const L=id=>CFG.layers.find(l=>l.id===id);
  const dims=()=>M.bg?{w:M.bg.w,h:M.bg.h}:{w:W0,h:H0};
  const len=pts=>pts.slice(1).reduce((a,p,i)=>a+Math.hypot(p[0]-pts[i][0],p[1]-pts[i][1]),0);
@@ -470,7 +499,7 @@ const MK=(()=>{
  const area=pts=>Math.abs(pts.reduce((a,p,i)=>{const q=pts[(i+1)%pts.length];return a+p[0]*q[1]-q[0]*p[1]},0))/2;
  const fmtA=px=>{const m=M.scale?px*M.scale*M.scale:null;return m==null?"sin escala":m>=1e4?(m/1e4).toFixed(2).replace(".",",")+" ha":Math.round(m)+" m²"};
  const fmtL=px=>{const m=meters(px);return m==null?"sin escala":m>=1000?(m/1000).toFixed(2).replace(".",",")+" km":Math.round(m)+" m"};
- function svgFeatures(forExport){const d=dims(),k=Math.max(d.w,d.h)/1200;let s="";
+ function svgFeatures(forExport){const d=dims(),k=Math.max(d.w,d.h)/1200*(forExport?1:zf());let s="";
   [...M.f].sort((a,b)=>(L(b.l)?.t==="area")-(L(a.l)?.t==="area")).forEach(f=>{const l=L(f.l);if(!l||M.hide[l.id])return;const c=forExport?l.hex:l.col;
    if(l.t==="line"&&f.p.length>1){s+=`<polyline points="${f.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${c}" stroke-width="${6*k}" stroke-linecap="round" stroke-linejoin="round" ${l.dash?`stroke-dasharray="${14*k} ${10*k}"`:""} ${!forExport&&f.id===selId?'class="sel"':""} data-f="${f.id}"/>`;
     const m=f.p[Math.floor(f.p.length/2)];const ki=k*(CFG.ik||1);s+=`<text x="${m[0]}" y="${m[1]-10*ki}" text-anchor="middle" font-size="${15*ki}" font-weight="700" fill="${c}" stroke="${forExport?"#fff":"var(--surface)"}" stroke-width="${4*ki}" paint-order="stroke" font-family="Source Sans 3,Arial,sans-serif">${esc(f.n||l.n)}</text>`}
@@ -480,10 +509,7 @@ const MK=(()=>{
  function grid(){const d=dims();let g=`<rect width="${d.w}" height="${d.h}" fill="var(--sunk)"/>`;for(let x=0;x<=d.w;x+=60)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${d.h}" stroke="var(--line)"/>`;for(let y=0;y<=d.h;y+=60)g+=`<line x1="0" y1="${y}" x2="${d.w}" y2="${y}" stroke="var(--line)"/>`;
   return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
  function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);
-  let s=M.bg?bgSvg():grid();s+=svgFeatures(false);
-  if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="5" stroke-dasharray="4 6"/>`+draft.p.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${i===0&&l.t==="area"?10*vb().w/1200:5}" fill="${l.col}" ${i===0&&l.t==="area"?'stroke="#fff" stroke-width="2"':""}/>`).join("")}
-  if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="none" stroke="var(--signal)" stroke-width="3"/>`).join("");
-  sv_.innerHTML=s;sv_.classList.toggle("pan",!tool&&!cal);
+  draw();sv_.classList.toggle("pan",!tool&&!cal);
   $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":l.t==="area"?"superficie":"punto"}</span></button>`).join("");
   $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
   $("#mk-layers").innerHTML=`<label class="chk"><input type="checkbox" id="mk-all" ${CFG.layers.every(l=>!M.hide[l.id])?"checked":""}> <b>Todas las capas</b></label>`+CFG.layers.map(l=>{const n=M.f.filter(f=>f.l===l.id).length;return `<label class="chk"><input type="checkbox" data-h="${l.id}" ${M.hide[l.id]?"":"checked"}> <i class="sw" style="background:${l.col}"></i>${esc(l.n)} <span class="muted small">(${n})</span></label>`}).join("");
@@ -496,6 +522,12 @@ const MK=(()=>{
   $$("[data-del]").forEach(b=>b.onclick=()=>{M.f=M.f.filter(f=>f.id!==b.dataset.del);sv();render()});
   $("#mk-scale").textContent=M.scale?`Escala: 1 px = ${M.scale.toFixed(2).replace(".",",")} m`:"Sin escala: las longitudes no se calculan";
   if(CFG.onRender)CFG.onRender(M)}
+ // dibujo del SVG (fondo, teselas de detalle y elementos); se repite al terminar cada zoom o desplazamiento
+ function draw(){const sv_=$("#mk-svg"),z=zf();let s=M.bg?bgSvg():grid();s+=svgFeatures(false);
+  if(draft&&draft.p.length){const l=L(draft.l);s+=`<polyline points="${draft.p.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${l.col}" stroke-width="${5*z}" stroke-dasharray="${4*z} ${6*z}"/>`+draft.p.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${i===0&&l.t==="area"?10*vb().w/1200:5*z}" fill="${l.col}" ${i===0&&l.t==="area"?`stroke="#fff" stroke-width="${2*z}"`:""}/>`).join("")}
+  if(cal&&cal.length)s+=cal.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="${7*z}" fill="none" stroke="var(--signal)" stroke-width="${3*z}"/>`).join("");
+  sv_.innerHTML=s}
+ let rz;const redraw=()=>{clearTimeout(rz);rz=setTimeout(draw,120)};
  function hint(){const l=tool&&L(tool);$("#mk-hint").textContent=cal?"Escala: pulsa dos puntos de distancia conocida.":!l?"Elige una capa para dibujar.":l.t==="point"?`Pulsa en el mapa para colocar: ${l.n}.`:l.t==="area"?`Pulsa para marcar los vértices de «${l.n}». Para cerrarla pulsa de nuevo en el primer vértice, haz doble clic o usa «Terminar superficie»${l.pob===false?".":"; después indica la población en la tabla."}`:`Pulsa para añadir vértices de «${l.n}». Doble clic o «Terminar línea» para cerrar.`;$("#mk-end").hidden=!(l&&l.t!=="point");$("#mk-end").textContent=l&&l.t==="area"?"Terminar superficie":"Terminar línea"}
  function pt(e){const s=$("#mk-svg"),r=s.getBoundingClientRect(),v=vb();return[Math.round(v.x+(e.clientX-r.left)/r.width*v.w),Math.round(v.y+(e.clientY-r.top)/r.height*v.h)]}
  const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
@@ -505,9 +537,9 @@ const MK=(()=>{
   s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
   s.addEventListener("pointermove",e=>{if(!drag||(drag.v.w>=dims().w&&drag.v.h>=dims().h))return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;s.classList.add("drag");
    const r=s.getBoundingClientRect(),d=dims(),k=drag.v.w/r.width;V={...drag.v,x:Math.min(d.w-drag.v.w,Math.max(0,drag.v.x-dx*k)),y:Math.min(d.h-drag.v.h,Math.max(0,drag.v.y-dy*k))};s.setAttribute("viewBox",`${V.x} ${V.y} ${V.w} ${V.h}`)});
-  addEventListener("pointerup",()=>{if(drag&&drag.m)noClick=true;drag=null;s.classList.remove("drag")});
+  addEventListener("pointerup",()=>{if(drag&&drag.m){noClick=true;redraw()}drag=null;s.classList.remove("drag")});
   $("#mk-zin").onclick=()=>zoom(1.25);$("#mk-zout").onclick=()=>zoom(1/1.25);(CFG.hideBtns||[]).forEach(id=>{const e=$("#"+id);if(e)e.hidden=true});$("#mk-zfit").onclick=()=>{V=null;render()};
-  if(CFG.osm){const b=document.createElement("button");b.className="btn ghost sm";b.type="button";b.textContent="Mapa base de La Isleta";b.onclick=()=>{M.bg=osmBg();M.scale=CFG.osm.mpp;V=null;sv();render()};$("#mk-nobg").after(b)}
+  if(CFG.osm){const b=document.createElement("button");b.className="btn ghost sm";b.type="button";b.textContent=CFG.osm.name||"Mapa base de La Isleta";b.onclick=()=>{M.bg=osmBg();M.scale=CFG.osm.mpp;V=null;sv();render()};$("#mk-nobg").after(b)}
   s.addEventListener("click",e=>{if(noClick){noClick=false;return}const p=pt(e);
    if(cal){cal.push(p);if(cal.length===2){$("#mk-calbox").hidden=false;$("#mk-calm").focus()}render();return}
    const hit=e.target.closest("[data-f]");if(!tool){selId=hit?hit.dataset.f:null;render();return}
