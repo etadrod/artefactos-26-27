@@ -377,11 +377,18 @@ $("#act").onchange=e=>{ST.act=e.target.value;SEL=-1;if(LG)LG.clearLayers();$("#d
 
 // clave de emparejado KMZ ↔ captura: nombre sin extensión, sin tildes ni palabras como «captura» o «mapa»
 const kn=s=>nz(String(s).replace(/\.[^.]+$/,"")).replace(/\b(captura|mapa|kmz|kml|pantalla|screenshot|imagen|img|foto)\b/g," ").replace(/[^a-z0-9]+/g,"");
-const busca=k=>{const L=ST.al;return L.find(a=>kn(a.file||a.al)===k)||(k.length>2?L.find(a=>{const x=kn(a.file||a.al);return x.length>2&&(x.includes(k)||k.includes(x))}):null)};
+// palabras del nombre útiles para emparejar (sin genéricas, números ni fechas)
+const STOP=new Set("captura capturas mapa mapas pantalla screenshot imagen img foto kmz kml act aev ge6 catalogo medios aereos maritimos recursos sanitarios terrestres lpa las palmas provincia sin titulo final entrega copia the and del los las con por para png jpg jpeg".split(" "));
+const toks=s=>nz(String(s).replace(/\.[^.]+$/,"")).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!STOP.has(w)&&!/\d/.test(w));
+const busca=f=>{const L=ST.al,k=kn(f.name);const e=L.find(a=>kn(a.file||a.al)===k)||(k.length>2?L.find(a=>{const x=kn(a.file||a.al);return x.length>2&&(x.includes(k)||k.includes(x))}):null);if(e)return e;
+ // si no, el alumno con más palabras del nombre en común (solo si no hay empate)
+ const t=toks(f.name);if(!t.length)return null;const sc=L.map(a=>{const u=toks(a.file||a.al);return t.filter(w=>u.some(v=>v===w||(w.length>=5&&v.length>=5&&(v.startsWith(w)||w.startsWith(v))))).length});
+ const mx=Math.max(0,...sc);return mx&&sc.filter(v=>v===mx).length===1?L[sc.indexOf(mx)]:null};
 // miniatura JPG para guardar en el navegador; si el formato no se puede ver (PDF, HEIC…), solo queda el nombre
 const miniatura=f=>new Promise(ok=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{try{const w=Math.min(640,im.naturalWidth),c=document.createElement("canvas");c.width=w;c.height=Math.round(im.naturalHeight*w/im.naturalWidth);c.getContext("2d").drawImage(im,0,0,c.width,c.height);ok({u,th:c.toDataURL("image/jpeg",.7)})}catch(e){ok({u,th:""})}};im.onerror=()=>ok({u,th:""});setTimeout(()=>ok({u,th:""}),4000);if(!/\.(png|jpe?g|gif|webp|bmp|svg|avif)$/i.test(f.name))ok({u,th:""});else im.src=u});
 // capturas sin KMZ con su nombre: no crean fila; esperan en memoria por si llega su KMZ
 const HUERF=[];
+function huerfMsg(){$("#huerf").innerHTML=HUERF.length?`<p class="fb ko small">Capturas sin emparejar (no puntúan): ${HUERF.map(f=>esc(f.name)).join(", ")}. Abre «Ver mapa» del alumno y asígnala en el punto 3.</p>`:""}
 async function addCap(f,a){if(!a){if(!HUERF.some(x=>x.name===f.name))HUERF.push(f);return}const m=await miniatura(f);
  a.cap={name:f.name,th:m.th};a._capUrl=m.u;a.E=evalua(a,ACTS[ST.act],REFC)}
 async function addFiles(fs){
@@ -394,8 +401,8 @@ async function addFiles(fs){
   if(i>=0){a.cap=ST.al[i].cap;a._capUrl=ST.al[i]._capUrl;ST.al[i]=a}else ST.al.push(a);a.E=evalua(a,A,REFC);n++}
  ST.al=ST.al.filter(x=>!x.nokmz);
  for(const f of HUERF.splice(0))caps.push(f);
- for(const f of caps){await addCap(f,busca(kn(f.name)));n++}
- $("#huerf").innerHTML=HUERF.length?`<p class="fb ko small">Capturas sin KMZ con el mismo nombre (no puntúan hasta que cargues su KMZ o las subas desde el punto 3): ${HUERF.map(f=>esc(f.name)).join(", ")}</p>`:"";
+ for(const f of caps){await addCap(f,busca(f));n++}
+ huerfMsg();
  ST.al.sort((x,y)=>x.al.localeCompare(y.al,"es"));sv();toast(n+" archivo(s) cargado(s)");draw();
  if(SEL<0&&ST.al.length)ver(0)}
 $("#files").onchange=e=>{addFiles([...e.target.files]);e.target.value=""};
@@ -434,7 +441,7 @@ function ver(k){
   if(ST.ref)ST.ref.pms.forEach(p=>L.circleMarker([p.lat,p.lon],{radius:4,color:"#000",weight:1,fillColor:"#ffeb3b",fillOpacity:.8}).bindTooltip("Solución: "+p.n).addTo(LG));
   if(b.length)MAP.fitBounds(b,{padding:[25,25],maxZoom:12});setTimeout(()=>MAP.invalidateSize(),50)}
  const Y=(ok,t)=>`<div><b class="${ok===true?"y":ok===false?"n":"w"}">${ok===true?"✓":ok===false?"✗":"!"}</b><span>${t}</span></div>`;
- let h=`<p class="eyebrow">${esc(a.file||"Sin KMZ")}</p><label class="btn ghost sm" style="cursor:pointer;justify-self:start">${a.cap?"Cambiar la captura":"Subir la captura del mapa"}<input type="file" id="capIn" hidden></label>`;
+ let h=`<p class="eyebrow">${esc(a.file||"Sin KMZ")}</p><label class="btn ghost sm" style="cursor:pointer;justify-self:start">${a.cap?"Cambiar la captura":"Subir la captura del mapa"}<input type="file" id="capIn" hidden></label>${HUERF.length?`<label class="f small">Asignar una captura sin emparejar<select id="capH"><option value="">Elige…</option>${HUERF.map((f,j)=>`<option value="${j}">${esc(f.name)}</option>`).join("")}</select></label>`:""}`;
  h+=a.cap?(a.cap.th?`<a ${a._capUrl?`href="${a._capUrl}" target="_blank" rel="noopener"`:""} title="Abrir la captura"><img src="${a.cap.th}" alt="Captura del mapa entregada" style="max-width:100%;border:1px solid var(--line);border-radius:6px"></a>`:"")+Y(true,`Captura entregada: ${esc(a.cap.name)}${a.cap.th?"":a._capUrl?` · <a href="${a._capUrl}" target="_blank" rel="noopener">abrir</a> (sin vista previa en este formato)`:" (sin vista previa en este formato)"}`):Y(false,"Captura no entregada");
  if(E.msg)h+=`<p class="fb ko">${esc(E.msg)}</p>`;
  else{
@@ -447,7 +454,8 @@ function ver(k){
   if(E.sin.length)h+=`<h4 style="margin:.6rem 0 0">Sin reconocer (${E.sin.length})</h4><div class="small muted">${E.sin.slice(0,25).map(p=>esc(p.n||"(sin nombre)")).join(" · ")}${E.sin.length>25?" …":""}</div><p class="small muted">Si alguno es un medio exigido con otro nombre, ajusta a mano la puntuación de su capa.</p>`;
   h+=`<p class="small muted">Ubicación: ${ST.ref?`a menos de ${REF_KM} km de un punto del mismo medio en tu solución.`:"dentro de su isla (GC, LZ o FV) o, si no se pide isla, en tierra de la provincia de Las Palmas."}</p>`}
  $("#det").innerHTML=h;
- $("#capIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;const j=HUERF.findIndex(x=>x.name===f.name);if(j>=0)HUERF.splice(j,1);await addCap(f,ST.al[k]);sv();ver(k)}}
+ $("#capIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;const j=HUERF.findIndex(x=>x.name===f.name);if(j>=0)HUERF.splice(j,1);await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)};
+ const hs=$("#capH");if(hs)hs.onchange=async()=>{const f=HUERF.splice(+hs.value,1)[0];if(!f)return;await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)}}
 
 $("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>{const E=a.E,ob=(a.cap?"":"captura no entregada; ")+(E.msg||[!E.sep&&"capas no separadas",!E.icOk&&("iconos: "+E.mix.map(m=>m.join(" y ")+" comparten icono").join(", ")),...A.cats.filter(c=>!E.cats[c[0]]).map(c=>"falta "+c[2]),...Object.entries(E.capas).filter(([,c])=>c.mal).map(([k,c])=>`${c.mal} mal ubicados en ${A.capas.find(z=>z[0]===k)[1]}`)].filter(Boolean).join("; "));
  return[a.al,a.file,...a.sc.map((v,i)=>v??E.auto[i]),String(nota(a)).replace(".",","),ob]})]))};
