@@ -300,9 +300,6 @@ const ACTS={
    ...["GC","LZ","FV"].map(i=>["hos"+i,"hos","Hospital general o comarcal · "+i,(t,p)=>/hospital|complejo hospitalario|insular|negrin|materno/.test(t)&&!/centro de salud/.test(t)&&isla(p)===i]),
    ...["GC","LZ","FV"].map(i=>["cs"+i,"hos","Centro de salud con urgencias · "+i,(t,p)=>/centro de salud|\bc\.?s\.?\b|suap|\bpac\b|urgencias/.test(t)&&isla(p)===i])]}};
 // Medios que deben estar en una isla concreta (1.1.1); el resto basta con que estén en la provincia
-// tipo de recurso de cada medio, para valorar el icono
-const CLASE={smH:"Helicóptero",sucH:"Helicóptero",ges:"Helicóptero",eaH:"Helicóptero",smA:"Avión",sucA:"Avión",eaA:"Avión",salvamar:"Embarcación",guardamar:"Embarcación",poli:"Embarcación",gc:"Embarcación",cr:"Embarcación",pro:"Embarcación",eml:"Embarcación",sva:"Ambulancia",base:"Base / parque",hos:"Hospital",cs:"Centro de salud"};
-const claseDe=c=>CLASE[c.replace(/(GC|LZ|FV)$/,"")]||c;
 const islaDe=c=>(c.match(/(GC|LZ|FV)$/)||[])[1];
 
 /* ---------- Lectura de KML / KMZ ---------- */
@@ -351,15 +348,11 @@ function evalua(S,A,REFC){
  const C=A.capas.map(([k])=>capaDe(k));
  const sep=C.every(c=>c&&c.pur>=.8)&&C[0].top!==C[1].top;
  // iconos: cada tipo de medio con su icono propio
- // iconos por tipo de recurso: un mismo icono no puede usarse para dos tipos (p. ej. avión y helicóptero); no se exige el logo del organismo
- const IU={};Object.entries(E.cats).forEach(([c,ps])=>{const k=claseDe(c);ps.forEach(p=>{(IU[p.ik]=IU[p.ik]||new Set()).add(k)})});
- const cl=[...new Set(Object.keys(E.cats).map(claseDe))],mix=Object.values(IU).filter(x=>x.size>1).map(x=>[...x]);
- const icOk=!mix.length;
- E.sep=sep;E.C=C;E.cl=cl;E.mix=mix;E.icOk=icOk;
+ E.sep=sep;E.C=C;
  const capa=k=>{const cs=A.cats.filter(c=>c[1]===k),pre=cs.filter(c=>E.cats[c[0]]),ps=pre.flatMap(c=>E.cats[c[0]]),loc=ps.every(p=>p.ok);
   E.capas[k]={pre:pre.length,tot:cs.length,mal:ps.filter(p=>!p.ok).length};
   return !pre.length?0:pre.length===cs.length&&loc?3:pre.length<cs.length/2&&!loc?1:2};
- E.auto=[cap,sep&&icOk?3:2,capa(A.capas[0][0]),capa(A.capas[1][0])];
+ E.auto=[cap,sep?3:2,capa(A.capas[0][0]),capa(A.capas[1][0])];
  return E}
 
 /* ---------- Estado ---------- */
@@ -447,7 +440,7 @@ function ver(k){
  else{
   h+=`<div class="small muted">${a.pms.length} puntos · capas de My Maps: ${esc([...new Set(a.pms.map(p=>p.ly))].join(", "))}</div>`;
   h+=Y(E.sep,`Capas separadas (${A.capas.map(c=>c[1].replace("Capa ","")).join(" / ")})${E.C.every(Boolean)?": "+E.C.map(c=>`«${esc(c.top)}» ${Math.round(c.pur*100)} %`).join(" · "):""}`);
-  h+=Y(E.icOk,E.icOk?`Iconos según el tipo de recurso (${E.cl.join(", ")}): ningún icono se repite entre tipos distintos`:`Iconos que no distinguen el tipo de recurso: ${E.mix.map(m=>m.join(" y ")+" comparten icono").join("; ")}`);
+  h+=`<div class="small muted">Iconos: compruébalos en el mapa (no se puntúan de forma automática).</div>`;
   h+=Y(E.info>=a.pms.length*.8?true:E.info?null:false,`Descripción con datos (${ST.act==="AEV1.1"?"autonomía, velocidad, carga…":"horario, dotación…"}): ${E.info} de ${a.pms.length}`);
   A.capas.forEach(([k,n,col])=>{const c=E.capas[k];h+=`<h4 style="margin:.6rem 0 0;display:flex;gap:.4rem;align-items:center"><span class="dot" style="background:${col}"></span>${esc(n)}: ${c.pre}/${c.tot}${c.mal?` · ${c.mal} mal ubicados`:""}</h4>`;
    A.cats.filter(z=>z[1]===k).forEach(([id,,nm])=>{const ps=E.cats[id]||[],bad=ps.filter(p=>!p.ok).length;h+=Y(!ps.length?false:bad?null:true,`${esc(nm)}${ps.length?` (${ps.length}${bad?`, ${bad} con ubicación dudosa`:""})`:""}`)})});
@@ -457,7 +450,7 @@ function ver(k){
  $("#capIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;const j=HUERF.findIndex(x=>x.name===f.name);if(j>=0)HUERF.splice(j,1);await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)};
  const hs=$("#capH");if(hs)hs.onchange=async()=>{const f=HUERF.splice(+hs.value,1)[0];if(!f)return;await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)}}
 
-$("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>{const E=a.E,ob=(a.cap?"":"captura no entregada; ")+(E.msg||[!E.sep&&"capas no separadas",!E.icOk&&("iconos: "+E.mix.map(m=>m.join(" y ")+" comparten icono").join(", ")),...A.cats.filter(c=>!E.cats[c[0]]).map(c=>"falta "+c[2]),...Object.entries(E.capas).filter(([,c])=>c.mal).map(([k,c])=>`${c.mal} mal ubicados en ${A.capas.find(z=>z[0]===k)[1]}`)].filter(Boolean).join("; "));
+$("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>{const E=a.E,ob=(a.cap?"":"captura no entregada; ")+(E.msg||[!E.sep&&"capas no separadas",...A.cats.filter(c=>!E.cats[c[0]]).map(c=>"falta "+c[2]),...Object.entries(E.capas).filter(([,c])=>c.mal).map(([k,c])=>`${c.mal} mal ubicados en ${A.capas.find(z=>z[0]===k)[1]}`)].filter(Boolean).join("; "));
  return[a.al,a.file,...a.sc.map((v,i)=>v??E.auto[i]),String(nota(a)).replace(".",","),ob]})]))};
 $("#clrB").onclick=()=>{if(!confirm("¿Vaciar la lista de trabajos y notas de esta actividad?"))return;ST.al=[];SEL=-1;sv();if(LG)LG.clearLayers();$("#who").textContent="elige un alumno en la tabla";$("#det").innerHTML="";draw()};
 
