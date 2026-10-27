@@ -270,7 +270,9 @@ function ayuda(map){Object.entries(map).forEach(([sel,txt])=>{const el=document.
 const REF_KM=3;
 // Texto normalizado (minúsculas, sin tildes) para reconocer los medios
 const nz=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
-const HELI=/helic|helimer|super ?puma|aw ?139|ec ?135|as ?365|dauphin|bk ?117|\bh-?\d/, AVION=/avion|ala fija|cn ?-?235|c ?-?295|sasemar ?1\d\d|vigma|ambulancia aerea|king ?air/;
+// palabras o modelos que indican el tipo de aeronave (en el título o en la descripción)
+const HELI=/helic|\bheli\b|helimer|helitransport|rotor|super ?puma|cougar|aw ?1[0-9]{2}|ec ?1[0-9]{2}|ec ?225|as ?3[0-9]{2}|dauphin|bk ?117|bell|sikorsky|nh ?90|mi ?-?[0-9]{1,2}\b|\bah\b|\bh-?\d/,
+ AVION=/avion|avioneta|ala fija|cn ?-?235|c ?-?295|c ?-?212|aviocar|persuader|sasemar ?1\d\d|vigma|ambulancia aerea|king ?air|beechcraft|\bb ?200\b|turbohelice|canadair|hidroavion|falcon|\batr\b|p-?3|orion/;
 const ISL={GC:[27.70,28.22,-15.88,-15.32],LZ:[28.80,29.46,-13.90,-13.38],FV:[28.02,28.78,-14.55,-13.80]},PROV=[27.55,29.5,-16.05,-13.25];
 const inB=(b,p)=>p.lat>=b[0]&&p.lat<=b[1]&&p.lon>=b[2]&&p.lon<=b[3];
 const isla=p=>Object.keys(ISL).find(k=>inB(ISL[k],p))||"";
@@ -289,7 +291,7 @@ const ACTS={
    ["eaA","aer","Ejército del Aire (SAR) · avión",t=>/ejercito|\bsar\b|802|escuadron/.test(t)&&AVION.test(t)],
    ["salvamar","mar","Salvamento Marítimo · Salvamar",t=>/salvamar/.test(t)],
    ["guardamar","mar","Salvamento Marítimo · Guardamar",t=>/guardamar/.test(t)],
-   ["poli","mar","Salvamento Marítimo · buque polivalente",t=>/polivalente|buque de salvamento|remolcador de salvamento/.test(t)],
+   ["poli","mar","Salvamento Marítimo · buque polivalente",t=>/polivalente|buque de salvamento|remolcador/.test(t)||/salvamento maritimo|sasemar|^sm\b/.test(t)&&/buque/.test(t)],
    ["gc","mar","Guardia Civil del Mar · patrulleras",t=>/guardia civil|patrullera|servicio maritimo|^gc\b/.test(t)],
    ["cr","mar","Cruz Roja · zodiac / moto acuática",t=>/cruz roja|^cr\b/.test(t)],
    ["pro","mar","Proactiva · zodiac / moto acuática",t=>/proactiva/.test(t)],
