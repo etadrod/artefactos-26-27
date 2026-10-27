@@ -351,7 +351,7 @@ const MK=(()=>{
  const osmBg=()=>({osm:CFG.osm,w:CFG.osm.nx*256,h:CFG.osm.ny*256});
  if(CFG.osm&&!M.bg&&(M.ej||!M.f.length)){M.bg=osmBg();M.scale=CFG.osm.mpp;if(M.ej){M.f=[];M.ej=false}}
  // si cambia el encuadre del mapa base, se desplazan los elementos ya dibujados para que no se muevan sobre el terreno
- if(CFG.osm&&M.bg&&M.bg.osm&&(M.bg.osm.x0!==CFG.osm.x0||M.bg.osm.y0!==CFG.osm.y0||M.bg.osm.nx!==CFG.osm.nx||M.bg.osm.ny!==CFG.osm.ny)){const dx=(M.bg.osm.x0-CFG.osm.x0)*256,dy=(M.bg.osm.y0-CFG.osm.y0)*256;M.f.forEach(f=>f.p=f.p.map(([x,y])=>[x+dx,y+dy]));M.bg=osmBg();M.scale=CFG.osm.mpp}
+ if(CFG.osm&&M.bg&&M.bg.osm&&(M.bg.osm.z!==CFG.osm.z||M.bg.osm.x0!==CFG.osm.x0||M.bg.osm.y0!==CFG.osm.y0||M.bg.osm.nx!==CFG.osm.nx||M.bg.osm.ny!==CFG.osm.ny)){const o=M.bg.osm,c=CFG.osm,k=2**(c.z-o.z);M.f.forEach(f=>f.p=f.p.map(([x,y])=>[Math.round((x+o.x0*256)*k-c.x0*256),Math.round((y+o.y0*256)*k-c.y0*256)]));M.bg=osmBg();M.scale=CFG.osm.mpp}
  const tiles=()=>{const o=M.bg.osm,a=[];for(let j=0;j<o.ny;j++)for(let i=0;i<o.nx;i++)a.push([i*256,j*256,`https://tile.openstreetmap.org/${o.z}/${o.x0+i}/${o.y0+j}.png`]);return a};
  const zf=()=>{const v=vb();return Math.min(1,v.w/dims().w)};
  // teselas con más detalle al acercar: nivel z0+dz según los píxeles de pantalla por unidad del mapa, solo en la zona visible
