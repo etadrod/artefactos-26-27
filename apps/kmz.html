@@ -279,18 +279,18 @@ const ACTS={
  "AEV1.1":{t:"AEV1.1 · Medios aéreos y marítimos",info:/autonom|velocid|nudos|km\/h|carga|capacidad|tripul|plazas|pasajer|alcance|operativ/,
   capas:[["aer","Capa Medios Aéreos","#1f5fbf",/a[eé]re|aire|heli|avion/],["mar","Capa Medios Marítimos","#00838f",/mar[ií]tim|mar\b|barco|embarc|buque/]],
   cats:[
-   ["smH","aer","Salvamento Marítimo · helicóptero",t=>/helimer/.test(t)||/salvamento maritimo|sasemar/.test(t)&&HELI.test(t)],
-   ["smA","aer","Salvamento Marítimo · avión",t=>/sasemar ?1\d\d/.test(t)||/salvamento maritimo|sasemar/.test(t)&&AVION.test(t)],
+   ["smH","aer","Salvamento Marítimo · helicóptero",t=>/helimer/.test(t)||/salvamento maritimo|sasemar|^sm\b/.test(t)&&HELI.test(t)],
+   ["smA","aer","Salvamento Marítimo · avión",t=>/sasemar ?1\d\d/.test(t)||/salvamento maritimo|sasemar|^sm\b/.test(t)&&AVION.test(t)],
+   ["ges","aer","GES · helicóptero",t=>/\bges\b|grupo de emergencias y salvamento|grupo de emergencias/.test(t)],
    ["sucH","aer","SUC · helicóptero",t=>/\bsuc\b|servicio de urgencias canario|sanitari|medicalizad/.test(t)&&HELI.test(t)],
    ["sucA","aer","SUC · avión",t=>/\bsuc\b|servicio de urgencias canario|sanitari|medicalizad/.test(t)&&AVION.test(t)],
-   ["ges","aer","GES · helicóptero",t=>/\bges\b|grupo de emergencias y salvamento|grupo de emergencias/.test(t)],
    ["eaH","aer","Ejército del Aire (SAR) · helicóptero",t=>/ejercito|\bsar\b|802|escuadron|super ?puma/.test(t)&&HELI.test(t)],
    ["eaA","aer","Ejército del Aire (SAR) · avión",t=>/ejercito|\bsar\b|802|escuadron/.test(t)&&AVION.test(t)],
    ["salvamar","mar","Salvamento Marítimo · Salvamar",t=>/salvamar/.test(t)],
    ["guardamar","mar","Salvamento Marítimo · Guardamar",t=>/guardamar/.test(t)],
    ["poli","mar","Salvamento Marítimo · buque polivalente",t=>/polivalente|buque de salvamento|remolcador de salvamento/.test(t)],
-   ["gc","mar","Guardia Civil del Mar · patrulleras",t=>/guardia civil|patrullera|servicio maritimo/.test(t)],
-   ["cr","mar","Cruz Roja · zodiac / moto acuática",t=>/cruz roja/.test(t)],
+   ["gc","mar","Guardia Civil del Mar · patrulleras",t=>/guardia civil|patrullera|servicio maritimo|^gc\b/.test(t)],
+   ["cr","mar","Cruz Roja · zodiac / moto acuática",t=>/cruz roja|^cr\b/.test(t)],
    ["pro","mar","Proactiva · zodiac / moto acuática",t=>/proactiva/.test(t)],
    ["eml","mar","Emerlan · zodiac / moto acuática",t=>/emerlan/.test(t)]]},
  "AEV1.1.1":{t:"AEV1.1.1 · Recursos sanitarios terrestres",info:/horari|24 ?h|h24|abierto|dotaci|tecnic|medic|enfermer|conductor|tes\b|turno/,
@@ -334,7 +334,8 @@ function parseKml(kml,imgs){
  return{pms,nl}}
 
 /* ---------- Evaluación ---------- */
-function clasifica(pm,A){const t=nz(pm.n+" "+pm.d+" "+pm.ly);const c=A.cats.find(c=>c[3](t,pm));return c?c[0]:""}
+// primero solo con el nombre y la capa; si no encaja, también con la descripción (evita que «GES-EMERLAN» en la descripción gane al nombre)
+function clasifica(pm,A){for(const t of[nz(pm.n+" "+pm.ly),nz(pm.n+" "+pm.d+" "+pm.ly)]){const c=A.cats.find(c=>c[3](t,pm));if(c)return c[0]}return""}
 const dist=(a,b)=>{const R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lon-a.lon)*r,s=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(s))};
 function bienUbicado(pm,c,REFC){const r=REFC&&REFC[c];if(r&&r.length)return Math.min(...r.map(q=>dist(q,pm)))<=REF_KM;const i=islaDe(c);return i?inB(ISL[i],pm):inB(PROV,pm)&&!!isla(pm)}
 function evalua(S,A,REFC){
@@ -370,10 +371,12 @@ $("#refKm").textContent=REF_KM;
 $("#act").onchange=e=>{ST.act=e.target.value;SEL=-1;if(LG)LG.clearLayers();$("#det").innerHTML="";$("#who").textContent="elige un alumno en la tabla";reeval();sv();draw();if(ST.al.length)ver(0)};
 
 // clave de emparejado KMZ ↔ captura: nombre sin extensión, sin tildes ni palabras como «captura» o «mapa»
-const kn=s=>nz(String(s).replace(/\.[^.]+$/,"")).replace(/\b(captura|mapa|kmz|kml|pantalla|screenshot|imagen|img|foto)\b/g," ").replace(/[^a-z0-9]+/g,"");
+// entregas de Moodle: «Nombre Apellidos_12345678_assignsubmission_file_…» → se usa solo el nombre del alumno
+const moodle=s=>{const m=String(s).match(/^(.+?)_\d+_assignsubmission_(?:file|onlinetext)_/);return m?m[1]:String(s)};
+const kn=s=>nz(moodle(s).replace(/\.[^.]+$/,"")).replace(/\b(captura|mapa|kmz|kml|pantalla|screenshot|imagen|img|foto)\b/g," ").replace(/[^a-z0-9]+/g,"");
 // palabras del nombre útiles para emparejar (sin genéricas, números ni fechas)
 const STOP=new Set("captura capturas mapa mapas pantalla screenshot imagen img foto kmz kml act aev ge6 catalogo medios aereos maritimos recursos sanitarios terrestres lpa las palmas provincia sin titulo final entrega copia the and del los las con por para png jpg jpeg".split(" "));
-const toks=s=>nz(String(s).replace(/\.[^.]+$/,"")).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!STOP.has(w)&&!/\d/.test(w));
+const toks=s=>nz(moodle(s).replace(/\.[^.]+$/,"")).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!STOP.has(w)&&!/\d/.test(w));
 const busca=f=>{const L=ST.al,k=kn(f.name);const e=L.find(a=>kn(a.file||a.al)===k)||(k.length>2?L.find(a=>{const x=kn(a.file||a.al);return x.length>2&&(x.includes(k)||k.includes(x))}):null);if(e)return e;
  // si no, el alumno con más palabras del nombre en común (solo si no hay empate)
  const t=toks(f.name);if(!t.length)return null;const sc=L.map(a=>{const u=toks(a.file||a.al);return t.filter(w=>u.some(v=>v===w||(w.length>=5&&v.length>=5&&(v.startsWith(w)||w.startsWith(v))))).length});
@@ -388,7 +391,7 @@ async function addCap(f,a){if(!a){if(!HUERF.some(x=>x.name===f.name))HUERF.push(
 async function addFiles(fs){
  const A=ACTS[ST.act];let n=0;const caps=fs.filter(f=>!/\.km[lz]$/i.test(f.name));
  for(const f of fs){if(!/\.km[lz]$/i.test(f.name))continue;
-  const al=f.name.replace(/\.km[lz]$/i,"").replace(/[_]+/g," ").trim();let S;
+  const al=moodle(f.name).replace(/\.km[lz]$/i,"").replace(/[_]+/g," ").trim();let S;
   try{S=await readFile(f)}catch(e){S={pms:[],nl:0,err:"No se puede leer el archivo: "+(e.message||"formato no reconocido")+"."}}
   const a={al,file:f.name,pms:S.pms,nl:S.nl,err:S.err||"",sc:[null,null,null,null]};
   const i=ST.al.findIndex(x=>x.file===f.name);
