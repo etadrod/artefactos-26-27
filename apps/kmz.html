@@ -120,6 +120,7 @@ table.ev select.man{border-color:var(--warn);border-width:2px}
 .chk div{display:flex;gap:.4rem;align-items:baseline}
 .chk b.y{color:var(--ok)}.chk b.n{color:var(--ko)}.chk b.w{color:var(--warn)}
 .cl{cursor:pointer;border-radius:4px;padding:.05rem .3rem}.cl:hover{background:var(--sunk)}.cl.on{background:color-mix(in srgb,var(--navy) 16%,var(--surface));font-weight:700}
+.chk button.mk{border:0;background:none;font:inherit;font-weight:700;cursor:pointer;padding:0 .15rem;border-radius:3px}.chk button.mk:hover{background:var(--line)}.chk button.mk.y{color:var(--ok)}.chk button.mk.n{color:var(--ko)}.chk button.mk.w{color:var(--warn)}
 .dot{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;flex:none}
 .leaflet-popup-content{font:14px var(--f-body)}
 .leaflet-container a.leaflet-popup-close-button{color:#555}
@@ -351,9 +352,11 @@ function evalua(S,A,REFC){
  const sep=C.every(c=>c&&c.pur>=.8)&&C[0].top!==C[1].top;
  // iconos: cada tipo de medio con su icono propio
  E.sep=sep;E.C=C;
- const capa=k=>{const cs=A.cats.filter(c=>c[1]===k),pre=cs.filter(c=>E.cats[c[0]]),ps=pre.flatMap(c=>E.cats[c[0]]),loc=ps.every(p=>p.ok);
-  E.capas[k]={pre:pre.length,tot:cs.length,mal:ps.filter(p=>!p.ok).length};
-  return !pre.length?0:pre.length===cs.length&&loc?3:pre.length<cs.length/2&&!loc?1:2};
+ // estado de cada medio: y = presente y bien ubicado, w = ubicación dudosa, n = falta; el profesorado puede corregirlo (S.ov)
+ E.st={};A.cats.forEach(([id])=>{const ps=E.cats[id]||[],o=(S.ov||{})[id],au=!ps.length?"n":ps.some(p=>!p.ok)?"w":"y";E.st[id]={s:o===true?"y":o===false?"n":au,au,man:o!==undefined}});
+ const capa=k=>{const cs=A.cats.filter(c=>c[1]===k),pre=cs.filter(c=>E.st[c[0]].s!=="n").length,mal=cs.filter(c=>E.st[c[0]].s==="w").length;
+  E.capas[k]={pre,tot:cs.length,mal};
+  return !pre?0:pre===cs.length&&!mal?3:pre<cs.length/2&&mal?1:2};
  E.auto=[cap,sep?3:2,capa(A.capas[0][0]),capa(A.capas[1][0])];
  return E}
 
@@ -457,16 +460,19 @@ function ver(k){
   h+=Y(E.info>=a.pms.length*.8?true:E.info?null:false,`Descripción con datos (${ST.act==="AEV1.1"?"autonomía, velocidad, carga…":"horario, dotación…"}): ${E.info} de ${a.pms.length}`);
   h+=`<p class="small muted" id="filT"></p>`;
   A.capas.forEach(([k,n,col])=>{const c=E.capas[k];h+=`<h4 style="margin:.6rem 0 0;display:flex;gap:.4rem;align-items:center"><span class="dot" style="background:${col}"></span>${esc(n)}: ${c.pre}/${c.tot}${c.mal?` · ${c.mal} mal ubicados`:""}<button class="btn ghost sm" type="button" data-all="${k}" style="margin-left:auto">Todos visibles</button></h4>`;
-   A.cats.filter(z=>z[1]===k).forEach(([id,,nm])=>{const ps=E.cats[id]||[],bad=ps.filter(p=>!p.ok).length;h+=`<div class="cl" data-cat="${id}" role="button" tabindex="0" title="Ver solo este medio en el mapa">`+Y(!ps.length?false:bad?null:true,`${esc(nm)}${ps.length?` (${ps.length}${bad?`, ${bad} con ubicación dudosa`:""})`:""}`)+`</div>`})});
+   A.cats.filter(z=>z[1]===k).forEach(([id,,nm])=>{const ps=E.cats[id]||[],bad=ps.filter(p=>!p.ok).length,st=E.st[id],ic={y:"✓",n:"✗",w:"!"}[st.s];
+   h+=`<div class="cl" data-cat="${id}" role="button" tabindex="0" title="Ver solo este medio en el mapa"><div><button type="button" class="mk ${st.s==="y"?"y":st.s==="n"?"n":"w"}" data-ov="${id}" title="Cambiar a ${st.s==="y"?"✗ (no está)":"✓ (correcto)"}" aria-label="Cambiar valoración de ${esc(nm)}">${ic}</button><span>${esc(nm)}${ps.length?` (${ps.length}${bad?`, ${bad} con ubicación dudosa`:""})`:""}${st.man?' <span class="pill warn">manual</span>':""}</span></div></div>`})});
   if(E.sin.length)h+=`<h4 style="margin:.6rem 0 0">Sin reconocer (${E.sin.length})</h4><div class="small muted">${E.sin.slice(0,25).map(p=>esc(p.n||"(sin nombre)")).join(" · ")}${E.sin.length>25?" …":""}</div><p class="small muted">Si alguno es un medio exigido con otro nombre, ajusta a mano la puntuación de su capa.</p>`;
   h+=`<p class="small muted">Ubicación: ${ST.ref?`a menos de ${REF_KM} km de un punto del mismo medio en tu solución.`:"dentro de su isla (GC, LZ o FV) o, si no se pide isla, en tierra de la provincia de Las Palmas."}</p>`}
  $("#det").innerHTML=h;aplicaFil();
  $$("#det [data-cat]").forEach(e=>{const go=()=>{const c=e.dataset.cat;if(!FIL)FIL=new Set([c]);else{FIL.has(c)?FIL.delete(c):FIL.add(c);if(!FIL.size)FIL=null}aplicaFil()};e.onclick=go;e.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();go()}}});
+ $$("#det [data-ov]").forEach(b=>{b.onclick=ev=>{ev.stopPropagation();const id=b.dataset.ov,st=a.E.st[id],want=st.s==="y"?"n":"y";a.ov=a.ov||{};
+  if(want===st.au)delete a.ov[id];else a.ov[id]=want==="y";a.E=evalua(a,A,REFC);sv();ver(k)};b.onkeydown=ev=>ev.stopPropagation()});
  $$("#det [data-all]").forEach(b=>b.onclick=()=>{if(!FIL)return;A.cats.filter(z=>z[1]===b.dataset.all).forEach(z=>FIL.add(z[0]));if(FIL.size>=A.cats.length)FIL=null;aplicaFil()});
  $("#capIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;const j=HUERF.findIndex(x=>x.name===f.name);if(j>=0)HUERF.splice(j,1);await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)};
  const hs=$("#capH");if(hs)hs.onchange=async()=>{const f=HUERF.splice(+hs.value,1)[0];if(!f)return;await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)}}
 
-$("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>{const E=a.E,ob=(a.cap?"":"captura no entregada; ")+(E.msg||[!E.sep&&"capas no separadas",...A.cats.filter(c=>!E.cats[c[0]]).map(c=>"falta "+c[2]),...Object.entries(E.capas).filter(([,c])=>c.mal).map(([k,c])=>`${c.mal} mal ubicados en ${A.capas.find(z=>z[0]===k)[1]}`)].filter(Boolean).join("; "));
+$("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>{const E=a.E,ob=(a.cap?"":"captura no entregada; ")+(E.msg||[!E.sep&&"capas no separadas",...A.cats.filter(c=>E.st&&E.st[c[0]].s==="n").map(c=>"falta "+c[2]),...Object.entries(E.capas).filter(([,c])=>c.mal).map(([k,c])=>`${c.mal} mal ubicados en ${A.capas.find(z=>z[0]===k)[1]}`)].filter(Boolean).join("; "));
  return[a.al,a.file,...a.sc.map((v,i)=>v??E.auto[i]),String(nota(a)).replace(".",","),ob]})]))};
 $("#clrB").onclick=()=>{if(!confirm("¿Vaciar la lista de trabajos y notas de esta actividad?"))return;ST.al=[];SEL=-1;sv();if(LG)LG.clearLayers();$("#who").textContent="elige un alumno en la tabla";$("#det").innerHTML="";draw()};
 
