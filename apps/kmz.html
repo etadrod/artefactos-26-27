@@ -149,6 +149,7 @@ table.ev select.man{border-color:var(--warn);border-width:2px}
   <section class="panel" aria-labelledby="hE">
     <h3 id="hE">2. Evaluación</h3>
     <div class="tbl"><table class="ev"><thead id="evH"></thead><tbody id="evB"></tbody></table></div>
+    <div id="huerf"></div>
     <div class="btns"><span class="small muted" id="evN"></span><span class="spacer"></span><button class="btn" id="csvB" type="button" style="background:#2e7d32;border-color:#2e7d32;color:#fff">Descargar notas (.csv)</button><button class="btn" id="clrB" type="button" style="background:#c62828;border-color:#c62828;color:#fff">Vaciar lista</button></div>
   </section>
 
@@ -379,7 +380,9 @@ const kn=s=>nz(String(s).replace(/\.[^.]+$/,"")).replace(/\b(captura|mapa|kmz|km
 const busca=k=>{const L=ST.al;return L.find(a=>kn(a.file||a.al)===k)||(k.length>2?L.find(a=>{const x=kn(a.file||a.al);return x.length>2&&(x.includes(k)||k.includes(x))}):null)};
 // miniatura JPG para guardar en el navegador; si el formato no se puede ver (PDF, HEIC…), solo queda el nombre
 const miniatura=f=>new Promise(ok=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{try{const w=Math.min(640,im.naturalWidth),c=document.createElement("canvas");c.width=w;c.height=Math.round(im.naturalHeight*w/im.naturalWidth);c.getContext("2d").drawImage(im,0,0,c.width,c.height);ok({u,th:c.toDataURL("image/jpeg",.7)})}catch(e){ok({u,th:""})}};im.onerror=()=>ok({u,th:""});setTimeout(()=>ok({u,th:""}),4000);if(!/\.(png|jpe?g|gif|webp|bmp|svg|avif)$/i.test(f.name))ok({u,th:""});else im.src=u});
-async function addCap(f,a){const m=await miniatura(f);if(!a){a={al:f.name.replace(/\.[^.]+$/,"").replace(/[_]+/g," ").replace(/\b(captura|mapa)\b/gi,"").trim()||f.name,file:"",pms:[],nl:0,err:"",nokmz:true,sc:[null,null,null,null]};ST.al.push(a)}
+// capturas sin KMZ con su nombre: no crean fila; esperan en memoria por si llega su KMZ
+const HUERF=[];
+async function addCap(f,a){if(!a){if(!HUERF.some(x=>x.name===f.name))HUERF.push(f);return}const m=await miniatura(f);
  a.cap={name:f.name,th:m.th};a._capUrl=m.u;a.E=evalua(a,ACTS[ST.act],REFC)}
 async function addFiles(fs){
  const A=ACTS[ST.act];let n=0;const caps=fs.filter(f=>!/\.km[lz]$/i.test(f.name));
@@ -387,9 +390,12 @@ async function addFiles(fs){
   const al=f.name.replace(/\.km[lz]$/i,"").replace(/[_]+/g," ").trim();let S;
   try{S=await readFile(f)}catch(e){S={pms:[],nl:0,err:"No se puede leer el archivo: "+(e.message||"formato no reconocido")+"."}}
   const a={al,file:f.name,pms:S.pms,nl:S.nl,err:S.err||"",sc:[null,null,null,null]};
-  let i=ST.al.findIndex(x=>x.file===f.name);if(i<0){const o=ST.al.find(x=>x.nokmz&&kn(x.cap.name).includes(kn(f.name)));i=ST.al.indexOf(o)}
+  const i=ST.al.findIndex(x=>x.file===f.name);
   if(i>=0){a.cap=ST.al[i].cap;a._capUrl=ST.al[i]._capUrl;ST.al[i]=a}else ST.al.push(a);a.E=evalua(a,A,REFC);n++}
+ ST.al=ST.al.filter(x=>!x.nokmz);
+ for(const f of HUERF.splice(0))caps.push(f);
  for(const f of caps){await addCap(f,busca(kn(f.name)));n++}
+ $("#huerf").innerHTML=HUERF.length?`<p class="fb ko small">Capturas sin KMZ con el mismo nombre (no puntúan hasta que cargues su KMZ o las subas desde el punto 3): ${HUERF.map(f=>esc(f.name)).join(", ")}</p>`:"";
  ST.al.sort((x,y)=>x.al.localeCompare(y.al,"es"));sv();toast(n+" archivo(s) cargado(s)");draw();
  if(SEL<0&&ST.al.length)ver(0)}
 $("#files").onchange=e=>{addFiles([...e.target.files]);e.target.value=""};
@@ -404,12 +410,12 @@ function draw(){
  if(ST.ref)$("#refX").onclick=()=>{ST.ref=null;$("#ref").value="";reeval();sv();draw();if(SEL>=0)ver(SEL)};
  $("#evH").innerHTML=`<tr><th>Alumno</th>${CR.map((c,i)=>`<th>${esc(c)} <span class="muted small">(${MAX[i]})</span></th>`).join("")}<th>Nota</th><th></th></tr>`;
  $("#evB").innerHTML=ST.al.map((a,k)=>`<tr class="${k===SEL?"sel":""}"><td><b>${esc(a.al)}</b>${a.E.msg?`<div class="small" style="color:var(--ko)">${esc(a.E.msg)}</div>`:""}</td>${
-  MAX.map((m,i)=>{const v=a.sc[i]??a.E.auto[i];return `<td>${i===0?`<label class="btn ghost sm" style="cursor:pointer;margin-right:.3rem" title="${esc(a.cap?a.cap.name:"Subir la captura de este alumno")}">${a.cap?"Cambiar":"Subir"}<input type="file" data-cap="${k}" hidden></label>`:""}<select data-a="${k}" data-i="${i}" class="${a.sc[i]!=null?"man":""}" aria-label="${esc(CR[i])}">${[...Array(m+1).keys()].map(n=>`<option${n===v?" selected":""}>${n}</option>`).join("")}</select>${a.sc[i]==null?' <span class="pill">Auto</span>':""}</td>`}).join("")
+  MAX.map((m,i)=>{const v=a.sc[i]??a.E.auto[i];return `<td><select data-a="${k}" data-i="${i}" class="${a.sc[i]!=null?"man":""}" aria-label="${esc(CR[i])}">${[...Array(m+1).keys()].map(n=>`<option${n===v?" selected":""}>${n}</option>`).join("")}</select>${a.sc[i]==null?' <span class="pill">Auto</span>':""}</td>`}).join("")
   }<td class="tot">${String(nota(a)).replace(".",",")} / 10</td><td><button class="btn ghost sm" data-v="${k}" type="button">Ver mapa</button></td></tr>`).join("")||`<tr><td colspan="7" class="muted">Todavía no hay archivos cargados.</td></tr>`;
  $("#evN").textContent=ST.al.length?`${ST.al.length} trabajos · media ${(ST.al.reduce((s,a)=>s+nota(a),0)/ST.al.length).toFixed(1).replace(".",",")}. Captura: ${ST.al.filter(a=>a.cap).length} de ${ST.al.length} entregadas.`:"";
  $$("#evB select").forEach(s=>s.onchange=()=>{const a=ST.al[+s.dataset.a],i=+s.dataset.i,v=+s.value;a.sc[i]=v===a.E.auto[i]?null:v;sv();draw()});
  $$("#evB [data-v]").forEach(b=>b.onclick=()=>ver(+b.dataset.v));
- $$("#evB [data-cap]").forEach(inp=>inp.onchange=async()=>{const f=inp.files[0],k=+inp.dataset.cap;if(!f)return;await addCap(f,ST.al[k]);sv();draw();ver(k)})}
+ }
 
 /* ---------- Mapa ---------- */
 let MAP=null,LG=null;
@@ -428,7 +434,7 @@ function ver(k){
   if(ST.ref)ST.ref.pms.forEach(p=>L.circleMarker([p.lat,p.lon],{radius:4,color:"#000",weight:1,fillColor:"#ffeb3b",fillOpacity:.8}).bindTooltip("Solución: "+p.n).addTo(LG));
   if(b.length)MAP.fitBounds(b,{padding:[25,25],maxZoom:12});setTimeout(()=>MAP.invalidateSize(),50)}
  const Y=(ok,t)=>`<div><b class="${ok===true?"y":ok===false?"n":"w"}">${ok===true?"✓":ok===false?"✗":"!"}</b><span>${t}</span></div>`;
- let h=`<p class="eyebrow">${esc(a.file||"Sin KMZ")}</p>`;
+ let h=`<p class="eyebrow">${esc(a.file||"Sin KMZ")}</p><label class="btn ghost sm" style="cursor:pointer;justify-self:start">${a.cap?"Cambiar la captura":"Subir la captura del mapa"}<input type="file" id="capIn" hidden></label>`;
  h+=a.cap?(a.cap.th?`<a ${a._capUrl?`href="${a._capUrl}" target="_blank" rel="noopener"`:""} title="Abrir la captura"><img src="${a.cap.th}" alt="Captura del mapa entregada" style="max-width:100%;border:1px solid var(--line);border-radius:6px"></a>`:"")+Y(true,`Captura entregada: ${esc(a.cap.name)}${a.cap.th?"":a._capUrl?` · <a href="${a._capUrl}" target="_blank" rel="noopener">abrir</a> (sin vista previa en este formato)`:" (sin vista previa en este formato)"}`):Y(false,"Captura no entregada");
  if(E.msg)h+=`<p class="fb ko">${esc(E.msg)}</p>`;
  else{
@@ -440,7 +446,8 @@ function ver(k){
    A.cats.filter(z=>z[1]===k).forEach(([id,,nm])=>{const ps=E.cats[id]||[],bad=ps.filter(p=>!p.ok).length;h+=Y(!ps.length?false:bad?null:true,`${esc(nm)}${ps.length?` (${ps.length}${bad?`, ${bad} con ubicación dudosa`:""})`:""}`)})});
   if(E.sin.length)h+=`<h4 style="margin:.6rem 0 0">Sin reconocer (${E.sin.length})</h4><div class="small muted">${E.sin.slice(0,25).map(p=>esc(p.n||"(sin nombre)")).join(" · ")}${E.sin.length>25?" …":""}</div><p class="small muted">Si alguno es un medio exigido con otro nombre, ajusta a mano la puntuación de su capa.</p>`;
   h+=`<p class="small muted">Ubicación: ${ST.ref?`a menos de ${REF_KM} km de un punto del mismo medio en tu solución.`:"dentro de su isla (GC, LZ o FV) o, si no se pide isla, en tierra de la provincia de Las Palmas."}</p>`}
- $("#det").innerHTML=h}
+ $("#det").innerHTML=h;
+ $("#capIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;const j=HUERF.findIndex(x=>x.name===f.name);if(j>=0)HUERF.splice(j,1);await addCap(f,ST.al[k]);sv();ver(k)}}
 
 $("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>{const E=a.E,ob=(a.cap?"":"captura no entregada; ")+(E.msg||[!E.sep&&"capas no separadas",!E.icOk&&("iconos: "+E.mix.map(m=>m.join(" y ")+" comparten icono").join(", ")),...A.cats.filter(c=>!E.cats[c[0]]).map(c=>"falta "+c[2]),...Object.entries(E.capas).filter(([,c])=>c.mal).map(([k,c])=>`${c.mal} mal ubicados en ${A.capas.find(z=>z[0]===k)[1]}`)].filter(Boolean).join("; "));
  return[a.al,a.file,...a.sc.map((v,i)=>v??E.auto[i]),String(nota(a)).replace(".",","),ob]})]))};
