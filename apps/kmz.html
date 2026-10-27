@@ -498,8 +498,8 @@ function ver(k){
  $("#capIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;const j=HUERF.findIndex(x=>x.name===f.name);if(j>=0)HUERF.splice(j,1);await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)};
  const hs=$("#capH");if(hs)hs.onchange=async()=>{const f=HUERF.splice(+hs.value,1)[0];if(!f)return;await addCap(f,ST.al[k]);huerfMsg();sv();ver(k)}}
 
-$("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>{const E=a.E,ob=(a.cap?"":"captura no entregada; ")+(E.msg||[!E.sep&&"capas no separadas",...A.cats.filter(c=>E.st&&E.st[c[0]].s==="n").map(c=>"falta "+c[2]),...Object.entries(E.capas).filter(([,c])=>c.mal).map(([k,c])=>`${c.mal} mal ubicados en ${A.capas.find(z=>z[0]===k)[1]}`)].filter(Boolean).join("; "));
- return[a.al,a.file,...a.sc.map((v,i)=>v??E.auto[i]),String(nota(a)).replace(".",","),ob]})]))};
+// Observaciones = comentario del alumno («Ejecutar resumen»); si aún no se ha ejecutado, se genera con la valoración actual
+$("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>[a.al,a.file,...a.sc.map((v,i)=>v??a.E.auto[i]),String(nota(a)).replace(".",","),a.res||comentario(a,A)])]))};
 $("#clrB").onclick=()=>{if(!confirm("¿Vaciar la lista de trabajos y notas de esta actividad?"))return;ST.al=[];SEL=-1;sv();if(LG)LG.clearLayers();$("#who").textContent="elige un alumno en la tabla";$("#det").innerHTML="";draw()};
 
 Object.values(ST.L).forEach(l=>l.forEach(x=>{if(x.file)x.al=nombreDe(x.file)}));
