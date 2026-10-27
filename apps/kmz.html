@@ -273,6 +273,8 @@ const nz=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 // palabras o modelos que indican el tipo de aeronave (en el título o en la descripción)
 const HELI=/helic|\bheli\b|helimer|helitransport|rotor|super ?puma|cougar|aw ?1[0-9]{2}|ec ?1[0-9]{2}|ec ?225|as ?3[0-9]{2}|dauphin|bk ?117|bell|sikorsky|nh ?90|mi ?-?[0-9]{1,2}\b|\bah\b|\bh-?\d/,
  AVION=/avion|avioneta|ala fija|cn ?-?235|c ?-?295|c ?-?212|aviocar|persuader|sasemar ?1\d\d|vigma|ambulancia aerea|king ?air|beechcraft|\bb ?200\b|turbohelice|canadair|hidroavion|falcon|\batr\b|p-?3|orion/;
+// medios aéreos o marítimos: nunca cuentan como recursos sanitarios terrestres (1.1.1)
+const AEREO_MAR=t=>HELI.test(t)||AVION.test(t)||/embarcac|zodiac|moto acuatica|salvamar|guardamar|patrullera|buque|lancha|semirrigid/.test(t);
 const ISL={GC:[27.70,28.22,-15.88,-15.32],LZ:[28.80,29.46,-13.90,-13.38],FV:[28.02,28.78,-14.55,-13.80]},PROV=[27.55,29.5,-16.05,-13.25];
 const inB=(b,p)=>p.lat>=b[0]&&p.lat<=b[1]&&p.lon>=b[2]&&p.lon<=b[3];
 const isla=p=>Object.keys(ISL).find(k=>inB(ISL[k],p))||"";
@@ -299,10 +301,10 @@ const ACTS={
  "AEV1.1.1":{t:"AEV1.1.1 · Recursos sanitarios terrestres",info:/horari|24 ?h|h24|abierto|dotaci|tecnic|medic|enfermer|conductor|tes\b|turno/,
   capas:[["ter","Capa Medios Terrestres (SVA y bases)","#c62828",/terrestre|sva|ambulan|base|consorcio|bombero/],["hos","Capa Recursos Hospitalarios","#2e7d32",/hospital|sanitari|salud|urgencia|asistencial/]],
   cats:[
-   ...["GC","LZ","FV"].map(i=>["sva"+i,"ter","Ambulancia SVA · "+i,(t,p)=>/\bsva\b|soporte vital avanzado|medicalizad|ambulancia/.test(t)&&isla(p)===i]),
-   ...["GC","LZ","FV"].map(i=>["base"+i,"ter","Base del Consorcio de Emergencias · "+i,(t,p)=>/consorcio|parque|bombero|base/.test(t)&&isla(p)===i]),
-   ...["GC","LZ","FV"].map(i=>["hos"+i,"hos","Hospital general o comarcal · "+i,(t,p)=>/hospital|complejo hospitalario|insular|negrin|materno/.test(t)&&!/centro de salud/.test(t)&&isla(p)===i]),
-   ...["GC","LZ","FV"].map(i=>["cs"+i,"hos","Centro de salud con urgencias · "+i,(t,p)=>/centro de salud|\bc\.?s\.?\b|suap|\bpac\b|urgencias/.test(t)&&isla(p)===i])]}};
+   ...["GC","LZ","FV"].map(i=>["sva"+i,"ter","Ambulancia SVA · "+i,(t,p)=>!AEREO_MAR(t)&&/\bsva\b|soporte vital avanzado|medicalizad|ambulancia/.test(t)&&isla(p)===i]),
+   ...["GC","LZ","FV"].map(i=>["base"+i,"ter","Base del Consorcio de Emergencias · "+i,(t,p)=>!AEREO_MAR(t)&&/consorcio|parque|bombero|base/.test(t)&&isla(p)===i]),
+   ...["GC","LZ","FV"].map(i=>["hos"+i,"hos","Hospital general o comarcal · "+i,(t,p)=>!AEREO_MAR(t)&&/hospital|complejo hospitalario|insular|negrin|materno/.test(t)&&!/centro de salud/.test(t)&&isla(p)===i]),
+   ...["GC","LZ","FV"].map(i=>["cs"+i,"hos","Centro de salud con urgencias · "+i,(t,p)=>!AEREO_MAR(t)&&/centro de salud|\bc\.?s\.?\b|suap|\bpac\b|urgencias/.test(t)&&isla(p)===i])]}};
 // Medios que deben estar en una isla concreta (1.1.1); el resto basta con que estén en la provincia
 const islaDe=c=>(c.match(/(GC|LZ|FV)$/)||[])[1];
 
@@ -338,15 +340,16 @@ function parseKml(kml,imgs){
 
 /* ---------- Evaluación ---------- */
 // primero solo con el nombre y la capa; si no encaja, también con la descripción (evita que «GES-EMERLAN» en la descripción gane al nombre)
-function clasifica(pm,A){for(const t of[nz(pm.n+" "+pm.ly),nz(pm.n+" "+pm.d+" "+pm.ly)]){const c=A.cats.find(c=>c[3](t,pm));if(c)return c[0]}return""}
+// también se prueban los medios de la otra actividad (la 1.1.1 continúa el mapa de la 1.1): si el punto es de la otra, devuelve "otra:<id>"
+function clasifica(pm,A){const O=Object.values(ACTS).find(x=>x!==A);for(const t of[nz(pm.n+" "+pm.ly),nz(pm.n+" "+pm.d+" "+pm.ly)]){const c=A.cats.find(c=>c[3](t,pm));if(c)return c[0];const o=O&&O.cats.find(c=>c[3](t,pm));if(o)return"otra:"+o[0]}return""}
 const dist=(a,b)=>{const R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lon-a.lon)*r,s=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(s))};
 function bienUbicado(pm,c,REFC){const r=REFC&&REFC[c];if(r&&r.length)return Math.min(...r.map(q=>dist(q,pm)))<=REF_KM;const i=islaDe(c);return i?inB(ISL[i],pm):inB(PROV,pm)&&!!isla(pm)}
 function evalua(S,A,REFC){
- const E={cats:{},capas:{},info:0,sin:[]};
+ const E={cats:{},capas:{},info:0,sin:[],otra:[]};
  const cap=S.cap?1:0;
  if(S.nokmz){E.auto=[cap,0,0,0];E.msg="Archivo KMZ no entregado.";return E}
  if(S.err||!S.pms.length){E.auto=[cap,1,0,0];E.msg=S.err||(S.nl?"Exportado con «mantener sincronizado» (solo un enlace): vuelve a exportarlo desde My Maps sin esa opción.":"No contiene ningún punto.");return E}
- for(const pm of S.pms){pm.c=clasifica(pm,A);pm.ok=pm.c?bienUbicado(pm,pm.c,REFC):false;if(pm.c)(E.cats[pm.c]=E.cats[pm.c]||[]).push(pm);else E.sin.push(pm)}
+ for(const pm of S.pms){pm.c=clasifica(pm,A);pm.ok=pm.c?bienUbicado(pm,pm.c,REFC):false;if(pm.c.startsWith("otra:")){E.otra.push(pm);pm.c="";pm.ok=false}else if(pm.c)(E.cats[pm.c]=E.cats[pm.c]||[]).push(pm);else E.sin.push(pm)}
  E.info=S.pms.filter(p=>A.info.test(nz(p.d))).length;
  // capas separadas: los medios de cada capa de la rúbrica comparten capa en My Maps y no se mezclan con la otra
  const capaDe=k=>{const ls=A.cats.filter(c=>c[1]===k).flatMap(c=>E.cats[c[0]]||[]).map(p=>p.ly);if(!ls.length)return null;const m={};ls.forEach(l=>m[l]=(m[l]||0)+1);const [top,n]=Object.entries(m).sort((a,b)=>b[1]-a[1])[0];return{top,pur:n/ls.length}};
@@ -367,7 +370,7 @@ const KEY="kmz_eval_v1";let ST=store.get(KEY,null)||{act:"AEV1.1",L:{},ref:null}
 Object.defineProperty(ST,"al",{get(){return ST.L[ST.act]=ST.L[ST.act]||[]},set(v){ST.L[ST.act]=v},enumerable:false});let SEL=-1,REFC=null;
 const sv=()=>{try{store.set(KEY,{act:ST.act,ref:ST.ref,L:Object.fromEntries(Object.entries(ST.L).map(([k,l])=>[k,l.map(({_capUrl,...a})=>({...a,pms:a.pms.map(({img,...p})=>p)}))]))})}catch(e){}};
 const CR=["Captura del mapa","Archivo KMZ: capas e iconos","",""],MAX=[1,3,3,3];
-function refCats(){REFC=null;if(!ST.ref)return;const A=ACTS[ST.act];REFC={};ST.ref.pms.forEach(p=>{const c=clasifica(p,A);if(c)(REFC[c]=REFC[c]||[]).push(p)})}
+function refCats(){REFC=null;if(!ST.ref)return;const A=ACTS[ST.act];REFC={};ST.ref.pms.forEach(p=>{const c=clasifica(p,A);if(c&&!c.startsWith("otra:"))(REFC[c]=REFC[c]||[]).push(p)})}
 function nota(a){return a.sc.reduce((s,v,i)=>s+(v??a.E.auto[i]),0)}
 function reeval(){refCats();const A=ACTS[ST.act];ST.al.forEach(a=>a.E=evalua(a,A,REFC))}
 
@@ -464,6 +467,7 @@ function ver(k){
   A.capas.forEach(([k,n,col])=>{const c=E.capas[k];h+=`<h4 style="margin:.6rem 0 0;display:flex;gap:.4rem;align-items:center"><span class="dot" style="background:${col}"></span>${esc(n)}: ${c.pre}/${c.tot}${c.mal?` · ${c.mal} mal ubicados`:""}<button class="btn ghost sm" type="button" data-all="${k}" style="margin-left:auto">Todos visibles</button></h4>`;
    A.cats.filter(z=>z[1]===k).forEach(([id,,nm])=>{const ps=E.cats[id]||[],bad=ps.filter(p=>!p.ok).length,st=E.st[id],ic={y:"✓",n:"✗",w:"!"}[st.s];
    h+=`<div class="cl" data-cat="${id}" role="button" tabindex="0" title="Ver solo este medio en el mapa"><div><button type="button" class="mk ${st.s==="y"?"y":st.s==="n"?"n":"w"}" data-ov="${id}" title="Cambiar a ${st.s==="y"?"✗ (no está)":"✓ (correcto)"}" aria-label="Cambiar valoración de ${esc(nm)}">${ic}</button><span>${esc(nm)}${ps.length?` (${ps.length}${bad?`, ${bad} con ubicación dudosa`:""})`:""}${st.man?' <span class="pill warn">manual</span>':""}</span></div></div>`})});
+  if(E.otra.length){const O=Object.entries(ACTS).find(([,x])=>x!==A);h+=`<h4 style="margin:.6rem 0 0">De la actividad ${esc(O[0])} (${E.otra.length})</h4><p class="small muted">Puntos del mismo mapa que pertenecen a la otra actividad: no cuentan en esta rúbrica.</p>`}
   if(E.sin.length)h+=`<h4 style="margin:.6rem 0 0">Sin reconocer (${E.sin.length})</h4><div class="small muted">${E.sin.slice(0,25).map(p=>esc(p.n||"(sin nombre)")).join(" · ")}${E.sin.length>25?" …":""}</div><p class="small muted">Si alguno es un medio exigido con otro nombre, ajusta a mano la puntuación de su capa.</p>`;
   h+=`<p class="small muted">Ubicación: ${ST.ref?`a menos de ${REF_KM} km de un punto del mismo medio en tu solución.`:"dentro de su isla (GC, LZ o FV) o, si no se pide isla, en tierra de la provincia de Las Palmas."}</p>`}
  $("#det").innerHTML=h;aplicaFil();
