@@ -1,0 +1,434 @@
+<!doctype html><html lang="es"><head><script>(function(){var d=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};var t=g("evb_theme"),z=+g("evb_scale")||1;function ap(){if(t)d.setAttribute("data-theme",t);d.style.fontSize=(16*z)+"px"}ap();document.addEventListener("DOMContentLoaded",function(){var w=document.createElement("div");w.setAttribute("role","group");w.setAttribute("aria-label","Accesibilidad");w.style.cssText="display:flex;gap:.3rem;align-items:center;flex-wrap:wrap";var bs="background:transparent;color:inherit;border:1px solid currentColor;border-radius:6px;padding:.2rem .55rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;line-height:1.4;opacity:.9";function b(txt,lab,fn){var e=document.createElement("button");e.type="button";e.textContent=txt;e.setAttribute("aria-label",lab);e.style.cssText=bs;e.onclick=fn;w.appendChild(e);return e}var dk=function(){return d.getAttribute("data-theme")==="dark"||(!d.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches)};b("A−","Reducir texto",function(){z=Math.max(.9,+(z-.1).toFixed(2));s("evb_scale",z);ap()});b("A+","Aumentar texto",function(){z=Math.min(1.4,+(z+.1).toFixed(2));s("evb_scale",z);ap()});var tb=b("","",function(){t=dk()?"light":"dark";s("evb_theme",t);ap();lt()});function lt(){var k=dk();tb.textContent=k?"☀ Claro":"☾ Oscuro";tb.setAttribute("aria-label",k?"Cambiar a modo claro":"Cambiar a modo oscuro")}lt();var dc=document.querySelector("header.top a.doc");if(dc){dc.style.position="static";w.appendChild(dc)}var h=document.querySelector("header.top .top-in");if(h){h.appendChild(w)}else{w.style.cssText+=";position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;background:var(--surface,#fff);color:var(--ink,#111);padding:.3rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2)";document.body.appendChild(w)}})})()</script><script>(function(){var K=["ge6:AEV1.1 \u00b7 1.1.1"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});if(K.length&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p></main>";show()})})()</script><script>document.addEventListener("DOMContentLoaded",function(){var V={"ge6:AEV1.1": "../coordinacion/ge6/index.html"},q=new URLSearchParams(location.search).get("aev"),u=V[q]||V[Object.keys(V)[0]],h=document.querySelector("header.top");if(!u||!h)return;var a=document.createElement("a");a.href=u;a.textContent="← Volver al módulo";a.style.cssText="display:inline-block;margin:.5rem 0 0 max(16px,env(safe-area-inset-left,0px));color:inherit;font-weight:600;font-size:.9rem;text-decoration:none;opacity:.9";h.insertBefore(a,h.firstChild)})</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Evaluador de mapas KMZ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../vendor/leaflet/leaflet.css">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.rubfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:999px;padding:.7rem 1.1rem;background:var(--signal);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+.btn.rubin{background:var(--signal);border-color:var(--signal);color:#fff}
+.rubdlg{width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--ink);padding:1rem}
+.rubdlg::backdrop{background:rgba(10,20,40,.55)}
+.rubdlg .rub-h{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.rubdlg .rub-x{border:0;background:none;color:inherit;font-size:1.6rem;cursor:pointer;line-height:1}
+.rubdlg textarea,.rubdlg select{width:100%;margin-top:.3rem;font:inherit;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);padding:.35rem}
+.rubdlg .rub-t{display:flex;justify-content:space-between;align-items:center;margin:.8rem 0;padding:.6rem .8rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.rubdlg .rub-t b{font-size:1.4rem}
+.rubdlg .row-btn{display:flex;justify-content:flex-end}
+@media print{.rubfab{display:none}}
+.ayuda{position:static;display:inline-block;margin-left:.35rem;vertical-align:middle;font-weight:400}
+.ayuda .info{width:1.25rem;height:1.25rem;border-radius:50%;border:1.5px solid var(--navy);background:var(--surface);color:var(--navy);font:700 .8rem/1 Georgia,serif;font-style:italic;cursor:pointer;padding:0;display:inline-grid;place-items:center}
+.ayuda .info[aria-expanded="true"]{background:var(--navy);color:var(--navy-ink)}
+.ayuda .tip{position:absolute;left:0;top:calc(100% + .35rem);z-index:40;width:min(20rem,calc(100vw - 48px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:var(--radius);padding:.6rem .75rem;box-shadow:0 6px 18px rgba(0,0,0,.18);font-size:.88rem;line-height:1.4;text-transform:none;letter-spacing:0;white-space:normal;text-align:left}
+th .ayuda .tip{font-weight:400}
+.ayuda-row{display:inline-flex;align-items:center;gap:0;position:relative}
+
+.drop{border:2px dashed var(--line);border-radius:var(--radius);padding:1.2rem;text-align:center;display:grid;gap:.5rem;justify-items:center;background:var(--sunk)}
+.drop.on{border-color:var(--navy);background:color-mix(in srgb,var(--navy) 8%,var(--surface))}
+.lay{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,22rem);gap:1rem;align-items:start}
+@media (max-width:900px){.lay{grid-template-columns:1fr}}
+#map{height:min(70vh,560px);border-radius:var(--radius);border:1px solid var(--line);z-index:0}
+table.ev{width:100%;border-collapse:collapse;font-size:.92rem}
+table.ev th,table.ev td{padding:.4rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.ev tr.sel{background:color-mix(in srgb,var(--navy) 10%,var(--surface))}
+table.ev select{padding:.2rem;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink)}
+table.ev select.man{border-color:var(--warn);border-width:2px}
+.tot{font-weight:700;font-family:var(--f-mono);white-space:nowrap}
+.chk{display:grid;gap:.25rem;font-size:.9rem}
+.chk div{display:flex;gap:.4rem;align-items:baseline}
+.chk b.y{color:var(--ok)}.chk b.n{color:var(--ko)}.chk b.w{color:var(--warn)}
+.dot{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;flex:none}
+.leaflet-popup-content{font:14px var(--f-body)}
+.leaflet-container a.leaflet-popup-close-button{color:#555}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Evaluador de mapas KMZ</b><span>Catálogo de medios y recursos de la provincia de Las Palmas · Curso 2026-2027</span></div>
+    <div class="chips"><em>GE6 · AEV1.1</em><em>AEV1.1.1</em></div>
+  </div>
+</header>
+
+<main>
+  <div class="intro"><p class="eyebrow">Corrección de entregas · My Maps</p><h2>Carga los KMZ del grupo y revisa la nota</h2>
+    <p class="muted">Arrastra todos los archivos KMZ o KML de la actividad. La herramienta los abre en un mapa abierto (OpenStreetMap), reconoce cada medio por su nombre y su descripción, comprueba capas, iconos y ubicación, y propone la puntuación de la rúbrica. Puedes cambiar cualquier puntuación: queda marcada como manual.</p></div>
+
+  <section class="panel" aria-labelledby="hC">
+    <h3 id="hC">1. Actividad y archivos</h3>
+    <div class="grid2">
+      <label class="f">Actividad<select id="act"></select></label>
+      <label class="f">Solución del profesorado (opcional)<input type="file" id="ref" accept=".kmz,.kml"><small>Si cargas tu propio KMZ, la ubicación se compara con tus puntos (máx. <span id="refKm"></span> km). Sin él, se comprueba que cada medio esté en su isla o en la provincia.</small></label>
+    </div>
+    <p class="small" id="refInfo"></p>
+    <div class="drop" id="drop"><b>Arrastra aquí los KMZ o KML del alumnado</b><span class="muted small">Se admiten varios a la vez. El nombre del archivo se usa como nombre del alumno.</span>
+      <label class="btn" for="files" style="cursor:pointer">Elegir archivos…</label><input type="file" id="files" accept=".kmz,.kml" multiple hidden></div>
+  </section>
+
+  <section class="panel" aria-labelledby="hE">
+    <h3 id="hE">2. Evaluación</h3>
+    <div class="tbl"><table class="ev"><thead id="evH"></thead><tbody id="evB"></tbody></table></div>
+    <div class="btns"><span class="small muted" id="evN"></span><span class="spacer"></span><button class="btn" id="csvB" type="button" style="background:#2e7d32;border-color:#2e7d32;color:#fff">Descargar notas (.csv)</button><button class="btn" id="clrB" type="button" style="background:#c62828;border-color:#c62828;color:#fff">Vaciar lista</button></div>
+  </section>
+
+  <section class="panel" aria-labelledby="hM">
+    <h3 id="hM">3. Mapa y detalle: <span id="who" class="muted">elige un alumno en la tabla</span></h3>
+    <div class="lay"><div id="map" role="region" aria-label="Mapa del trabajo seleccionado"></div><div id="det" class="chk"></div></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script src="../vendor/leaflet/leaflet.js"></script>
+<script src="../vendor/jszip.min.js"></script>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+/* Rúbrica de la AEV + informe PDF. Solo se activa en la web, donde site.py inyecta window.RUBRICAS.
+   auto(key) devuelve, por criterio, [r 0..1, evidencia] o null (lo autoevalúa el alumno con justificación). */
+const words=s=>String(s??"").trim().split(/\s+/).filter(Boolean).length;
+const clamp01=x=>Math.max(0,Math.min(1,x||0));
+function rubrica(o){const R=window.RUBRICAS;if(!R)return;
+ const keys=Object.keys(R),q=new URLSearchParams(location.search).get("aev"),key=keys.includes(q)?q:keys[0],RB=R[key];
+ const NIV=["Insuficiente","Suficiente","Notable","Sobresaliente"],F=[.25,.5,.75,1],lv=r=>r<.35?0:r<.6?1:r<.85?2:3;
+ const SK="rub_"+key;let st=store.get(SK,{al:"",gr:"",self:{}});const sv=()=>store.set(SK,st);
+ function calc(){const A=o.auto(key)||[];return RB.rub.map(([t,ce,max,d],i)=>{const a=A[i];
+  if(a){const n=lv(clamp01(a[0]));return{t,ce,max,d,n,auto:true,ev:a[1]||"",pts:max*F[n]}}
+  const s=st.self[i]||{},ok=s.n!=null&&words(s.j)>=12,n=ok?s.n:0;
+  return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
+ const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
+ // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
+ let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
+ const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
+ function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
+  dl.innerHTML=`<div class="rub-h"><div><p class="eyebrow">${esc(RB.aev)} · ${esc(RB.mod)}</p><h3>${esc(RB.titulo)}</h3><p class="small muted">${esc(RB.ra_ce)}</p></div><button type="button" class="rub-x" aria-label="Cerrar">×</button></div>
+  <div class="grid2"><label class="f">Nombre y apellidos<input type="text" id="rubAl" value="${esc(st.al)}"></label><label class="f">Grupo<input type="text" id="rubGr" value="${esc(st.gr)}"></label></div>
+  <p class="small muted">«Auto» = lo calcula la herramienta con tu trabajo. En el resto elige tu nivel y justifícalo (mínimo 12 palabras); sin justificación cuenta como Insuficiente. El docente valida la nota final.</p>
+  <div class="tbl"><table><thead><tr><th>Criterio</th><th>Nivel</th><th class="num">Puntos</th></tr></thead><tbody>${C.map((c,i)=>`<tr><td><b>${esc(c.t)}</b><div class="small muted">${esc(c.ce)} · máx. ${fmt(c.max)}</div>
+   ${c.auto?`<div class="small">${esc(c.ev)}</div>`:`<textarea rows="2" data-j="${i}" placeholder="Justifica tu nivel con lo que has hecho">${esc(c.ev)}</textarea>`}<div class="small muted">${esc(c.d[c.n])}</div></td>
+   <td>${c.auto?`<span class="pill">Auto</span> ${NIV[c.n]}`:`<select data-n="${i}" aria-label="Nivel"><option value="">Elige…</option>${NIV.map((n,k)=>`<option value="${k}" ${c.sel===k?"selected":""}>${n}</option>`).join("")}</select>${c.sel!=null&&!c.ok?'<div class="small" style="color:var(--ko)">Falta justificar</div>':""}`}</td>
+   <td class="num">${fmt(c.pts)}</td></tr>`).join("")}</tbody></table></div>
+  <div class="rub-t"><span>Nota propuesta</span><b>${fmt(tot)} / 10</b></div>
+  <div class="row-btn"><button type="button" class="btn" id="rubPdf">Descargar informe PDF</button></div>`;
+  dl.querySelector(".rub-x").onclick=()=>dl.close();
+  dl.querySelector("#rubAl").oninput=e=>{st.al=e.target.value;sv()};dl.querySelector("#rubGr").oninput=e=>{st.gr=e.target.value;sv()};
+  dl.querySelectorAll("[data-n]").forEach(s=>s.onchange=()=>{const i=s.dataset.n;st.self[i]={...(st.self[i]||{}),n:s.value===""?null:+s.value};sv();draw()});
+  dl.querySelectorAll("[data-j]").forEach(t=>{t.oninput=()=>{const i=t.dataset.j;st.self[i]={...(st.self[i]||{}),j:t.value};sv()};t.onchange=draw});
+  dl.querySelector("#rubPdf").onclick=()=>pdf(calc())}
+ b.onclick=()=>{draw();dl.showModal?dl.showModal():dl.setAttribute("open","")};
+ const load=src=>new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
+ async function libs(){if(window.jspdf?.jsPDF?.API?.autoTable)return;
+  try{await load("../vendor/jspdf.umd.min.js");await load("../vendor/jspdf.plugin.autotable.min.js")}
+  catch(e){await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js")}}
+ // helvetica de jsPDF solo trae Latin-1/WinAnsi
+ const T=s=>String(s??"").replace(/[≥]/g,">=").replace(/[≤]/g,"<=").replace(/[→]/g,"->").replace(/[✓]/g,"OK").replace(/[✗]/g,"X").replace(/[‑‒]/g,"-").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
+ async function pdf(C){if(!st.al.trim()){toast("Escribe tu nombre antes de descargar el informe");dl.querySelector("#rubAl").focus();return}
+  try{await libs()}catch(e){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"}),M=16,W=210,tot=C.reduce((a,c)=>a+c.pts,0);let y=0;
+  doc.setFillColor(31,58,104);doc.rect(0,0,W,24,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text(T("Informe de evaluación · "+RB.aev),M,11);
+  doc.setFont("helvetica","normal");doc.setFontSize(9);doc.text(T(RB.mod),M,18);y=32;doc.setTextColor(20,32,51);
+  doc.setFont("helvetica","bold");doc.setFontSize(12);doc.splitTextToSize(T(RB.titulo),W-2*M).forEach(l=>{doc.text(l,M,y);y+=5.5});
+  const tb=o2=>{doc.autoTable(Object.assign({startY:y,margin:{left:M,right:M},theme:"grid",styles:{font:"helvetica",fontSize:8.5,cellPadding:1.8,textColor:[20,32,51],lineColor:[211,218,228],lineWidth:.2},headStyles:{fillColor:[31,58,104],textColor:255}},o2));y=doc.lastAutoTable.finalY+6};
+  y+=2;tb({body:[["Alumno/a",T(st.al)],["Grupo",T(st.gr||"—")],["Fecha",new Date().toLocaleDateString("es-ES")],["Herramienta",T(document.title)],["RA y CE",T(RB.ra_ce)]],columnStyles:{0:{fontStyle:"bold",cellWidth:35}}});
+  tb({head:[["Criterio (RA · CE)","Nivel","Origen","Puntos"]],body:C.map(c=>[T(c.t+"\n"+c.ce),NIV[c.n],c.auto?"Herramienta":c.ok?"Autoevaluación":"Sin justificar",fmt(c.pts)+" / "+fmt(c.max)]).concat([[{content:"Nota propuesta",colSpan:3,styles:{fontStyle:"bold",halign:"right"}},{content:fmt(tot)+" / 10",styles:{fontStyle:"bold"}}]]),columnStyles:{3:{halign:"right",cellWidth:24},1:{cellWidth:26},2:{cellWidth:28}}});
+  tb({head:[["Criterio","Evidencia o justificación","Descriptor del nivel alcanzado"]],body:C.map(c=>[T(c.t),T(c.ev||"—"),T(c.d[c.n])]),columnStyles:{0:{cellWidth:38}}});
+  // o.img: imagen opcional (p. ej. el mapa) en una página propia antes del resumen
+  if(o.img){let u=null;try{u=await o.img()}catch(e){}if(u){const ip=doc.getImageProperties(u),w=W-2*M,h=Math.min(245,w*ip.height/ip.width),ww=h*ip.width/ip.height;doc.addPage();doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor(20,32,51);doc.text(T(o.imgT||"Mapa"),M,18);doc.addImage(u,"JPEG",M,24,ww,h);doc.addPage();y=20}}
+  const rs=o.resumen?o.resumen(key):[];if(rs.length)tb({head:[["Resumen del trabajo en la herramienta",""]],body:rs.map(r=>[T(r[0]),T(r[1])]),columnStyles:{0:{fontStyle:"bold",cellWidth:55}}});
+  if(y>250){doc.addPage();y=20}
+  doc.setFontSize(8.5);doc.setFont("helvetica","normal");doc.splitTextToSize(T("Nota propuesta por la herramienta según la rúbrica de la AEV (cada criterio suma el 25 %, 50 %, 75 % o 100 % de su valor). Los criterios autoevaluados y la calificación final los valida el docente."),W-2*M).forEach(l=>{doc.text(l,M,y);y+=4});
+  const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
+  const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
+  saveFile(fn,doc.output("blob"))}}
+/* Ayuda flotante: ayuda({"#id-del-campo o selector de cabecera": "texto"}) añade un icono «i» junto a la etiqueta */
+function ayuda(map){Object.entries(map).forEach(([sel,txt])=>{const el=document.querySelector(sel);if(!el)return;const host=el.closest("label")||el;
+ const w=document.createElement("span");w.className="ayuda";w.innerHTML=`<button type="button" class="info" aria-label="Ayuda" aria-expanded="false">i</button><span class="tip" role="tooltip" hidden></span>`;w.querySelector(".tip").textContent=txt;
+ const tn=[...host.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(tn){const row=document.createElement("span");row.className="ayuda-row";tn.replaceWith(row);row.append(tn,w)}else host.appendChild(w);
+ const b=w.querySelector(".info"),t=w.querySelector(".tip");b.onclick=e=>{e.preventDefault();e.stopPropagation();const open=t.hidden;document.querySelectorAll(".ayuda .tip").forEach(x=>{x.hidden=true;x.previousElementSibling.setAttribute("aria-expanded","false")});t.hidden=!open;b.setAttribute("aria-expanded",open)}});
+ if(!ayuda._b){ayuda._b=1;document.addEventListener("click",e=>{if(!e.target.closest(".ayuda"))document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)});document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)})}}
+
+"use strict";
+const REF_KM=3;
+// Texto normalizado (minúsculas, sin tildes) para reconocer los medios
+const nz=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const HELI=/helic|helimer|super ?puma|aw ?139|ec ?135|as ?365|dauphin|bk ?117|\bh-?\d/, AVION=/avion|ala fija|cn ?-?235|c ?-?295|sasemar ?1\d\d|vigma|ambulancia aerea|king ?air/;
+const ISL={GC:[27.70,28.22,-15.88,-15.32],LZ:[28.80,29.46,-13.90,-13.38],FV:[28.02,28.78,-14.55,-13.80]},PROV=[27.55,29.5,-16.05,-13.25];
+const inB=(b,p)=>p.lat>=b[0]&&p.lat<=b[1]&&p.lon>=b[2]&&p.lon<=b[3];
+const isla=p=>Object.keys(ISL).find(k=>inB(ISL[k],p))||"";
+/* Actividades: capas de la rúbrica y medios exigidos. m(texto,pm) decide si un punto es ese medio.
+   El orden importa: se asigna el primer medio que encaja. */
+const ACTS={
+ "AEV1.1":{t:"AEV1.1 · Medios aéreos y marítimos",info:/autonom|velocid|nudos|km\/h|carga|capacidad|tripul|plazas|pasajer|alcance|operativ/,
+  capas:[["aer","Capa Medios Aéreos","#1f5fbf",/a[eé]re|aire|heli|avion/],["mar","Capa Medios Marítimos","#00838f",/mar[ií]tim|mar\b|barco|embarc|buque/]],
+  cats:[
+   ["smH","aer","Salvamento Marítimo · helicóptero",t=>/helimer/.test(t)||/salvamento maritimo|sasemar/.test(t)&&HELI.test(t)],
+   ["smA","aer","Salvamento Marítimo · avión",t=>/sasemar ?1\d\d/.test(t)||/salvamento maritimo|sasemar/.test(t)&&AVION.test(t)],
+   ["sucH","aer","SUC · helicóptero",t=>/\bsuc\b|servicio de urgencias canario|sanitari|medicalizad/.test(t)&&HELI.test(t)],
+   ["sucA","aer","SUC · avión",t=>/\bsuc\b|servicio de urgencias canario|sanitari|medicalizad/.test(t)&&AVION.test(t)],
+   ["ges","aer","GES · helicóptero",t=>/\bges\b|grupo de emergencias y salvamento|grupo de emergencias/.test(t)],
+   ["eaH","aer","Ejército del Aire (SAR) · helicóptero",t=>/ejercito|\bsar\b|802|escuadron|super ?puma/.test(t)&&HELI.test(t)],
+   ["eaA","aer","Ejército del Aire (SAR) · avión",t=>/ejercito|\bsar\b|802|escuadron/.test(t)&&AVION.test(t)],
+   ["salvamar","mar","Salvamento Marítimo · Salvamar",t=>/salvamar/.test(t)],
+   ["guardamar","mar","Salvamento Marítimo · Guardamar",t=>/guardamar/.test(t)],
+   ["poli","mar","Salvamento Marítimo · buque polivalente",t=>/polivalente|buque de salvamento|remolcador de salvamento/.test(t)],
+   ["gc","mar","Guardia Civil del Mar · patrulleras",t=>/guardia civil|patrullera|servicio maritimo/.test(t)],
+   ["cr","mar","Cruz Roja · zodiac / moto acuática",t=>/cruz roja/.test(t)],
+   ["pro","mar","Proactiva · zodiac / moto acuática",t=>/proactiva/.test(t)],
+   ["eml","mar","Emerlan · zodiac / moto acuática",t=>/emerlan/.test(t)]]},
+ "AEV1.1.1":{t:"AEV1.1.1 · Recursos sanitarios terrestres",info:/horari|24 ?h|h24|abierto|dotaci|tecnic|medic|enfermer|conductor|tes\b|turno/,
+  capas:[["ter","Capa Medios Terrestres (SVA y bases)","#c62828",/terrestre|sva|ambulan|base|consorcio|bombero/],["hos","Capa Recursos Hospitalarios","#2e7d32",/hospital|sanitari|salud|urgencia|asistencial/]],
+  cats:[
+   ...["GC","LZ","FV"].map(i=>["sva"+i,"ter","Ambulancia SVA · "+i,(t,p)=>/\bsva\b|soporte vital avanzado|medicalizad|ambulancia/.test(t)&&isla(p)===i]),
+   ...["GC","LZ","FV"].map(i=>["base"+i,"ter","Base del Consorcio de Emergencias · "+i,(t,p)=>/consorcio|parque|bombero|base/.test(t)&&isla(p)===i]),
+   ...["GC","LZ","FV"].map(i=>["hos"+i,"hos","Hospital general o comarcal · "+i,(t,p)=>/hospital|complejo hospitalario|insular|negrin|materno/.test(t)&&!/centro de salud/.test(t)&&isla(p)===i]),
+   ...["GC","LZ","FV"].map(i=>["cs"+i,"hos","Centro de salud con urgencias · "+i,(t,p)=>/centro de salud|\bc\.?s\.?\b|suap|\bpac\b|urgencias/.test(t)&&isla(p)===i])]}};
+// Medios que deben estar en una isla concreta (1.1.1); el resto basta con que estén en la provincia
+const islaDe=c=>(c.match(/(GC|LZ|FV)$/)||[])[1];
+
+/* ---------- Lectura de KML / KMZ ---------- */
+const txt=(el,tag)=>{const e=el&&el.getElementsByTagNameNS("*",tag)[0];return e?e.textContent.trim():""};
+const plain=h=>{try{return(new DOMParser().parseFromString("<body>"+String(h||"").replace(/<br\s*\/?>/gi,"\n")+"</body>","text/html").body.textContent||"").trim()}catch(e){return String(h||"")}};
+async function readFile(f){
+ let kml="",imgs={};
+ if(/\.kmz$/i.test(f.name)){
+  let z;try{z=await JSZip.loadAsync(f)}catch(e){throw new Error("no es un KMZ válido (archivo dañado o con otro formato)")}
+  const ks=Object.keys(z.files).filter(n=>/\.kml$/i.test(n));
+  if(!ks.length)throw new Error("El KMZ no contiene ningún KML.");
+  kml=await z.file(ks.find(n=>/(^|\/)doc\.kml$/i.test(n))||ks[0]).async("string");
+  for(const n of Object.keys(z.files))if(/\.(png|jpe?g|gif|svg)$/i.test(n)&&!z.files[n].dir)imgs[n]=URL.createObjectURL(await z.file(n).async("blob"));
+ }else kml=await f.text();
+ return parseKml(kml,imgs)}
+function parseKml(kml,imgs){
+ const x=new DOMParser().parseFromString(kml,"application/xml");
+ if(x.getElementsByTagName("parsererror").length)throw new Error("El archivo no es un KML válido.");
+ const st={},sm={};
+ for(const s of x.getElementsByTagNameNS("*","Style")){const ic=s.getElementsByTagNameNS("*","IconStyle")[0];st[s.getAttribute("id")]={h:txt(ic,"href"),c:txt(ic,"color")}}
+ for(const s of x.getElementsByTagNameNS("*","StyleMap")){for(const p of s.getElementsByTagNameNS("*","Pair"))if(txt(p,"key")==="normal")sm[s.getAttribute("id")]=txt(p,"styleUrl").replace(/^#/,"")}
+ const pms=[];
+ for(const p of x.getElementsByTagNameNS("*","Placemark")){
+  const co=txt(p,"coordinates").split(/\s+/).filter(Boolean)[0];if(!co)continue;
+  const [lon,lat]=co.split(",").map(Number);if(!isFinite(lat)||!isFinite(lon))continue;
+  let f=p.parentNode,top="";while(f&&f.nodeType===1){if(f.localName==="Folder")top=txt(f,"name")||top;f=f.parentNode}
+  let su=txt(p,"styleUrl").replace(/^#/,"");su=sm[su]||su;const s=st[su]||{};
+  const href=s.h||"",img=imgs[href]||(/^https?:/.test(href)?href:"");
+  pms.push({n:txt(p,"name"),d:plain(txt(p,"description")),lat,lon,ly:top||"(sin capa)",ik:(href||su.replace(/-(normal|highlight|nodesc)$/g,""))+"|"+(s.c||""),img,pt:!!p.getElementsByTagNameNS("*","Point")[0]})}
+ const nl=x.getElementsByTagNameNS("*","NetworkLink").length;
+ return{pms,nl}}
+
+/* ---------- Evaluación ---------- */
+function clasifica(pm,A){const t=nz(pm.n+" "+pm.d+" "+pm.ly);const c=A.cats.find(c=>c[3](t,pm));return c?c[0]:""}
+const dist=(a,b)=>{const R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lon-a.lon)*r,s=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(s))};
+function bienUbicado(pm,c,REFC){const r=REFC&&REFC[c];if(r&&r.length)return Math.min(...r.map(q=>dist(q,pm)))<=REF_KM;const i=islaDe(c);return i?inB(ISL[i],pm):inB(PROV,pm)&&!!isla(pm)}
+function evalua(S,A,REFC){
+ const E={cats:{},capas:{},info:0,sin:[]};
+ if(S.err||!S.pms.length){E.auto=[0,1,0,0];E.msg=S.err||(S.nl?"Exportado con «mantener sincronizado» (solo un enlace): vuelve a exportarlo desde My Maps sin esa opción.":"No contiene ningún punto.");return E}
+ for(const pm of S.pms){pm.c=clasifica(pm,A);pm.ok=pm.c?bienUbicado(pm,pm.c,REFC):false;if(pm.c)(E.cats[pm.c]=E.cats[pm.c]||[]).push(pm);else E.sin.push(pm)}
+ E.info=S.pms.filter(p=>A.info.test(nz(p.d))).length;
+ // capas separadas: los medios de cada capa de la rúbrica comparten capa en My Maps y no se mezclan con la otra
+ const capaDe=k=>{const ls=A.cats.filter(c=>c[1]===k).flatMap(c=>E.cats[c[0]]||[]).map(p=>p.ly);if(!ls.length)return null;const m={};ls.forEach(l=>m[l]=(m[l]||0)+1);const [top,n]=Object.entries(m).sort((a,b)=>b[1]-a[1])[0];return{top,pur:n/ls.length}};
+ const C=A.capas.map(([k])=>capaDe(k));
+ const sep=C.every(c=>c&&c.pur>=.8)&&C[0].top!==C[1].top;
+ // iconos: cada tipo de medio con su icono propio
+ const TY={};Object.entries(E.cats).forEach(([c,ps])=>{const t=c.replace(/(GC|LZ|FV)$/,"");TY[t]=(TY[t]||[]).concat(ps)});
+ const dom=Object.values(TY).map(ps=>{const m={};ps.forEach(p=>m[p.ik]=(m[p.ik]||0)+1);return Object.entries(m).sort((a,b)=>b[1]-a[1])[0][0]});
+ const nIc=new Set(dom).size,icOk=dom.length>1&&nIc>=Math.ceil(dom.length*.6);
+ E.sep=sep;E.C=C;E.nTy=dom.length;E.nIc=nIc;E.icOk=icOk;
+ const capa=k=>{const cs=A.cats.filter(c=>c[1]===k),pre=cs.filter(c=>E.cats[c[0]]),ps=pre.flatMap(c=>E.cats[c[0]]),loc=ps.every(p=>p.ok);
+  E.capas[k]={pre:pre.length,tot:cs.length,mal:ps.filter(p=>!p.ok).length};
+  return !pre.length?0:pre.length===cs.length&&loc?3:pre.length<cs.length/2&&!loc?1:2};
+ E.auto=[0,sep&&icOk?3:2,capa(A.capas[0][0]),capa(A.capas[1][0])];
+ return E}
+
+/* ---------- Estado ---------- */
+const KEY="kmz_eval_v1";let ST=store.get(KEY,null)||{act:"AEV1.1",L:{},ref:null};ST.L=ST.L||{};
+Object.defineProperty(ST,"al",{get(){return ST.L[ST.act]=ST.L[ST.act]||[]},set(v){ST.L[ST.act]=v},enumerable:false});let SEL=-1,REFC=null;
+const sv=()=>{try{store.set(KEY,{act:ST.act,ref:ST.ref,L:Object.fromEntries(Object.entries(ST.L).map(([k,l])=>[k,l.map(a=>({...a,pms:a.pms.map(({img,...p})=>p)}))]))})}catch(e){}};
+const CR=["Captura del mapa","Archivo KMZ: capas e iconos","",""],MAX=[1,3,3,3];
+function refCats(){REFC=null;if(!ST.ref)return;const A=ACTS[ST.act];REFC={};ST.ref.pms.forEach(p=>{const c=clasifica(p,A);if(c)(REFC[c]=REFC[c]||[]).push(p)})}
+function nota(a){return a.sc.reduce((s,v,i)=>s+(v??a.E.auto[i]),0)}
+function reeval(){refCats();const A=ACTS[ST.act];ST.al.forEach(a=>a.E=evalua(a,A,REFC))}
+
+$("#act").innerHTML=Object.entries(ACTS).map(([k,a])=>`<option value="${k}">${esc(a.t)}</option>`).join("");
+$("#refKm").textContent=REF_KM;
+$("#act").onchange=e=>{ST.act=e.target.value;SEL=-1;if(LG)LG.clearLayers();$("#det").innerHTML="";$("#who").textContent="elige un alumno en la tabla";reeval();sv();draw();if(ST.al.length)ver(0)};
+
+async function addFiles(fs){
+ const A=ACTS[ST.act];let n=0;
+ for(const f of fs){if(!/\.km[lz]$/i.test(f.name))continue;
+  const al=f.name.replace(/\.km[lz]$/i,"").replace(/[_]+/g," ").trim();let S;
+  try{S=await readFile(f)}catch(e){S={pms:[],nl:0,err:"No se puede leer el archivo: "+(e.message||"formato no reconocido")+"."}}
+  const a={al,file:f.name,pms:S.pms,nl:S.nl,err:S.err||"",sc:[null,null,null,null]};a.E=evalua(a,A,REFC);
+  const i=ST.al.findIndex(x=>x.file===f.name);if(i>=0)ST.al[i]=a;else ST.al.push(a);n++}
+ ST.al.sort((x,y)=>x.al.localeCompare(y.al,"es"));sv();toast(n+" archivo(s) cargado(s)");draw();
+ if(SEL<0&&ST.al.length)ver(0)}
+$("#files").onchange=e=>{addFiles([...e.target.files]);e.target.value=""};
+const dz=$("#drop");["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("on")}));
+["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove("on")}));
+dz.addEventListener("drop",e=>addFiles([...e.dataTransfer.files]));
+$("#ref").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const S=await readFile(f);ST.ref={file:f.name,pms:S.pms.map(({img,...p})=>p)};reeval();sv();draw();if(SEL>=0)ver(SEL)}catch(er){toast("No se pudo leer la solución.")}};
+
+function draw(){
+ const A=ACTS[ST.act];CR[2]=A.capas[0][1];CR[3]=A.capas[1][1];
+ $("#refInfo").innerHTML=ST.ref?`Solución cargada: <b>${esc(ST.ref.file)}</b> (${ST.ref.pms.length} puntos). <button class="btn ghost sm" id="refX" type="button">Quitar</button>`:"";
+ if(ST.ref)$("#refX").onclick=()=>{ST.ref=null;$("#ref").value="";reeval();sv();draw();if(SEL>=0)ver(SEL)};
+ $("#evH").innerHTML=`<tr><th>Alumno</th>${CR.map((c,i)=>`<th>${esc(c)} <span class="muted small">(${MAX[i]})</span></th>`).join("")}<th>Nota</th><th></th></tr>`;
+ $("#evB").innerHTML=ST.al.map((a,k)=>`<tr class="${k===SEL?"sel":""}"><td><b>${esc(a.al)}</b>${a.E.msg?`<div class="small" style="color:var(--ko)">${esc(a.E.msg)}</div>`:""}</td>${
+  MAX.map((m,i)=>{const v=a.sc[i]??a.E.auto[i];return `<td><select data-a="${k}" data-i="${i}" class="${a.sc[i]!=null?"man":""}" aria-label="${esc(CR[i])}">${[...Array(m+1).keys()].map(n=>`<option${n===v?" selected":""}>${n}</option>`).join("")}</select>${i&&a.sc[i]==null?' <span class="pill">Auto</span>':i===0&&a.sc[0]==null?' <span class="pill warn">Revisar</span>':""}</td>`}).join("")
+  }<td class="tot">${String(nota(a)).replace(".",",")} / 10</td><td><button class="btn ghost sm" data-v="${k}" type="button">Ver mapa</button></td></tr>`).join("")||`<tr><td colspan="7" class="muted">Todavía no hay archivos cargados.</td></tr>`;
+ $("#evN").textContent=ST.al.length?`${ST.al.length} trabajos · media ${(ST.al.reduce((s,a)=>s+nota(a),0)/ST.al.length).toFixed(1).replace(".",",")}. La captura se puntúa a mano (la herramienta solo recibe el KMZ).`:"";
+ $$("#evB select").forEach(s=>s.onchange=()=>{const a=ST.al[+s.dataset.a],i=+s.dataset.i,v=+s.value;a.sc[i]=v===a.E.auto[i]&&i?null:v;sv();draw()});
+ $$("#evB [data-v]").forEach(b=>b.onclick=()=>ver(+b.dataset.v))}
+
+/* ---------- Mapa ---------- */
+let MAP=null,LG=null;
+function ensureMap(){if(MAP||!window.L)return;MAP=L.map("map").setView([28.55,-14.6],8);
+ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© colaboradores de OpenStreetMap"}).addTo(MAP);LG=L.layerGroup().addTo(MAP)}
+function ver(k){
+ SEL=k;draw();const a=ST.al[k],A=ACTS[ST.act],E=a.E;$("#who").textContent=a.al;ensureMap();
+ const capaCol=c=>{const x=A.cats.find(z=>z[0]===c);return x?A.capas.find(z=>z[0]===x[1])[2]:"#757575"};
+ if(LG){LG.clearLayers();const b=[];
+  a.pms.forEach(p=>{const col=capaCol(p.c),ll=[p.lat,p.lon];b.push(ll);
+   const mk=p.img?L.marker(ll,{icon:L.icon({iconUrl:p.img,iconSize:[26,26],iconAnchor:[13,13]})}):L.circleMarker(ll,{radius:7,color:p.c&&!p.ok?"#c62828":"#fff",weight:2,fillColor:col,fillOpacity:.9});
+   const nm=A.cats.find(z=>z[0]===p.c);
+   const pop=document.createElement("div");pop.innerHTML=`<b></b><div class="small"></div><div class="small" style="white-space:pre-wrap;max-height:9rem;overflow:auto;margin-top:.3rem"></div>`;
+   pop.children[0].textContent=p.n||"(sin nombre)";pop.children[1].textContent=`Capa: ${p.ly} · ${nm?nm[2]:"sin reconocer"}${p.c?(p.ok?" · bien ubicado":" · ubicación dudosa"):""}`;pop.children[2].textContent=p.d||"(sin descripción)";
+   mk.bindPopup(pop);mk.addTo(LG)});
+  if(ST.ref)ST.ref.pms.forEach(p=>L.circleMarker([p.lat,p.lon],{radius:4,color:"#000",weight:1,fillColor:"#ffeb3b",fillOpacity:.8}).bindTooltip("Solución: "+p.n).addTo(LG));
+  if(b.length)MAP.fitBounds(b,{padding:[25,25],maxZoom:12});setTimeout(()=>MAP.invalidateSize(),50)}
+ const Y=(ok,t)=>`<div><b class="${ok===true?"y":ok===false?"n":"w"}">${ok===true?"✓":ok===false?"✗":"!"}</b><span>${t}</span></div>`;
+ let h=`<p class="eyebrow">${esc(a.file)}</p>`;
+ if(E.msg)h+=`<p class="fb ko">${esc(E.msg)}</p>`;
+ else{
+  h+=`<div class="small muted">${a.pms.length} puntos · capas de My Maps: ${esc([...new Set(a.pms.map(p=>p.ly))].join(", "))}</div>`;
+  h+=Y(E.sep,`Capas separadas (${A.capas.map(c=>c[1].replace("Capa ","")).join(" / ")})${E.C.every(Boolean)?": "+E.C.map(c=>`«${esc(c.top)}» ${Math.round(c.pur*100)} %`).join(" · "):""}`);
+  h+=Y(E.icOk,`${E.nIc} iconos distintos para ${E.nTy} tipos de medio`);
+  h+=Y(E.info>=a.pms.length*.8?true:E.info?null:false,`Descripción con datos (${ST.act==="AEV1.1"?"autonomía, velocidad, carga…":"horario, dotación…"}): ${E.info} de ${a.pms.length}`);
+  A.capas.forEach(([k,n,col])=>{const c=E.capas[k];h+=`<h4 style="margin:.6rem 0 0;display:flex;gap:.4rem;align-items:center"><span class="dot" style="background:${col}"></span>${esc(n)}: ${c.pre}/${c.tot}${c.mal?` · ${c.mal} mal ubicados`:""}</h4>`;
+   A.cats.filter(z=>z[1]===k).forEach(([id,,nm])=>{const ps=E.cats[id]||[],bad=ps.filter(p=>!p.ok).length;h+=Y(!ps.length?false:bad?null:true,`${esc(nm)}${ps.length?` (${ps.length}${bad?`, ${bad} con ubicación dudosa`:""})`:""}`)})});
+  if(E.sin.length)h+=`<h4 style="margin:.6rem 0 0">Sin reconocer (${E.sin.length})</h4><div class="small muted">${E.sin.slice(0,25).map(p=>esc(p.n||"(sin nombre)")).join(" · ")}${E.sin.length>25?" …":""}</div><p class="small muted">Si alguno es un medio exigido con otro nombre, ajusta a mano la puntuación de su capa.</p>`;
+  h+=`<p class="small muted">Ubicación: ${ST.ref?`a menos de ${REF_KM} km de un punto del mismo medio en tu solución.`:"dentro de su isla (GC, LZ o FV) o, si no se pide isla, en tierra de la provincia de Las Palmas."}</p>`}
+ $("#det").innerHTML=h}
+
+$("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv([["Alumno","Archivo",...CR.map((c,i)=>`${c} (${MAX[i]})`),"Nota","Observaciones"],...ST.al.map(a=>{const E=a.E,ob=E.msg||[!E.sep&&"capas no separadas",!E.icOk&&"iconos poco diferenciados",...A.cats.filter(c=>!E.cats[c[0]]).map(c=>"falta "+c[2]),...Object.entries(E.capas).filter(([,c])=>c.mal).map(([k,c])=>`${c.mal} mal ubicados en ${A.capas.find(z=>z[0]===k)[1]}`)].filter(Boolean).join("; ");
+ return[a.al,a.file,...a.sc.map((v,i)=>v??E.auto[i]),String(nota(a)).replace(".",","),ob]})]))};
+$("#clrB").onclick=()=>{if(!confirm("¿Vaciar la lista de trabajos y notas de esta actividad?"))return;ST.al=[];SEL=-1;sv();if(LG)LG.clearLayers();$("#who").textContent="elige un alumno en la tabla";$("#det").innerHTML="";draw()};
+
+$("#act").value=ST.act;reeval();draw();ensureMap();if(ST.al.length)ver(0);
+</script>
+
+</body></html>
