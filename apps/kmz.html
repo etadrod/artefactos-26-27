@@ -373,6 +373,8 @@ $("#act").onchange=e=>{ST.act=e.target.value;SEL=-1;if(LG)LG.clearLayers();$("#d
 // clave de emparejado KMZ ↔ captura: nombre sin extensión, sin tildes ni palabras como «captura» o «mapa»
 // entregas de Moodle: «Nombre Apellidos_12345678_assignsubmission_file_…» → se usa solo el nombre del alumno
 const moodle=s=>{const m=String(s).match(/^(.+?)_\d+_assignsubmission_(?:file|onlinetext)_/);return m?m[1]:String(s)};
+// nombre y apellidos para la tabla: sin la parte de Moodle, extensión, números ni guiones bajos
+const nombreDe=f=>moodle(f).replace(/\.[^.]+$/,"").replace(/_\d{4,}.*$/,"").replace(/[_]+/g," ").replace(/\s+/g," ").trim()||String(f);
 const kn=s=>nz(moodle(s).replace(/\.[^.]+$/,"")).replace(/\b(captura|mapa|kmz|kml|pantalla|screenshot|imagen|img|foto)\b/g," ").replace(/[^a-z0-9]+/g,"");
 // palabras del nombre útiles para emparejar (sin genéricas, números ni fechas)
 const STOP=new Set("captura capturas mapa mapas pantalla screenshot imagen img foto kmz kml act aev ge6 catalogo medios aereos maritimos recursos sanitarios terrestres lpa las palmas provincia sin titulo final entrega copia the and del los las con por para png jpg jpeg".split(" "));
@@ -391,7 +393,7 @@ async function addCap(f,a){if(!a){if(!HUERF.some(x=>x.name===f.name))HUERF.push(
 async function addFiles(fs){
  const A=ACTS[ST.act];let n=0;const caps=fs.filter(f=>!/\.km[lz]$/i.test(f.name));
  for(const f of fs){if(!/\.km[lz]$/i.test(f.name))continue;
-  const al=moodle(f.name).replace(/\.km[lz]$/i,"").replace(/[_]+/g," ").trim();let S;
+  const al=nombreDe(f.name);let S;
   try{S=await readFile(f)}catch(e){S={pms:[],nl:0,err:"No se puede leer el archivo: "+(e.message||"formato no reconocido")+"."}}
   const a={al,file:f.name,pms:S.pms,nl:S.nl,err:S.err||"",sc:[null,null,null,null]};
   const i=ST.al.findIndex(x=>x.file===f.name);
@@ -468,6 +470,7 @@ $("#csvB").onclick=()=>{const A=ACTS[ST.act];saveFile(`notas_${ST.act}.csv`,csv(
  return[a.al,a.file,...a.sc.map((v,i)=>v??E.auto[i]),String(nota(a)).replace(".",","),ob]})]))};
 $("#clrB").onclick=()=>{if(!confirm("¿Vaciar la lista de trabajos y notas de esta actividad?"))return;ST.al=[];SEL=-1;sv();if(LG)LG.clearLayers();$("#who").textContent="elige un alumno en la tabla";$("#det").innerHTML="";draw()};
 
+Object.values(ST.L).forEach(l=>l.forEach(x=>{if(x.file)x.al=nombreDe(x.file)}));
 $("#act").value=ST.act;reeval();draw();ensureMap();if(ST.al.length)ver(0);
 </script>
 
