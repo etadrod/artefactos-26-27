@@ -539,7 +539,7 @@ const EVV=(()=>{
     <p><b>Total: ${fN(n)} / 10</b>${completo(E)?"":" <span class='pill warn'>provisional</span>"} <span class="small muted">· la raya naranja marca la propuesta automática</span></p>
     <div class="btns"><button class="btn ghost sm" type="button" id="evRc">Recalcular propuesta automática</button><button class="btn sm" type="button" id="evOk" ${completo(E)?"":"disabled"}>Guardar nota</button>${hecha(E)?'<span class="pill ok">Nota guardada</span>':E.ok===false?'<span class="small muted">Hay cambios sin guardar.</span>':""}</div>
     <label class="f" for="evR"><b>Resumen para el alumno</b></label>
-    <div class="btns"><button class="btn sm" type="button" id="evCp">Copiar texto</button><button class="btn ghost sm" type="button" id="evRg">Regenerar</button>${E.resMan?'<span class="small muted">Editado a mano: no se actualiza solo.</span>':""}</div>
+    <div class="btns"><button class="btn ghost sm" type="button" id="evRg">Regenerar</button><button class="btn sm" type="button" id="evCp">Copiar texto</button>${E.resMan?'<span class="small muted">Editado a mano: no se actualiza solo.</span>':""}</div>
     <textarea class="ev-res" id="evR" rows="2">${esc(E.res||"")}</textarea></div></div>`;
    fit($("#evR"));tabla();
    $("#evAl").onchange=()=>{E.al=$("#evAl").value.trim();E.alMan=true;if(!E.resMan)E.res=resumen(E);sv();abre(id)};
