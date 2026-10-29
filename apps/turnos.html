@@ -170,7 +170,35 @@ table.q tr.cov td.lack{background:color-mix(in srgb,var(--ko) 22%,var(--surface)
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+/* Sesión Alumno/Docente (herramientas con acceso()): el trabajo de cada usuario se guarda con su propio prefijo */
+let WHO=null;try{WHO=JSON.parse(sessionStorage.getItem("vib_who")||"null")}catch(e){}
+const kNom=n=>String(n).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+let UPRE="";const UK=k=>UPRE+k;
+const store={get(k,d){try{const v=localStorage.getItem(UK(k));return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(UK(k),JSON.stringify(v))}catch(e){}}};
+// o.doc(el): rellena el panel docente de la herramienta. Sin sesión muestra la entrada y detiene la app (throw).
+// enlace a la Herramienta de Evaluación (VIB) desde el panel docente de cada herramienta
+const evAev=()=>{const k=window.RUBRICAS&&Object.keys(window.RUBRICAS).find(x=>x.startsWith("vib:"));return k?k.split(":")[1]:""};
+const evLink=()=>evAev()?`<p class="small" style="margin-top:.6rem">La evaluación de las entregas de esta actividad está en la <a href="evaluacion.html?a=${evAev()}">Herramienta de Evaluación</a>.</p>`:"";
+function acceso(o){o=o||{};const main=document.querySelector("main"),setWho=w=>{try{w?sessionStorage.setItem("vib_who",JSON.stringify(w)):sessionStorage.removeItem("vib_who")}catch(e){}};
+ if(!document.getElementById("acc-css")){const st=document.createElement("style");st.id="acc-css";st.textContent=`.acc-gate{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.1rem;max-width:52rem}.acc-gate form{display:grid;gap:.7rem;align-content:start}.acc-gate input{padding:.5rem;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:inherit;min-width:0}.acc-who{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between;background:var(--sunk);border-radius:6px;padding:.5rem .8rem;margin-bottom:1rem}`;document.head.appendChild(st)}
+ // o.soloDoc: página solo para el profesorado (sin entrada de alumno)
+ if(o.soloDoc&&WHO&&WHO.rol!=="doc")WHO=null;
+ if(!WHO){[...main.children].forEach(c=>c.hidden=true);const g=document.createElement("section");g.setAttribute("aria-labelledby","accH");
+  g.innerHTML=`<div class="intro"><p class="eyebrow">Acceso</p><h2 id="accH">¿Quién entra?</h2><p class="muted">Cada alumno entra con su nombre: su trabajo se guarda por separado en este navegador.</p></div><div class="acc-gate"><form class="panel" id="accA"><h3>Alumno</h3><label class="f">Nombre y apellidos<input type="text" id="accN" autocomplete="name" required placeholder="Ej.: Nayra Santana Déniz"></label><button class="btn" type="submit">Entrar</button><p class="small muted" id="accAm"></p></form><form class="panel" id="accD"><h3>Docente</h3><label class="f">Código<input type="password" id="accC" inputmode="numeric" autocomplete="off"></label><button class="btn ghost" type="submit">Entrar como docente</button><p class="small muted" id="accDm"></p></form></div>`;
+  if(o.soloDoc){g.querySelector("#accA").remove();g.querySelector(".intro .muted").textContent="Herramienta solo para el profesorado: entra con el código docente."}
+  main.prepend(g);
+  if($("#accA"))$("#accA").onsubmit=e=>{e.preventDefault();const n=$("#accN").value.replace(/\s+/g," ").trim();if(n.split(" ").length<2){$("#accAm").textContent="Escribe tu nombre y al menos un apellido.";return}setWho({rol:"al",nom:n});location.reload()};
+  // shortcut: el código solo separa la vista docente (la web es pública)
+  $("#accD").onsubmit=async e=>{e.preventDefault();const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("artefactos-26-27:"+$("#accC").value.trim()));
+   if([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")!=="6c8f4c40e57cfdb9e934b46b9b1b54ec714fd36841e273e170f027766ccda77a"){$("#accDm").textContent="Código incorrecto.";return}
+   try{sessionStorage.setItem("doc_ok","1")}catch(x){}setWho({rol:"doc"});location.reload()};
+  throw new Error("acceso: esperando usuario")}
+ const doc=WHO.rol==="doc";UPRE=doc?"doc:":"u:"+kNom(WHO.nom)+":";
+ if(!doc&&window.RUBRICAS)Object.keys(window.RUBRICAS).forEach(k=>{const st=store.get("rub_"+k,{al:"",gr:"",self:{}});if(!st.al){st.al=WHO.nom;store.set("rub_"+k,st)}});
+ const w=document.createElement("div");w.className="acc-who";w.innerHTML=`<span>${doc?"<b>Docente</b> · ves la herramienta como el alumnado, con tu panel.":"<b>Alumno:</b> "+esc(WHO.nom)}</span><button class="btn ghost sm" type="button">Cambiar de usuario</button>`;
+ w.querySelector("button").onclick=()=>{setWho(null);location.reload()};main.prepend(w);
+ if(doc){const d=document.createElement("section");d.className="panel";d.setAttribute("aria-label","Panel docente");d.style.marginBottom="1rem";d.innerHTML=`<h3>Panel docente</h3><div id="accP"><p class="small muted">Aún no hay ajustes propios en esta herramienta.</p></div>${o.soloDoc?"":evLink()}`;w.after(d);if(o.doc)o.doc($("#accP"))}
+ return WHO}
 function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
 const today=()=>new Date().toISOString().slice(0,10);
 const fmtD=d=>d?d.split("-").reverse().join("/"):"";
@@ -220,7 +248,9 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
  (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
- let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
+ let b=o.btn&&document.getElementById(o.btn);
+ if(WHO&&WHO.rol==="doc"&&key.startsWith("vib:")){if(b){b.className="btn ghost";b.textContent="Evaluar entregas (Herramienta de Evaluación)";b.onclick=()=>location.href="evaluacion.html?a="+RB.aev}return}
+ if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
   dl.innerHTML=`<div class="rub-h"><div><p class="eyebrow">${esc(RB.aev)} · ${esc(RB.mod)}</p><h3>${esc(RB.titulo)}</h3><p class="small muted">${esc(RB.ra_ce)}</p></div><button type="button" class="rub-x" aria-label="Cerrar">×</button></div>
@@ -260,6 +290,8 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   if(y>250){doc.addPage();y=20}
   doc.setFontSize(8.5);doc.setFont("helvetica","normal");doc.splitTextToSize(T("Nota propuesta por la herramienta según la rúbrica de la AEV (cada criterio suma el 25 %, 50 %, 75 % o 100 % de su valor). Los criterios autoevaluados y la calificación final los valida el docente."),W-2*M).forEach(l=>{doc.text(l,M,y);y+=4});
   const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
+  const meta={key,al:st.al,gr:st.gr,fecha:new Date().toISOString(),C:C.map(c=>({t:c.t,n:c.n,auto:c.auto,ok:!!c.ok,ev:c.ev||"",pts:c.pts,max:c.max})),tot};
+  doc.setProperties({title:T("Informe de evaluación · "+RB.aev),author:T(st.al),subject:"RUBKIT1:"+btoa(unescape(encodeURIComponent(JSON.stringify(meta)))),keywords:"VIB "+RB.aev});
   const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
   saveFile(fn,doc.output("blob"))}}
 /* Ayuda flotante: ayuda({"#id-del-campo o selector de cabecera": "texto"}) añade un icono «i» junto a la etiqueta */

@@ -1,0 +1,547 @@
+<!doctype html><html lang="es"><head><script>(function(){var d=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};var t=g("evb_theme"),z=+g("evb_scale")||1;function ap(){if(t)d.setAttribute("data-theme",t);d.style.fontSize=(16*z)+"px"}ap();document.addEventListener("DOMContentLoaded",function(){var w=document.createElement("div");w.setAttribute("role","group");w.setAttribute("aria-label","Accesibilidad");w.style.cssText="display:flex;gap:.3rem;align-items:center;flex-wrap:wrap";var bs="background:transparent;color:inherit;border:1px solid currentColor;border-radius:6px;padding:.2rem .55rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;line-height:1.4;opacity:.9";function b(txt,lab,fn){var e=document.createElement("button");e.type="button";e.textContent=txt;e.setAttribute("aria-label",lab);e.style.cssText=bs;e.onclick=fn;w.appendChild(e);return e}var dk=function(){return d.getAttribute("data-theme")==="dark"||(!d.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches)};b("A−","Reducir texto",function(){z=Math.max(.9,+(z-.1).toFixed(2));s("evb_scale",z);ap()});b("A+","Aumentar texto",function(){z=Math.min(1.4,+(z+.1).toFixed(2));s("evb_scale",z);ap()});var tb=b("","",function(){t=dk()?"light":"dark";s("evb_theme",t);ap();lt()});function lt(){var k=dk();tb.textContent=k?"☀ Claro":"☾ Oscuro";tb.setAttribute("aria-label",k?"Cambiar a modo claro":"Cambiar a modo oscuro")}lt();var dc=document.querySelector("header.top a.doc");if(dc){dc.style.position="static";w.appendChild(dc)}var h=document.querySelector("header.top .top-in");if(h){h.appendChild(w)}else{w.style.cssText+=";position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;background:var(--surface,#fff);color:var(--ink,#111);padding:.3rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2)";document.body.appendChild(w)}})})()</script><script>(function(){var K=["vib:Docente"],d=document.documentElement;d.style.visibility="hidden";function show(){d.style.visibility=""}setTimeout(show,3000);Promise.all([fetch("../visibilidad.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}),new Promise(function(r){document.readyState=="loading"?document.addEventListener("DOMContentLoaded",r):r()})]).then(function(a){var v=a[0];document.querySelectorAll("[data-k]").forEach(function(c){c.hidden=v[c.dataset.k]===false});var dok=false;try{dok=sessionStorage.getItem("doc_ok")=="1"}catch(e){}if(K.length&&!dok&&K.every(function(k){return v[k]===false}))document.body.innerHTML="<main style='padding:2rem 16px;font:16px system-ui'><h2>Herramienta no disponible</h2><p>Tu profesor la activará cuando toque usarla.</p><p><a href='../index.html'>Acceso docente</a></p></main>";show()})})()</script><script>window.RUBRICAS={"vib:AEV1.1": {"titulo": "Puesto de control de accesos y rondas interiores en un evento", "ra_ce": "RA1: a, b, c, d, f", "peso": "9,44%", "rub": [["Elementos del control de accesos", "RA1 a", 2, ["No identifica los elementos del control.", "Identifica algunos elementos sin relacionarlos con la seguridad del recinto.", "Identifica los elementos necesarios y su función.", "Control completo, ordenado y adaptado al evento."]], ["Identificación de las personas en el interior", "RA1 b", 2, ["No describe el proceso.", "Describe el proceso de forma incompleta.", "Describe el proceso y qué hacer con una persona no identificada.", "Proceso claro y aplicado correctamente durante el servicio."]], ["Rondas interiores", "RA1 c", 2, ["No diseña rondas.", "Recorrido sin frecuencia ni puntos de control.", "Rondas con recorrido, frecuencia y puntos de control.", "Rondas bien planificadas y ejecutadas, con incidencias registradas."]], ["Seguimiento del estado de bienes y medios de seguridad", "RA1 d", 2, ["No hay lista de comprobación.", "Lista incompleta.", "Lista completa y cumplimentada.", "Lista completa con incidencias detectadas y comunicadas."]], ["Medios técnicos de control de accesos", "RA1 f", 2, ["No describe medios técnicos.", "Cita medios sin explicar su funcionamiento.", "Describe medios y su funcionamiento.", "Propone una combinación de medios adecuada al recinto y la justifica."]]], "art": "Simulador de control de accesos: aparecen personas con acreditaciones válidas, caducadas o falsas y el alumnado decide y registra la actuación.", "aev": "AEV1.1", "mod": "VIB 1679 · CFGM"}, "vib:AEV4.1": {"titulo": "Operación de seguridad integral en un depósito de explosivos (simulación)", "ra_ce": "RA8: a, b, e, f", "peso": "5,10%", "rub": [["Identificación por etiquetas y pictogramas", "RA8 a", 3, ["No identifica los materiales.", "Identifica algunos con errores.", "Identifica correctamente los materiales.", "Identificación completa y explicada."]], ["Medidas de seguridad en manipulación y custodia", "RA8 b", 3, ["No describe medidas.", "Medidas incompletas.", "Medidas correctas según el plan.", "Medidas completas y aplicadas en la simulación."]], ["Señalización y cerramientos", "RA8 e", 2, ["No revisa el recinto.", "Revisión incompleta.", "Revisión completa con deficiencias anotadas.", "Revisión rigurosa y propuestas de corrección."]], ["Custodia de llaves y cierre", "RA8 f", 2, ["No describe el proceso.", "Proceso incompleto.", "Proceso correcto hasta la activación de sistemas.", "Proceso correcto y documentado sin fallos."]]], "art": "Ronda virtual por el depósito (imágenes con puntos a revisar) donde el alumnado detecta deficiencias de señalización y cerramiento.", "aev": "AEV4.1", "mod": "VIB 1679 · CFGM"}, "vib:AEV5.1": {"titulo": "Plan de seguridad de un transporte de explosivos (hoja de ruta, carga y precinto)", "ra_ce": "RA9: a, c, d, e, h", "peso": "4,54%", "rub": [["Documentación del transporte", "RA9 a", 2, ["No identifica la documentación.", "Documentación incompleta.", "Documentación correcta.", "Documentación completa y explicada."]], ["Medidas de seguridad en carga y descarga", "RA9 c", 2, ["Sin medidas.", "Medidas genéricas.", "Medidas adecuadas.", "Medidas completas y ordenadas por fases."]], ["Carga y descarga según la guía de circulación", "RA9 d", 2, ["No sigue la guía.", "Sigue la guía con errores.", "Proceso correcto según la guía.", "Proceso correcto y justificado."]], ["Estiba y anclaje", "RA9 e", 2, ["No describe la estiba.", "Descripción incompleta.", "Estiba y anclaje correctos.", "Estiba y anclaje correctos con medidas de seguridad añadidas."]], ["Libro de registro", "RA9 h", 2, ["No lo cumplimenta.", "Con errores u omisiones.", "Cumplimentado correctamente.", "Cumplimentado sin errores y con letra o formato claro."]]], "art": "Hoja de ruta interactiva sobre mapa de Gran Canaria (recorrido, paradas autorizadas y alternativas) con lista de control del vehículo.", "aev": "AEV5.1", "mod": "VIB 1679 · CFGM"}, "vib:AEV6.1": {"titulo": "Control documental del consumo y la destrucción de explosivos (supuesto práctico)", "ra_ce": "RA10: b, c, e", "peso": "4,34%", "rub": [["Confirmación del consumo", "RA10 b", 3, ["No comprueba firmas ni documentos.", "Comprobación parcial.", "Comprueba firma y documento de entrega.", "Comprobación completa y sin errores."]], ["Cálculo del sobrante y discrepancias", "RA10 c", 4, ["No calcula o el cálculo es erróneo.", "Cálculo correcto sin detectar la discrepancia.", "Cálculo correcto y discrepancia detectada.", "Todo correcto y explica el origen de la discrepancia."]], ["Importancia del control e incidencia", "RA10 e", 3, ["No lo valora.", "Valoración genérica.", "Valora el control y propone la actuación correcta.", "Valoración razonada y actuación correcta con comunicación a quien corresponda."]]], "art": "Supuesto documental interactivo con varios casos aleatorios de voladura para encontrar discrepancias (autocorregible).", "aev": "AEV6.1", "mod": "VIB 1679 · CFGM"}, "vib:AEV9.1": {"titulo": "Planificación de una ruta segura y de los desplazamientos del protegido", "ra_ce": "RA6: a, b, c, d, e, f, g, h", "peso": "4,16%", "rub": [["Tipo de caravana e itinerario", "RA6 a", 1, ["No lo determina.", "Elección sin justificar.", "Elección correcta.", "Elección correcta y justificada."]], ["Lugares de recogida y destino", "RA6 b", 1, ["No los valora.", "Valoración parcial.", "Valoración correcta.", "Valoración completa con puntos débiles."]], ["Recorrido principal, alternativos y escape", "RA6 c", 2, ["Sin rutas o rutas inviables.", "Ruta principal sin alternativas.", "Ruta principal, alternativas y lugares de escape.", "Rutas completas, justificadas y bien representadas."]], ["Medios de comunicación y protección", "RA6 d", 1, ["No los enumera.", "Enumeración incompleta.", "Enumeración correcta.", "Medios adecuados y justificados."]], ["Círculos de seguridad", "RA6 e", 1, ["No los describe.", "Descripción con errores.", "Descripción correcta.", "Descripción correcta aplicada al caso."]], ["Desplazamiento en vehículo", "RA6 f", 1, ["Sin secuencia.", "Secuencia incompleta.", "Secuencia correcta.", "Secuencia correcta y adaptada a la vía."]], ["Inspección del vehículo", "RA6 g", 1, ["No inspecciona.", "Inspección incompleta.", "Inspección correcta.", "Inspección completa y metódica."]], ["Desplazamiento a pie con cápsula", "RA6 h", 2, ["No lo realiza.", "Cápsula con fallos de posición.", "Cápsula correcta en la representación.", "Cápsula correcta y adaptada a los cambios del entorno."]]], "art": "Planificador de rutas sobre mapa (principal, alternativa, escape y puntos de riesgo) que exporta el plano al dosier.", "aev": "AEV9.1", "mod": "VIB 1679 · CFGM"}, "vib:AEV10.1": {"titulo": "Respuesta ante una agresión al protegido (simulación)", "ra_ce": "RA7: a, b, c, d, e", "peso": "6,04%", "rub": [["Posiciones de cobertura", "RA7 a", 2, ["No cubre al protegido.", "Cobertura tardía o incompleta.", "Cobertura correcta.", "Cobertura inmediata y coordinada."]], ["Congruencia y proporcionalidad", "RA7 b", 2, ["Respuesta desproporcionada o no la justifica.", "Justificación incompleta.", "Respuesta proporcionada y justificada.", "Respuesta proporcionada con justificación normativa precisa."]], ["Evacuación del protegido", "RA7 c", 2, ["No evacua.", "Evacuación desordenada.", "Evacuación correcta por la ruta prevista.", "Evacuación rápida, segura y coordinada."]], ["Técnicas de defensa personal", "RA7 d", 2, ["Técnica inadecuada o insegura.", "Técnica adecuada con fallos.", "Técnica adecuada y segura.", "Técnica adecuada, eficaz y controlada."]], ["Comunicación con las FCS", "RA7 e", 2, ["No comunica.", "Comunicación incompleta.", "Comunicación correcta.", "Comunicación correcta, clara y a tiempo, con parte completo."]]], "art": "Escenarios ramificados de decisión (elige tu respuesta) para entrenar proporcionalidad y evacuación antes de la simulación física.", "aev": "AEV10.1", "mod": "VIB 1679 · CFGM"}}</script><script>document.addEventListener("DOMContentLoaded",function(){var V={"vib:Docente": "../seguridad/vib/index.html"},q=new URLSearchParams(location.search).get("aev"),u=V[q]||V[Object.keys(V)[0]],h=document.querySelector("header.top");if(!u||!h)return;var a=document.createElement("a");a.href=u;a.textContent="← Volver al módulo";a.style.cssText="display:inline-block;margin:.5rem 0 0 max(16px,env(safe-area-inset-left,0px));color:inherit;font-weight:600;font-size:.9rem;text-decoration:none;opacity:.9";h.insertBefore(a,h.firstChild)})</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Herramienta de Evaluación</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.rubfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:999px;padding:.7rem 1.1rem;background:var(--signal);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+.btn.rubin{background:var(--signal);border-color:var(--signal);color:#fff}
+.rubdlg{width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--ink);padding:1rem}
+.rubdlg::backdrop{background:rgba(10,20,40,.55)}
+.rubdlg .rub-h{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.rubdlg .rub-x{border:0;background:none;color:inherit;font-size:1.6rem;cursor:pointer;line-height:1}
+.rubdlg textarea,.rubdlg select{width:100%;margin-top:.3rem;font:inherit;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);padding:.35rem}
+.rubdlg .rub-t{display:flex;justify-content:space-between;align-items:center;margin:.8rem 0;padding:.6rem .8rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.rubdlg .rub-t b{font-size:1.4rem}
+.rubdlg .row-btn{display:flex;justify-content:flex-end}
+@media print{.rubfab{display:none}}
+.ayuda{position:static;display:inline-block;margin-left:.35rem;vertical-align:middle;font-weight:400}
+.ayuda .info{width:1.25rem;height:1.25rem;border-radius:50%;border:1.5px solid var(--navy);background:var(--surface);color:var(--navy);font:700 .8rem/1 Georgia,serif;font-style:italic;cursor:pointer;padding:0;display:inline-grid;place-items:center}
+.ayuda .info[aria-expanded="true"]{background:var(--navy);color:var(--navy-ink)}
+.ayuda .tip{position:absolute;left:0;top:calc(100% + .35rem);z-index:40;width:min(20rem,calc(100vw - 48px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:var(--radius);padding:.6rem .75rem;box-shadow:0 6px 18px rgba(0,0,0,.18);font-size:.88rem;line-height:1.4;text-transform:none;letter-spacing:0;white-space:normal;text-align:left}
+th .ayuda .tip{font-weight:400}
+.ayuda-row{display:inline-flex;align-items:center;gap:0;position:relative}
+
+.ev-act{display:flex;flex-wrap:wrap;gap:.6rem;align-items:end;margin-bottom:.6rem}
+.ev-act label{flex:1 1 18rem;min-width:0;margin:0}
+.ev-act select{font-size:1.02rem;font-weight:600}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div><b>Herramienta de Evaluación</b><span>Corrección de las entregas del alumnado con la rúbrica de cada actividad · Curso 2026-2027</span></div>
+    <div class="chips"><em>VIB 1679</em><em>Solo profesorado</em></div>
+  </div>
+</header>
+
+<main></main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+/* Sesión Alumno/Docente (herramientas con acceso()): el trabajo de cada usuario se guarda con su propio prefijo */
+let WHO=null;try{WHO=JSON.parse(sessionStorage.getItem("vib_who")||"null")}catch(e){}
+const kNom=n=>String(n).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+let UPRE="";const UK=k=>UPRE+k;
+const store={get(k,d){try{const v=localStorage.getItem(UK(k));return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(UK(k),JSON.stringify(v))}catch(e){}}};
+// o.doc(el): rellena el panel docente de la herramienta. Sin sesión muestra la entrada y detiene la app (throw).
+// enlace a la Herramienta de Evaluación (VIB) desde el panel docente de cada herramienta
+const evAev=()=>{const k=window.RUBRICAS&&Object.keys(window.RUBRICAS).find(x=>x.startsWith("vib:"));return k?k.split(":")[1]:""};
+const evLink=()=>evAev()?`<p class="small" style="margin-top:.6rem">La evaluación de las entregas de esta actividad está en la <a href="evaluacion.html?a=${evAev()}">Herramienta de Evaluación</a>.</p>`:"";
+function acceso(o){o=o||{};const main=document.querySelector("main"),setWho=w=>{try{w?sessionStorage.setItem("vib_who",JSON.stringify(w)):sessionStorage.removeItem("vib_who")}catch(e){}};
+ if(!document.getElementById("acc-css")){const st=document.createElement("style");st.id="acc-css";st.textContent=`.acc-gate{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.1rem;max-width:52rem}.acc-gate form{display:grid;gap:.7rem;align-content:start}.acc-gate input{padding:.5rem;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:inherit;min-width:0}.acc-who{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between;background:var(--sunk);border-radius:6px;padding:.5rem .8rem;margin-bottom:1rem}`;document.head.appendChild(st)}
+ // o.soloDoc: página solo para el profesorado (sin entrada de alumno)
+ if(o.soloDoc&&WHO&&WHO.rol!=="doc")WHO=null;
+ if(!WHO){[...main.children].forEach(c=>c.hidden=true);const g=document.createElement("section");g.setAttribute("aria-labelledby","accH");
+  g.innerHTML=`<div class="intro"><p class="eyebrow">Acceso</p><h2 id="accH">¿Quién entra?</h2><p class="muted">Cada alumno entra con su nombre: su trabajo se guarda por separado en este navegador.</p></div><div class="acc-gate"><form class="panel" id="accA"><h3>Alumno</h3><label class="f">Nombre y apellidos<input type="text" id="accN" autocomplete="name" required placeholder="Ej.: Nayra Santana Déniz"></label><button class="btn" type="submit">Entrar</button><p class="small muted" id="accAm"></p></form><form class="panel" id="accD"><h3>Docente</h3><label class="f">Código<input type="password" id="accC" inputmode="numeric" autocomplete="off"></label><button class="btn ghost" type="submit">Entrar como docente</button><p class="small muted" id="accDm"></p></form></div>`;
+  if(o.soloDoc){g.querySelector("#accA").remove();g.querySelector(".intro .muted").textContent="Herramienta solo para el profesorado: entra con el código docente."}
+  main.prepend(g);
+  if($("#accA"))$("#accA").onsubmit=e=>{e.preventDefault();const n=$("#accN").value.replace(/\s+/g," ").trim();if(n.split(" ").length<2){$("#accAm").textContent="Escribe tu nombre y al menos un apellido.";return}setWho({rol:"al",nom:n});location.reload()};
+  // shortcut: el código solo separa la vista docente (la web es pública)
+  $("#accD").onsubmit=async e=>{e.preventDefault();const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("artefactos-26-27:"+$("#accC").value.trim()));
+   if([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")!=="6c8f4c40e57cfdb9e934b46b9b1b54ec714fd36841e273e170f027766ccda77a"){$("#accDm").textContent="Código incorrecto.";return}
+   try{sessionStorage.setItem("doc_ok","1")}catch(x){}setWho({rol:"doc"});location.reload()};
+  throw new Error("acceso: esperando usuario")}
+ const doc=WHO.rol==="doc";UPRE=doc?"doc:":"u:"+kNom(WHO.nom)+":";
+ if(!doc&&window.RUBRICAS)Object.keys(window.RUBRICAS).forEach(k=>{const st=store.get("rub_"+k,{al:"",gr:"",self:{}});if(!st.al){st.al=WHO.nom;store.set("rub_"+k,st)}});
+ const w=document.createElement("div");w.className="acc-who";w.innerHTML=`<span>${doc?"<b>Docente</b> · ves la herramienta como el alumnado, con tu panel.":"<b>Alumno:</b> "+esc(WHO.nom)}</span><button class="btn ghost sm" type="button">Cambiar de usuario</button>`;
+ w.querySelector("button").onclick=()=>{setWho(null);location.reload()};main.prepend(w);
+ if(doc){const d=document.createElement("section");d.className="panel";d.setAttribute("aria-label","Panel docente");d.style.marginBottom="1rem";d.innerHTML=`<h3>Panel docente</h3><div id="accP"><p class="small muted">Aún no hay ajustes propios en esta herramienta.</p></div>${o.soloDoc?"":evLink()}`;w.after(d);if(o.doc)o.doc($("#accP"))}
+ return WHO}
+function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+/* Guardar archivo: usa la capacidad «downloads» del visor; si no está, avisa. */
+let _dl;const dlReady=(window.claude?.use?window.claude.use("downloads"):Promise.resolve(null)).then(d=>_dl=d).catch(()=>_dl=null);
+async function saveFile(filename,data){await dlReady;if(!_dl){/* fuera de claude.ai (web propia): descarga normal del navegador */try{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Archivo descargado: "+filename);return true}catch(e){toast("No se pudo descargar el archivo.");return false}}
+ try{await _dl.save({filename,data});toast("Archivo listo: "+filename);return true}catch(e){if(e&&e.code!=="declined")toast("No se pudo guardar ("+(e.code||"error")+").");return false}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();toast("Pulsa Ctrl+C para copiar");setTimeout(()=>ta.remove(),8000)}}
+const csv=rows=>"﻿"+rows.map(r=>r.map(c=>{c=String(c??"");return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
+function tabs(ids,key){const show=id=>{ids.forEach(t=>{$("#tab-"+t).setAttribute("aria-selected",t===id);$("#v-"+t).hidden=t!==id});store.set(key,id)};
+ ids.forEach(t=>$("#tab-"+t).onclick=()=>show(t));const h=location.hash.slice(1);show(ids.includes(h)?h:store.get(key,ids[0])||ids[0])}
+/* ---- DOCX mínimo (zip sin compresión) ---- */
+const DOCX=(()=>{const enc=new TextEncoder();const T=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;T[n]=c>>>0}
+ const crc=b=>{let c=0xFFFFFFFF;for(const x of b)c=T[(c^x)&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zip(files){const parts=[],cen=[];let off=0;for(const [name,str] of files){const n=enc.encode(name),d=typeof str==="string"?enc.encode(str):str,c=crc(d);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,n.length,true);
+  parts.push(new Uint8Array(h.buffer),n,d);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,d.length,true);e.setUint32(24,d.length,true);e.setUint16(28,n.length,true);e.setUint32(42,off,true);
+  cen.push(new Uint8Array(e.buffer),n);off+=30+n.length+d.length}
+  const cs=cen.reduce((a,b)=>a+b.length,0),z=new DataView(new ArrayBuffer(22));z.setUint32(0,0x06054b50,true);z.setUint16(8,files.length,true);z.setUint16(10,files.length,true);z.setUint32(12,cs,true);z.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(z.buffer)])}
+ const x=s=>esc(s).replace(/&#39;/g,"&apos;");
+ const run=(t,b)=>String(t??"").split("\n").map((l,i)=>(i?"<w:r><w:br/></w:r>":"")+`<w:r>${b?"<w:rPr><w:b/></w:rPr>":""}<w:t xml:space="preserve">${x(l)}</w:t></w:r>`).join("");
+ const P=(t,o={})=>`<w:p>${o.style?`<w:pPr><w:pStyle w:val="${o.style}"/></w:pPr>`:""}${run(t,o.b)}</w:p>`;
+ const tbl=(head,rows)=>`<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>${(head||rows[0]).map(()=>`<w:gridCol w:w="${Math.floor(9600/(head||rows[0]).length)}"/>`).join("")}</w:tblGrid>${[head,...rows].filter(Boolean).map((r,i)=>`<w:tr>${r.map(c=>`<w:tc><w:p>${run(c,i===0&&head)}</w:p></w:tc>`).join("")}</w:tr>`).join("")}</w:tbl>`+P("");
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="21"/><w:lang w:val="es-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="100"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="200"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:color w:val="1F3A68"/><w:sz w:val="28"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="160" w:after="60"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="808080"/><w:insideV w:val="single" w:sz="4" w:color="808080"/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+ const IMG=(n,w,h)=>{const W=Math.round(w*360000),H=Math.round(h*360000);return `<w:p><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${W}" cy="${H}"/><wp:docPr id="${n+1}" name="Foto ${n+1}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n+1}" name="foto${n+1}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${W}" cy="${H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`};
+ const b64=d=>{const s=atob(d.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+ function build(body,landscape,media=[]){const sz=landscape?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>':'<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${sz}<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zip([["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
+   ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
+   ["word/_rels/document.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m,i)=>`<Relationship Id="rImg${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto${i}.jpeg"/>`).join("")}</Relationships>`],...media.map((m,i)=>["word/media/foto"+i+".jpeg",b64(m)]),
+   ["word/document.xml",doc],["word/styles.xml",styles]])}
+ return {P,tbl,build,IMG,H1:t=>P(t,{style:"Heading1"}),H2:t=>P(t,{style:"Heading2"}),Title:t=>P(t,{style:"Title"})}})();
+/* Rúbrica de la AEV + informe PDF. Solo se activa en la web, donde site.py inyecta window.RUBRICAS.
+   auto(key) devuelve, por criterio, [r 0..1, evidencia] o null (lo autoevalúa el alumno con justificación). */
+const words=s=>String(s??"").trim().split(/\s+/).filter(Boolean).length;
+const clamp01=x=>Math.max(0,Math.min(1,x||0));
+function rubrica(o){const R=window.RUBRICAS;if(!R)return;
+ const keys=Object.keys(R),q=new URLSearchParams(location.search).get("aev"),key=keys.includes(q)?q:keys[0],RB=R[key];
+ const NIV=["Insuficiente","Suficiente","Notable","Sobresaliente"],F=[.25,.5,.75,1],lv=r=>r<.35?0:r<.6?1:r<.85?2:3;
+ const SK="rub_"+key;let st=store.get(SK,{al:"",gr:"",self:{}});const sv=()=>store.set(SK,st);
+ function calc(){const A=o.auto(key)||[];return RB.rub.map(([t,ce,max,d],i)=>{const a=A[i];
+  if(a){const n=lv(clamp01(a[0]));return{t,ce,max,d,n,auto:true,ev:a[1]||"",pts:max*F[n]}}
+  const s=st.self[i]||{},ok=s.n!=null&&words(s.j)>=12,n=ok?s.n:0;
+  return{t,ce,max,d,n,auto:false,ok,ev:s.j||"",sel:s.n,pts:max*F[n]}})}
+ const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
+ // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
+ (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
+ let b=o.btn&&document.getElementById(o.btn);
+ if(WHO&&WHO.rol==="doc"&&key.startsWith("vib:")){if(b){b.className="btn ghost";b.textContent="Evaluar entregas (Herramienta de Evaluación)";b.onclick=()=>location.href="evaluacion.html?a="+RB.aev}return}
+ if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
+ const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
+ function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
+  dl.innerHTML=`<div class="rub-h"><div><p class="eyebrow">${esc(RB.aev)} · ${esc(RB.mod)}</p><h3>${esc(RB.titulo)}</h3><p class="small muted">${esc(RB.ra_ce)}</p></div><button type="button" class="rub-x" aria-label="Cerrar">×</button></div>
+  <div class="grid2"><label class="f">Nombre y apellidos<input type="text" id="rubAl" value="${esc(st.al)}"></label><label class="f">Grupo<input type="text" id="rubGr" value="${esc(st.gr)}"></label></div>
+  <p class="small muted">«Auto» = lo calcula la herramienta con tu trabajo. En el resto elige tu nivel y justifícalo (mínimo 12 palabras); sin justificación cuenta como Insuficiente. El docente valida la nota final.</p>
+  <div class="tbl"><table><thead><tr><th>Criterio</th><th>Nivel</th><th class="num">Puntos</th></tr></thead><tbody>${C.map((c,i)=>`<tr><td><b>${esc(c.t)}</b><div class="small muted">${esc(c.ce)} · máx. ${fmt(c.max)}</div>
+   ${c.auto?`<div class="small">${esc(c.ev)}</div>`:`<textarea rows="2" data-j="${i}" placeholder="Justifica tu nivel con lo que has hecho">${esc(c.ev)}</textarea>`}<div class="small muted">${esc(c.d[c.n])}</div></td>
+   <td>${c.auto?`<span class="pill">Auto</span> ${NIV[c.n]}`:`<select data-n="${i}" aria-label="Nivel"><option value="">Elige…</option>${NIV.map((n,k)=>`<option value="${k}" ${c.sel===k?"selected":""}>${n}</option>`).join("")}</select>${c.sel!=null&&!c.ok?'<div class="small" style="color:var(--ko)">Falta justificar</div>':""}`}</td>
+   <td class="num">${fmt(c.pts)}</td></tr>`).join("")}</tbody></table></div>
+  <div class="rub-t"><span>Nota propuesta</span><b>${fmt(tot)} / 10</b></div>
+  <div class="row-btn"><button type="button" class="btn" id="rubPdf">Descargar informe PDF</button></div>`;
+  dl.querySelector(".rub-x").onclick=()=>dl.close();
+  dl.querySelector("#rubAl").oninput=e=>{st.al=e.target.value;sv()};dl.querySelector("#rubGr").oninput=e=>{st.gr=e.target.value;sv()};
+  dl.querySelectorAll("[data-n]").forEach(s=>s.onchange=()=>{const i=s.dataset.n;st.self[i]={...(st.self[i]||{}),n:s.value===""?null:+s.value};sv();draw()});
+  dl.querySelectorAll("[data-j]").forEach(t=>{t.oninput=()=>{const i=t.dataset.j;st.self[i]={...(st.self[i]||{}),j:t.value};sv()};t.onchange=draw});
+  dl.querySelector("#rubPdf").onclick=()=>pdf(calc())}
+ b.onclick=()=>{draw();dl.showModal?dl.showModal():dl.setAttribute("open","")};
+ const load=src=>new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
+ async function libs(){if(window.jspdf?.jsPDF?.API?.autoTable)return;
+  try{await load("../vendor/jspdf.umd.min.js");await load("../vendor/jspdf.plugin.autotable.min.js")}
+  catch(e){await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js")}}
+ // helvetica de jsPDF solo trae Latin-1/WinAnsi
+ const T=s=>String(s??"").replace(/[≥]/g,">=").replace(/[≤]/g,"<=").replace(/[→]/g,"->").replace(/[✓]/g,"OK").replace(/[✗]/g,"X").replace(/[‑‒]/g,"-").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
+ async function pdf(C){if(!st.al.trim()){toast("Escribe tu nombre antes de descargar el informe");dl.querySelector("#rubAl").focus();return}
+  try{await libs()}catch(e){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"}),M=16,W=210,tot=C.reduce((a,c)=>a+c.pts,0);let y=0;
+  doc.setFillColor(31,58,104);doc.rect(0,0,W,24,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text(T("Informe de evaluación · "+RB.aev),M,11);
+  doc.setFont("helvetica","normal");doc.setFontSize(9);doc.text(T(RB.mod),M,18);y=32;doc.setTextColor(20,32,51);
+  doc.setFont("helvetica","bold");doc.setFontSize(12);doc.splitTextToSize(T(RB.titulo),W-2*M).forEach(l=>{doc.text(l,M,y);y+=5.5});
+  const tb=o2=>{doc.autoTable(Object.assign({startY:y,margin:{left:M,right:M},theme:"grid",styles:{font:"helvetica",fontSize:8.5,cellPadding:1.8,textColor:[20,32,51],lineColor:[211,218,228],lineWidth:.2},headStyles:{fillColor:[31,58,104],textColor:255}},o2));y=doc.lastAutoTable.finalY+6};
+  y+=2;tb({body:[["Alumno/a",T(st.al)],["Grupo",T(st.gr||"—")],["Fecha",new Date().toLocaleDateString("es-ES")],["Herramienta",T(document.title)],["RA y CE",T(RB.ra_ce)]],columnStyles:{0:{fontStyle:"bold",cellWidth:35}}});
+  tb({head:[["Criterio (RA · CE)","Nivel","Origen","Puntos"]],body:C.map(c=>[T(c.t+"\n"+c.ce),NIV[c.n],c.auto?"Herramienta":c.ok?"Autoevaluación":"Sin justificar",fmt(c.pts)+" / "+fmt(c.max)]).concat([[{content:"Nota propuesta",colSpan:3,styles:{fontStyle:"bold",halign:"right"}},{content:fmt(tot)+" / 10",styles:{fontStyle:"bold"}}]]),columnStyles:{3:{halign:"right",cellWidth:24},1:{cellWidth:26},2:{cellWidth:28}}});
+  tb({head:[["Criterio","Evidencia o justificación","Descriptor del nivel alcanzado"]],body:C.map(c=>[T(c.t),T(c.ev||"—"),T(c.d[c.n])]),columnStyles:{0:{cellWidth:38}}});
+  // o.img: imagen opcional (p. ej. el mapa) en una página propia antes del resumen
+  if(o.img){let u=null;try{u=await o.img()}catch(e){}if(u){const ip=doc.getImageProperties(u),w=W-2*M,h=Math.min(245,w*ip.height/ip.width),ww=h*ip.width/ip.height;doc.addPage();doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor(20,32,51);doc.text(T(o.imgT||"Mapa"),M,18);doc.addImage(u,"JPEG",M,24,ww,h);doc.addPage();y=20}}
+  const rs=o.resumen?o.resumen(key):[];if(rs.length)tb({head:[["Resumen del trabajo en la herramienta",""]],body:rs.map(r=>[T(r[0]),T(r[1])]),columnStyles:{0:{fontStyle:"bold",cellWidth:55}}});
+  if(y>250){doc.addPage();y=20}
+  doc.setFontSize(8.5);doc.setFont("helvetica","normal");doc.splitTextToSize(T("Nota propuesta por la herramienta según la rúbrica de la AEV (cada criterio suma el 25 %, 50 %, 75 % o 100 % de su valor). Los criterios autoevaluados y la calificación final los valida el docente."),W-2*M).forEach(l=>{doc.text(l,M,y);y+=4});
+  const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
+  const meta={key,al:st.al,gr:st.gr,fecha:new Date().toISOString(),C:C.map(c=>({t:c.t,n:c.n,auto:c.auto,ok:!!c.ok,ev:c.ev||"",pts:c.pts,max:c.max})),tot};
+  doc.setProperties({title:T("Informe de evaluación · "+RB.aev),author:T(st.al),subject:"RUBKIT1:"+btoa(unescape(encodeURIComponent(JSON.stringify(meta)))),keywords:"VIB "+RB.aev});
+  const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
+  saveFile(fn,doc.output("blob"))}}
+/* Ayuda flotante: ayuda({"#id-del-campo o selector de cabecera": "texto"}) añade un icono «i» junto a la etiqueta */
+function ayuda(map){Object.entries(map).forEach(([sel,txt])=>{const el=document.querySelector(sel);if(!el)return;const host=el.closest("label")||el;
+ const w=document.createElement("span");w.className="ayuda";w.innerHTML=`<button type="button" class="info" aria-label="Ayuda" aria-expanded="false">i</button><span class="tip" role="tooltip" hidden></span>`;w.querySelector(".tip").textContent=txt;
+ const tn=[...host.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(tn){const row=document.createElement("span");row.className="ayuda-row";tn.replaceWith(row);row.append(tn,w)}else host.appendChild(w);
+ const b=w.querySelector(".info"),t=w.querySelector(".tip");b.onclick=e=>{e.preventDefault();e.stopPropagation();const open=t.hidden;document.querySelectorAll(".ayuda .tip").forEach(x=>{x.hidden=true;x.previousElementSibling.setAttribute("aria-expanded","false")});t.hidden=!open;b.setAttribute("aria-expanded",open)}});
+ if(!ayuda._b){ayuda._b=1;document.addEventListener("click",e=>{if(!e.target.closest(".ayuda"))document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)});document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)})}}
+
+"use strict";
+/* Herramienta de Evaluación (VIB): el docente carga los PDF/MD del alumnado de una actividad, revisa la propuesta automática
+   con la rúbrica y genera el resumen. Archivos en IndexedDB (una base por actividad), puntuaciones en localStorage.
+   ACTS(R) da la configuración de cada actividad; evaluador(root,A) pinta la evaluación de una. */
+const EVV=(()=>{
+ const NIV=["Insuficiente","Suficiente","Notable","Sobresaliente"],F=[.25,.5,.75,1];
+ const nw=s=>String(s||"").trim().split(/\s+/).filter(Boolean).length;
+ const fN=n=>(Math.round(n*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
+ const norm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+ const PRES=["VIBDEP1:","RUBKIT1:"];
+ /* ---------- pdf.js (copia local o cdnjs) ---------- */
+ let PJ=null;
+ function pdfjs(){if(PJ)return PJ;const load=src=>new Promise((ok,ko)=>{const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=ko;document.head.appendChild(e)});
+  const set=b=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc=b+"pdf.worker.min.js";return window.pdfjsLib};
+  PJ=load("../vendor/pdfjs/pdf.min.js").then(()=>set("../vendor/pdfjs/")).catch(()=>{const b="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";return load(b+"pdf.min.js").then(()=>set(b))}).catch(e=>{PJ=null;throw e});return PJ}
+ /* ---------- lectura: texto por líneas, tablas y Markdown ---------- */
+ async function leePDF(buf){const lib=await pdfjs(),pdf=await lib.getDocument({data:buf}).promise;let meta=null;
+  try{const i=(await pdf.getMetadata()).info||{},s=String(i.Subject||""),pre=PRES.find(p=>s.startsWith(p));if(pre)meta={pre,data:JSON.parse(decodeURIComponent(escape(atob(s.slice(pre.length)))))}}catch(e){}
+  const L=[];for(let p=1;p<=pdf.numPages;p++){const tc=await(await pdf.getPage(p)).getTextContent(),rows=[];
+   tc.items.forEach(it=>{if(!it.str||!it.str.trim())return;const x=it.transform[4],y=it.transform[5],h=Math.abs(it.transform[3])||it.height||10;let r=rows.find(q=>Math.abs(q.y-y)<=Math.max(2.5,h*.3));if(!r)rows.push(r={y,it:[]});r.it.push({x,w:it.width,s:it.str,h})});
+   // celdas: hueco horizontal > 6 pt; una línea alineada con las columnas de la fila de tabla anterior es continuación de esa fila
+   let last=null;rows.sort((a,b)=>b.y-a.y).forEach(r=>{r.it.sort((a,b)=>a.x-b.x);const cs=[];let prev=null;
+    r.it.forEach(i=>{if(!prev||i.x-(prev.x+prev.w)>6)cs.push({x:i.x,s:""});const c=cs[cs.length-1];c.s+=(c.s&&i.x-(prev.x+prev.w)>1.2?" ":"")+i.s;prev=i});
+    const size=Math.max(...r.it.map(i=>i.h));
+    if(last&&last.y-r.y<size*1.9&&cs.every(c=>last.xs.some(x=>Math.abs(x-c.x)<3))&&!cs.some(c=>Math.abs(c.x-last.xs[0])<3)){cs.forEach(c=>{const k=last.xs.findIndex(x=>Math.abs(x-c.x)<3);last.l.cells[k]=(last.l.cells[k]+" "+c.s).trim()});last.y=r.y;return}
+    const l={cells:cs.map(c=>c.s.trim()),xs:cs.map(c=>c.x),size};L.push(l);last=cs.length>1?{xs:cs.map(c=>c.x),l,y:r.y}:null})}
+  return{meta,L}}
+ function aMD(L){const sz=L.map(l=>l.size).sort((a,b)=>a-b),body=sz[Math.floor(sz.length/2)]||10;let out=[],inT=false;
+  L.forEach(l=>{if(l.cells.length>1){const row="| "+l.cells.map(c=>c||"-").join(" | ")+" |";if(!inT){out.push("",row,"|"+l.cells.map(()=>" --- ").join("|")+"|");inT=true}else out.push(row);return}
+   inT=false;const t=l.cells[0];out.push(l.size>=body*1.2?"\n## "+t:t)});return out.join("\n").replace(/\n{3,}/g,"\n\n").trim()+"\n"}
+ // MD (o texto) → líneas con celdas
+ const deMD=t=>t.split(/\r?\n/).filter(x=>x.trim()&&!/^\s*\|?\s*:?-{3,}/.test(x)).map(x=>{x=x.trim();if(x.startsWith("|"))return{cells:x.replace(/^\||\|$/g,"").split("|").map(c=>c.trim()),size:10};return{cells:[x.replace(/^#+\s*/,"").replace(/^[-*]\s+/,"")],size:/^#/.test(x)?14:10}});
+ /* ---------- nombre del alumno ---------- */
+ const CON=new Set(["de","la","del","y","las","los"]);
+ const STOP=/^(informe|informes|final|definitivo|def|v|ver|version|versión|copia|entrega|tarea|trabajo|actividad|ronda|deposito|depósito|explosivos|parte|resultado|resultados|aev|vib|curso|grupo|gm|gs|cfgm|cfgs|seguridad|evaluacion|evaluación|documento|doc|pdf|md|primero|segundo|práctica|practica|ejercicio|alumno|alumna|nombre|apellidos|submission|assignsubmission|file|onlinetext|moodle|classroom|hoja|ruta|transporte|voladura|control|documental|accesos|acceso|escolta|escenarios|plan|desplazamiento|protegido|cra|ºa|ºb|º|ª|t\d*)$/i;
+ function limpia(raw){let t=String(raw||"").replace(/\.(pdf|md)$/i,"").replace(/_?\d+_assignsubmission_(file|onlinetext)_?/gi," ");
+  const plain=t.replace(/[_]+/g," ").replace(/\s+/g," ").trim();if(/^(equipo|grupo)\s*\d+$/i.test(plain))return plain.charAt(0).toUpperCase()+plain.slice(1);
+  t=t.replace(/\d{1,4}[\/.-]\d{1,2}[\/.-]\d{1,4}/g," ").replace(/[_\-.()\[\]{}·,;:|]+/g," ").replace(/\d+\s*º?/g," ");
+  let w=t.split(/\s+/).filter(x=>x&&!STOP.test(x)&&(x.length>1||x.toLowerCase()==="y"));
+  while(w.length&&CON.has(w[0].toLowerCase()))w.shift();while(w.length&&CON.has(w[w.length-1].toLowerCase()))w.pop();
+  if(!w.length)return plain;
+  return w.map(x=>{const l=x.toLowerCase();if(CON.has(l))return l;const mix=x!==x.toUpperCase()&&x!==l;return mix?x:l.charAt(0).toUpperCase()+l.slice(1)}).join(" ")}
+ function nombreTexto(L){for(const l of L){const t=l.cells.join(" | ");const m=t.match(/(?:^|\|)\s*(?:alumno\/?a?|nombre(?: y apellidos)?|vigilante(?: de explosivos)?)\s*[:|]\s*([^|]+)/i);
+  if(m){const v=m[1].trim();if(v&&!/^\[|^-$|^nombre/i.test(v)&&/[a-záéíóúñ]{2}/i.test(v))return v}}return""}
+ // ¿de qué actividad es el archivo? (para avisar si se ha cargado en otra)
+ function actDe(meta,L){if(meta&&meta.pre==="VIBDEP1:")return"AEV4.1";if(meta&&meta.pre==="RUBKIT1:")return String(meta.data.key||"").split(":")[1]||"";
+  const all=L.slice(0,25).map(l=>l.cells.join(" ")).join("\n"),m=all.match(/Informe de evaluaci[oó]n\s*·\s*(AEV\d+(?:\.\d+)?)/i);if(m)return m[1].toUpperCase();
+  if(/Informe de ronda/i.test(all)&&/Dep[oó]sito/i.test(all))return"AEV4.1";return""}
+
+ /* ================= Ronda en el depósito (AEV4.1): rúbrica propia del docente ================= */
+ const DEP={aev:"AEV4.1",KEY:"depeval_v1",DBN:"depeval",csv:"calificaciones_ronda_deposito.csv",cols:["Recorrido","Checklist","(c)","(d)","(e)"],
+  RUB:[
+  {t:"Realiza el recorrido de verificación",lv:[["No lo realiza",0],["Sí lo realiza",1]]},
+  {t:"Realiza el checklist cumplimentado",lv:[["No lo realiza",0],["Sí lo realiza",1]]},
+  {t:"(c) Procedimiento de rondas coherente con el plan/instalación y correctamente ejecutado",lv:[["No entrega o no realiza",0],["Recorrido inconexo; omite puntos críticos",1],["Recorrido válido con algunas lagunas",2],["Recorrido completo, frecuencias y puntos críticos bien definidos",3]]},
+  {t:"(d) Seguimiento del estado de bienes y medios (alarmas, accesos, etc.) y propuestas de acción",lv:[["No entrega o no verifica / no propone acciones",0],["Verifica parcialmente; propuestas vagas",1],["Verifica sistemáticamente y propone acciones adecuadas",2],["Verifica sistemáticamente y propone acciones mejoradas",3]]},
+  {t:"(e) Visualización/registro de imágenes respetando LOPD (anotación de finalidad, mínima captación, custodia)",lv:[["No entrega. Incumple LOPD o no registra",0],["Registra sin detallar finalidad o custodia",1],["Registra con finalidad y custodia descritas",2]]}],
+  // frases del resumen: [punto fuerte en presente, mejora en infinitivo, mejora cuando falta la información]
+  FR:[["realizas el recorrido completo de verificación","completar el recorrido por todos los puntos de la ronda","incluir el recorrido de verificación, que no aparece en tu entrega"],
+  ["cumplimentas el checklist de todos los puntos","cumplimentar el checklist completo, con el tipo y la actuación de cada deficiencia","incluir el checklist cumplimentado, que no aparece en tu entrega"],
+  ["tu ronda es completa y detectas bien los puntos críticos","detectar todos los puntos críticos de la ronda y valorar bien cada uno","incluir la valoración de los puntos de la ronda, que no aparece en tu entrega"],
+  ["verificas los medios de forma sistemática y propones acciones muy acertadas","proponer acciones concretas para cada deficiencia (a quién avisas y cómo se corrige)","incluir las propuestas de acción ante las deficiencias, que no aparecen en tu entrega"],
+  ["registras las imágenes con su finalidad y custodia, respetando la LOPD","detallar en el registro de imágenes la finalidad, la mínima captación y la custodia","incluir el registro de visualización de imágenes (finalidad, mínima captación y custodia), que no aparece en tu entrega"]]};
+ const COM=/comunic|avis|inform|supervisor|central|jefe|responsable|libro|registr|anot|parte/i,COR=/repar|sustitu|repon|cierr|cerrar|asegur|retir|revis|manten|solicit|bloque|precint|tens|limpi|desbroz|recoloc|cambi/i,MEJ=/propon|propuesta|mejora|recomiend|instalar|reforzar|añadir|ampliar|periódic|preventiv/i;
+ function depMeta(m){const P=m.P||[],N=P.length,rev=P.filter(p=>p.val),ok=rev.filter(p=>(p.val==="D")===!!p.ko),real=P.filter(p=>p.ko),tp=real.filter(p=>p.val==="D"),fp=P.filter(p=>!p.ko&&p.val==="D"),marc=P.filter(p=>p.val==="D"),sinAct=marc.filter(p=>nw(p.a)<3),cie=m.cierre||{},img=m.img||{};
+  const r=[],d=[],miss=[false,false,false,false,false];
+  r[0]=N&&rev.length===N?1:0;d[0]=`${rev.length} de ${N} puntos del plano nº ${m.plano} revisados.`+(rev.length&&rev.length<N?" Recorrido incompleto: revisa este criterio.":"");if(!rev.length)miss[0]=true;
+  r[1]=N&&rev.length===N&&!sinAct.length?1:0;d[1]=`${rev.length} de ${N} puntos valorados; ${marc.length} deficiencias marcadas${sinAct.length?`, ${sinAct.length} sin tipo o actuación descrita`:", todas con actuación"}.`;if(!rev.length)miss[1]=true;
+  const acc=N?ok.length/N:0,todas=tp.length===real.length,cOk=cie.done&&cie.ok>=5;
+  r[2]=!rev.length?0:rev.length===N&&acc>=.9&&todas&&cOk?3:acc>=.7?2:1;
+  d[2]=`${ok.length} de ${N} puntos bien valorados; ${real.length?`${tp.length} de ${real.length} deficiencias reales detectadas`:"plano sin deficiencias reales"}${fp.length?`, ${fp.length} falsas alarmas`:""}; cierre ${cie.done?cie.ok+" de 6 pasos en orden":"sin comprobar"}.`+(rev.length&&!cie.done?" Revisa este criterio.":"");if(!rev.length)miss[2]=true;
+  const aw=tp.length?tp.reduce((s,p)=>s+nw(p.a),0)/tp.length:0,mej=tp.filter(p=>COM.test(p.a)&&COR.test(p.a)).length;
+  if(real.length){r[3]=!tp.length&&!marc.length?0:tp.length<real.length||aw<5?1:mej===tp.length&&aw>=8&&fp.length<=1?3:2;
+   d[3]=`${tp.length} de ${real.length} deficiencias detectadas; actuaciones con ${aw.toFixed(0)} palabras de media; ${mej} incluyen aviso y corrección.`;if(!marc.length)miss[3]=true}
+  else{r[3]=fp.length?1:2;d[3]=`Plano sin deficiencias reales; ${fp.length?fp.length+" falsas alarmas":"ninguna falsa alarma"}. No hay acciones que proponer: revisa este criterio.`}
+  const f=nw(img.fin),mi=nw(img.min),cu=nw(img.cus);
+  r[4]=!f&&!mi&&!cu?0:f>=5&&cu>=5?2:1;d[4]=f||mi||cu?`Registro de imágenes: finalidad ${f} palabras, mínima captación ${mi}, custodia ${cu}.`+(r[4]===1?" Falta detallar finalidad o custodia.":""):"No aparece el registro de visualización de imágenes.";if(r[4]===0)miss[4]=true;
+  return{r,d,miss}}
+ function depTexto(L){const lines=L.map(l=>l.cells.join(" | ")),all=lines.join("\n");
+  const pts=L.filter(l=>/^(P\d{1,2}|punto\s*\d+)\b/i.test(l.cells[0]||"")),val=pts.filter(l=>/correct|deficien|incidenc|anomal|\bok\b|conforme|bien|mal\b/i.test(l.cells.join(" "))),
+   cells=pts.reduce((s,l)=>s+l.cells.length,0),vac=pts.reduce((s,l)=>s+l.cells.filter(c=>!c||/^[-–—]$/.test(c)).length,0),pv=cells?vac/cells:1,
+   defs=pts.filter(l=>/deficien|incidenc|anomal|no conforme|mal\b/i.test(l.cells.join(" "))).length,acts=lines.filter(t=>nw(t)>=4&&COM.test(t)&&COR.test(t)).length,actsV=lines.filter(t=>COR.test(t)||COM.test(t)).length,
+   mej=(all.match(new RegExp(MEJ.source,"gi"))||[]).length,img=/imagen|imágenes|grabaci|visualiz|videovigil/i.test(all),fin=/finalidad/i.test(all),cus=/custodia|conserva|plazo|supresi|borrad/i.test(all),min=/mínima|minimiz|imprescindible|solo (?:la|las) zona/i.test(all),frec=/frecuenc|cada \d+\s*(h|hora|min)|horario/i.test(all);
+  const r=[],d=[],miss=[!pts.length,!val.length,!pts.length,!defs&&!actsV,!img],rv=" Archivo sin datos de la app: revisa este criterio.";
+  r[0]=pts.length>=8?1:0;d[0]=`${pts.length} puntos de la ronda en el documento.`+rv;
+  r[1]=val.length>=8&&pv<=.1?1:0;d[1]=`${val.length} puntos valorados; ${vac} celdas vacías o con «-».`+rv;
+  r[2]=!pts.length?0:val.length<8||pv>.25?1:val.length>=12&&pv<=.05&&frec?3:2;d[2]=`${val.length} puntos valorados${frec?"; indica frecuencias u horario":"; no indica frecuencias"}. No se puede comparar con la solución.`+rv;
+  r[3]=!defs&&!actsV?0:acts<Math.max(1,defs)?1:mej>=2?3:2;d[3]=`${defs} deficiencias anotadas; ${acts} actuaciones con aviso y corrección; ${mej} propuestas de mejora.`+rv;
+  r[4]=!img?0:fin&&cus?2:1;d[4]=img?`Registro de imágenes: ${fin?"indica":"no indica"} finalidad, ${min?"indica":"no indica"} mínima captación y ${cus?"indica":"no indica"} custodia.`+rv:"No aparece el registro de visualización de imágenes."+rv;
+  return{r,d,miss}}
+ DEP.parse=(meta,L)=>meta&&meta.pre==="VIBDEP1:"&&meta.data.app==="deposito"?{...depMeta(meta.data),src:"app",al:meta.data.alumno}:{...depTexto(L),src:"texto"};
+
+ /* ================= Actividades con la rúbrica de la web (informe PDF de la herramienta) ================= */
+ // frases del resumen por criterio (mismo orden que rubricas.json): [punto fuerte, mejora, falta la información]
+ const FRK={
+  "AEV1.1":[["identificas los elementos del control de accesos y su función","identificar todos los elementos del control de accesos y explicar la función de cada uno","incluir los elementos del control de accesos, que no aparecen en tu entrega"],
+   ["identificas correctamente a las personas y sabes qué hacer con quien no está identificado","revisar la identificación de cada persona (documento, acreditación y lista) y qué hacer con quien no está identificado","incluir el proceso de identificación de las personas, que no aparece en tu entrega"],
+   ["planificas las rondas interiores con recorrido, frecuencia y puntos de control","definir en las rondas interiores el recorrido, la frecuencia y los puntos de control","incluir las rondas interiores, que no aparecen en tu entrega"],
+   ["mantienes una lista de comprobación completa y comunicas las incidencias","completar la lista de comprobación de bienes y medios y comunicar las incidencias detectadas","incluir la lista de comprobación de bienes y medios de seguridad, que no aparece en tu entrega"],
+   ["propones una combinación de medios técnicos adecuada y bien justificada","explicar cómo funciona cada medio técnico y justificar su elección para el recinto","incluir los medios técnicos de control de accesos, que no aparecen en tu entrega"]],
+  "AEV5.1":[["identificas y explicas toda la documentación del transporte","completar la documentación del transporte y explicar para qué sirve cada documento","incluir la documentación del transporte, que no aparece en tu entrega"],
+   ["ordenas por fases las medidas de seguridad de la carga y la descarga","concretar las medidas de seguridad de la carga y la descarga, ordenadas por fases","incluir las medidas de seguridad en la carga y la descarga, que no aparecen en tu entrega"],
+   ["sigues la guía de circulación en la carga y la descarga y lo justificas","seguir paso a paso la guía de circulación en la carga y la descarga","incluir el proceso de carga y descarga según la guía de circulación, que no aparece en tu entrega"],
+   ["describes una estiba y un anclaje correctos, con medidas añadidas","describir cómo se estiba y se ancla la carga","incluir la estiba y el anclaje de la carga, que no aparecen en tu entrega"],
+   ["cumplimentas el libro de registro sin errores","cumplimentar el libro de registro sin errores ni omisiones","incluir el libro de registro cumplimentado, que no aparece en tu entrega"]],
+  "AEV6.1":[["compruebas sin errores las firmas y los documentos del consumo","comprobar la firma y el documento de entrega de cada consumo","incluir la comprobación del consumo (firmas y documentos), que no aparece en tu entrega"],
+   ["calculas bien el sobrante y explicas el origen de la discrepancia","revisar el cálculo del sobrante y localizar la discrepancia","incluir el cálculo del sobrante y de las discrepancias, que no aparece en tu entrega"],
+   ["razonas la importancia del control y comunicas la incidencia a quien corresponde","explicar por qué es importante el control y a quién comunicas la incidencia","incluir la valoración del control y la actuación ante la incidencia, que no aparece en tu entrega"]],
+  "AEV9.1":[["eliges y justificas bien el tipo de caravana y el itinerario","justificar la elección del tipo de caravana y del itinerario","incluir el tipo de caravana y el itinerario, que no aparecen en tu entrega"],
+   ["valoras los lugares de recogida y destino con sus puntos débiles","valorar los lugares de recogida y destino y sus puntos débiles","incluir la valoración de los lugares de recogida y destino, que no aparece en tu entrega"],
+   ["trazas y justificas la ruta principal, las alternativas y los lugares de escape","añadir rutas alternativas y lugares de escape a la ruta principal","incluir el recorrido principal, los alternativos y los de escape, que no aparecen en tu entrega"],
+   ["justificas los medios de comunicación y protección","enumerar y justificar los medios de comunicación y protección","incluir los medios de comunicación y protección, que no aparecen en tu entrega"],
+   ["aplicas bien los círculos de seguridad al caso","describir los círculos de seguridad y aplicarlos al caso","incluir los círculos de seguridad, que no aparecen en tu entrega"],
+   ["adaptas a la vía la secuencia del desplazamiento en vehículo","completar la secuencia del desplazamiento en vehículo","incluir el desplazamiento en vehículo, que no aparece en tu entrega"],
+   ["inspeccionas el vehículo de forma completa y metódica","inspeccionar el vehículo de forma completa y ordenada","incluir la inspección del vehículo, que no aparece en tu entrega"],
+   ["colocas bien la cápsula y la adaptas a los cambios del entorno","corregir las posiciones de la cápsula en el desplazamiento a pie","incluir el desplazamiento a pie con cápsula, que no aparece en tu entrega"]],
+  "AEV10.1":[["cubres al protegido de forma inmediata y coordinada","cubrir al protegido de forma inmediata y completa","incluir las posiciones de cobertura, que no aparecen en tu entrega"],
+   ["das una respuesta proporcionada y la justificas con la norma","justificar que tu respuesta es congruente y proporcionada","incluir la justificación de la congruencia y la proporcionalidad, que no aparece en tu entrega"],
+   ["evacuas al protegido de forma rápida, segura y coordinada","evacuar al protegido de forma ordenada por la ruta prevista","incluir la evacuación del protegido, que no aparece en tu entrega"],
+   ["aplicas técnicas de defensa personal eficaces y controladas","elegir técnicas de defensa personal adecuadas y seguras","incluir las técnicas de defensa personal, que no aparecen en tu entrega"],
+   ["comunicas a tiempo con las FCS y completas el parte","comunicar con las FCS de forma clara y a tiempo, con el parte completo","incluir la comunicación con las FCS, que no aparece en tu entrega"]]};
+ // tabla «Criterio | Evidencia o justificación | Descriptor» del informe: une las líneas partidas por columnas (posición x)
+ function evid(L,T){const iH=L.findIndex(l=>l.cells.length>=3&&/^evidencia/i.test(l.cells[1]||""));if(iH<0||!L[iH].xs)return{};const hx=L[iH].xs,R={},full=t=>T.includes(norm(t));let cur=null;
+  const col=x=>hx.reduce((b,h,j)=>Math.abs(h-x)<Math.abs(hx[b]-x)?j:b,0);
+  for(const l of L.slice(iH+1)){if(!l.xs||/^(resumen del trabajo|nota propuesta por)/i.test(l.cells[0]))break;const c=["","",""];l.cells.forEach((t,j)=>{const k=col(l.xs[j]);c[k]=(c[k]+" "+t).trim()});
+   if(c[0]&&(!cur||full(cur.t))){if(!T.some(t=>t.startsWith(norm(c[0]))))break;cur={t:c[0],e:c[1]}}else if(cur){if(c[0])cur.t+=" "+c[0];if(c[1])cur.e=(cur.e+" "+c[1]).trim()}
+   if(cur)R[norm(cur.t)]=cur.e}
+  return R}
+ function kit(k,RB){const aev=k.split(":")[1],RUB=RB.rub.map(([t,ce,max,d])=>({t,ce,lv:NIV.map((n,j)=>[n,max*F[j],d[j]])}));
+  const fr=FRK[aev]&&FRK[aev].length===RUB.length?FRK[aev]:RUB.map(c=>{const t=c.t.charAt(0).toLowerCase()+c.t.slice(1);return[`cumples muy bien «${t}»`,`mejorar «${t}»`,`incluir «${t}», que no aparece en tu entrega`]});
+  function parse(meta,L){const n=RUB.length,r=Array(n).fill(null),d=Array(n).fill("No se reconoce el informe de la herramienta: puntúa este criterio a mano."),miss=Array(n).fill(false);
+   if(meta&&meta.pre==="RUBKIT1:"&&Array.isArray(meta.data.C)){const C=meta.data.C;
+    RUB.forEach((c,i)=>{const x=C.find(y=>norm(y.t)===norm(c.t))||C[i];if(!x){r[i]=0;miss[i]=true;d[i]="No aparece en el informe.";return}
+     if(x.auto){r[i]=x.n;d[i]="Herramienta: "+(x.ev||"sin detalle").replace(/\.$/,"")+".";miss[i]=x.n===0&&/^no (hay|aparece|se ha)|ningun/i.test(x.ev||"")}
+     else if(x.ok){r[i]=x.n;d[i]=`Autoevaluación del alumno (${NIV[x.n]}): «${x.ev}». Revisa este criterio.`}
+     else{r[i]=0;miss[i]=!nw(x.ev);d[i]=nw(x.ev)?`Autoevaluación sin justificar bien (${nw(x.ev)} palabras): cuenta como Insuficiente. Revisa este criterio.`:"El alumno no se autoevalúa ni lo justifica: cuenta como Insuficiente. Revisa este criterio."}});
+    return{r,d,miss,src:"app",al:meta.data.al}}
+   // informe de la herramienta sin metadatos (versiones anteriores): tabla «Criterio | Nivel | Origen | Puntos» y tabla de evidencias
+   const EV=evid(L,RUB.map(c=>norm(c.t)));let hit=0;RUB.forEach((c,i)=>{const k=norm(c.t),row=L.find(l=>l.cells.length>=3&&norm(l.cells[0]).startsWith(k)&&NIV.includes(l.cells[1]));
+    if(!row)return;hit++;const n=NIV.indexOf(row.cells[1]),org=row.cells[2]||"",evt=(EV[k]||"").replace(/^[—-]$/,"");
+    if(/herramienta/i.test(org)){r[i]=n;d[i]="Herramienta: "+(evt||"sin detalle").replace(/\.$/,"")+". Texto del PDF: revisa este criterio."}
+    else if(/autoevaluaci/i.test(org)){r[i]=n;d[i]=`Autoevaluación del alumno (${NIV[n]})${evt?": «"+evt+"»":""}. Texto del PDF: revisa este criterio.`}
+    else{r[i]=0;miss[i]=!evt;d[i]="Sin justificar en el informe: cuenta como Insuficiente. Revisa este criterio."}});
+   if(hit)RUB.forEach((c,i)=>{if(r[i]==null){r[i]=0;miss[i]=true;d[i]="No aparece en el informe. Revisa este criterio."}});
+   return{r,d,miss,src:hit?"texto":"otro"}}
+  return{aev,KEY:"eval_"+aev+"_v1",DBN:"eval_"+aev,csv:`calificaciones_${aev}_${norm(RB.titulo).split(" ").slice(0,4).join("_")}.csv`,cols:RUB.map((_,i)=>"C"+(i+1)),RUB,FR:fr,parse}}
+
+ /* ================= Control de accesos (AEV1.1): resultados .json de la ronda ================= */
+ // firma ligera para detectar archivos editados a mano (misma que la app; no es seguridad real)
+ const firma=o=>{let h=2166136261;for(const ch of "acc26:"+JSON.stringify(o)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36)};
+ const ACC={json:true,
+  carga(txts){let RES=store.get("acc_seg",[]),n=0,m=0;txts.forEach(t=>{try{const o=JSON.parse(t);if(o.app!=="accesos"){m++;return}const {firma:fi,...rest}=o;o.mod=firma(rest)!==fi;RES=RES.filter(r=>kNom(r.alumno)!==kNom(o.alumno)||r.fecha>o.fecha);if(!RES.some(r=>kNom(r.alumno)===kNom(o.alumno)))RES.push(o);n++}catch(x){m++}});
+   RES.sort((a,b)=>a.alumno.localeCompare(b.alumno,"es"));store.set("acc_seg",RES);return[n,m]},
+  panel(el){const RES=store.get("acc_seg",[]);
+   el.innerHTML=`<h3>Resultados de la ronda (.json)</h3><p class="small muted">El alumno descarga «Resultados_accesos_….json» al terminar y lo entrega en el Campus. Suéltalos en el recuadro de arriba junto a los PDF.</p>
+   <div class="btns"><button class="btn ghost sm" type="button" id="aCsv">Notas de la ronda (.csv)</button><button class="btn ghost sm" type="button" id="aClr">Vaciar resultados</button></div>
+   <div class="tbl"><table><thead><tr><th>Alumno</th><th>Fecha</th><th class="num">Atendidas</th><th class="num">Correctas</th><th class="num">Fallos detectados</th><th class="num">Nota</th><th>A revisar</th></tr></thead><tbody>${RES.length?RES.map(r=>`<tr><td>${esc(r.alumno)}${r.mod?' <span class="pill warn">editado</span>':""}</td><td class="mono">${esc(new Date(r.fecha).toLocaleString("es-ES",{dateStyle:"short",timeStyle:"short"}))}</td><td class="num">${r.atendidas}/${r.casos}</td><td class="num">${r.correctas}</td><td class="num">${r.detectados}/${r.fallos}</td><td class="num"><b>${String(r.nota).replace(".",",")}</b></td><td class="small">${esc(r.log.filter(l=>!l.ok).map(l=>l.n+": "+l.exp).join("; ")||"—")}</td></tr>`).join(""):`<tr><td colspan="7" class="muted">Aún no has cargado resultados.</td></tr>`}</tbody></table></div>`;
+   el.querySelector("#aCsv").onclick=()=>{if(!RES.length){toast("No hay resultados.");return}saveFile("notas_control_accesos.csv",csv([["Alumno","Fecha","Atendidas","Casos","Correctas","Fallos detectados","Fallos","Nota","Archivo editado","A revisar"],...RES.map(r=>[r.alumno,new Date(r.fecha).toLocaleString("es-ES"),r.atendidas,r.casos,r.correctas,r.detectados,r.fallos,String(r.nota).replace(".",","),r.mod?"Sí":"No",r.log.filter(l=>!l.ok).map(l=>l.n+": "+l.exp).join("; ")])]))};
+   const b=el.querySelector("#aClr");b.onclick=()=>{if(!RES.length)return;if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Pulsa otra vez para vaciar";setTimeout(()=>{b.dataset.c="";b.textContent="Vaciar resultados"},3000);return}store.set("acc_seg",[]);ACC.panel(el)}},
+  extra(E){const r=store.get("acc_seg",[]).find(x=>kNom(x.alumno)===kNom(E.al||""));return r?`<p class="fb"><b>Resultados de la ronda (.json):</b> ${r.atendidas} de ${r.casos} personas atendidas, ${r.correctas} correctas, ${r.detectados} de ${r.fallos} fallos detectados · nota de la ronda ${String(r.nota).replace(".",",")}${r.mod?' · <span class="pill warn">archivo editado</span>':""}</p>`:`<p class="small muted">No hay resultados .json de la ronda con este nombre.</p>`}};
+
+ /* ================= catálogo de actividades ================= */
+ function ACTS(R){R=R||{};const L=[["vib:AEV1.1","AEV1.1","Control de accesos","accesos.html"],["vib:AEV3.1","AEV3.1","Simulador CRA seguridad privada",null],["vib:AEV4.1","AEV4.1","Ronda en el depósito","deposito.html"],
+   ["vib:AEV5.1","AEV5.1","Hoja de ruta del transporte","hojaruta.html"],["vib:AEV6.1","AEV6.1","Control documental de voladura","voladura.html"],["vib:AEV9.1","AEV9.1","Plan de desplazamiento","rutas.html"],["vib:AEV10.1","AEV10.1","Escenarios de escolta","escenarios.html"]];
+  return L.map(([k,aev,n,app])=>{if(k==="vib:AEV4.1")return{...DEP,k,n,app,tit:"Rúbrica del docente (5 criterios)"};
+   if(!R[k])return{k,aev,n,app,off:true};const A={...kit(k,R[k]),k,n,app,tit:R[k].titulo+" · "+R[k].ra_ce};if(aev==="AEV1.1")Object.assign(A,ACC);return A})}
+
+ /* ================= interfaz de una actividad ================= */
+ let DZ=null,glob=false;
+ function evaluador(root,A){const RUB=A.RUB,FR=A.FR;
+  const MAX=RUB.map(r=>Math.max(...r.lv.map(l=>l[1]))),TOP=MAX.reduce((a,b)=>a+b,0);
+  let S=store.get(A.KEY,null)||{E:{}};const sv=()=>store.set(A.KEY,S);let CUR=null;const URLS={};
+  const db=()=>new Promise((ok,ko)=>{const r=indexedDB.open(A.DBN,1);r.onupgradeneeded=()=>r.result.createObjectStore("f",{keyPath:"id"});r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)});
+  const tx=(m,f)=>db().then(d=>new Promise((ok,ko)=>{const t=d.transaction("f",m),s=t.objectStore("f"),r=f(s);t.oncomplete=()=>{d.close();ok(r&&r.result)};t.onerror=()=>ko(t.error)}));
+  const dbPut=o=>tx("readwrite",s=>s.put(o)),dbGet=id=>tx("readonly",s=>s.get(id)),dbDel=id=>tx("readwrite",s=>s.delete(id)),dbClr=()=>tx("readwrite",s=>s.clear());
+  async function procesa(rec){const E=S.E[rec.id];try{let L,meta=null,md;
+    if(/\.md$/i.test(rec.name)||/markdown|text\/plain/.test(rec.type)){md=await rec.blob.text();L=deMD(md)}
+    else{const o=await leePDF(await rec.blob.arrayBuffer());meta=o.meta;L=o.L;md=aMD(L)}
+    const p=A.parse(meta,L),act=actDe(meta,L);rec.md=md;await dbPut(rec);
+    E.src=p.src==="texto"&&/\.md$/i.test(rec.name)?"md":p.src;E.err="";E.auto=p.r;E.det=p.d;E.miss=p.miss;E.otra=act&&act!==A.aev?act:"";
+    if(!E.alMan)E.al=limpia(p.al||nombreTexto(L)||rec.name)}
+   catch(e){E.src="error";E.err="No se ha podido leer el archivo. Puntúalo a mano.";E.auto=RUB.map(()=>null);E.det=RUB.map(()=>"Sin datos: archivo no legible.");E.miss=RUB.map(()=>false);E.otra="";if(!E.alMan)E.al=limpia(rec.name)}
+   if(!E.resMan)E.res=resumen(E);sv()}
+  /* ---------- puntuación y resumen ---------- */
+  const lvl=(E,i)=>E.lv&&E.lv[i]!=null?E.lv[i]:E.auto?E.auto[i]:null;
+  const pts=(E,i)=>{const v=lvl(E,i);return v==null?null:RUB[i].lv[v][1]};
+  const total=E=>RUB.reduce((s,_,i)=>s+(pts(E,i)||0),0),completo=E=>RUB.every((_,i)=>lvl(E,i)!=null);
+  function resumen(E){if(!completo(E))return"";const n=total(E),nm=/^(equipo|grupo)\b/i.test(E.al||"")?E.al:(E.al||"").split(" ")[0]||"";
+   const ini=n>=8.5?`¡Excelente trabajo, ${nm}!`:n>=6.5?`¡Buen trabajo, ${nm}!`:n>=5?`¡Vas por buen camino, ${nm}!`:`¡Gracias por tu entrega, ${nm}!`;
+   const fu=RUB.map((_,i)=>i).filter(i=>pts(E,i)===MAX[i]).slice(0,3).map(i=>FR[i][0]);
+   const me=RUB.map((_,i)=>i).filter(i=>pts(E,i)<MAX[i]).sort((a,b)=>pts(E,a)/MAX[a]-pts(E,b)/MAX[b]).slice(0,3).map(i=>lvl(E,i)===0&&E.miss&&E.miss[i]?FR[i][2]:FR[i][1]);
+   const lista=x=>x.length>1?x.slice(0,-1).join(", ")+" y "+x[x.length-1]:x[0]||"";
+   let t=ini+(fu.length?` Lo mejor de tu actividad: ${lista(fu)}.`:"");
+   if(me.length)t+=fu.length?` Sin embargo faltó ${lista(me)}.`:` Faltó ${lista(me)}.`;
+   t+=me.length?(n>=5?" ¡Has estado muy cerca!":" ¡Con estos ajustes se podría haber mejorado!"):" ¡Sigue así!";
+   return t+` Nota: ${fN(n)}/10.`}
+  /* ---------- interfaz ---------- */
+  const ext=A.json?/\.(pdf|md|json)$/i:/\.(pdf|md)$/i;
+  root.innerHTML=`<style>
+  .ev-dz{display:grid;place-items:center;gap:.4rem;min-height:9rem;border:3px dashed var(--line);border-radius:var(--radius);padding:1.2rem;text-align:center;cursor:pointer;background:var(--surface)}
+  .ev-dz:hover,.ev-dz:focus-within{border-color:var(--navy)}.ev-dz.on{border-color:var(--navy);background:color-mix(in srgb,var(--navy) 10%,var(--surface))}
+  .ev-det{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1rem;align-items:start}@media (max-width:900px){.ev-det{grid-template-columns:1fr}}
+  .ev-doc iframe{width:100%;height:min(80vh,900px);border:1px solid var(--line);border-radius:6px;background:#fff}
+  .ev-doc pre,.ev-md pre{white-space:pre-wrap;word-break:break-word;max-height:70vh;overflow:auto;background:var(--sunk);padding:.8rem;border-radius:6px;font-size:.85rem}
+  .ev-cr{border:1px solid var(--line);border-radius:6px;padding:.7rem;display:grid;gap:.45rem}
+  .ev-lv{display:flex;flex-wrap:wrap;gap:.35rem}.ev-lv button{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:.35rem .55rem;cursor:pointer;text-align:left;font:inherit;font-size:.9rem;flex:1 1 9rem}
+  .ev-lv button small{display:block;font-weight:400;color:var(--muted);font-size:.8rem;margin-top:.15rem}
+  .ev-lv button[aria-checked="true"]{border-color:var(--navy);background:color-mix(in srgb,var(--navy) 14%,var(--surface));font-weight:700}
+  .ev-lv button.au{box-shadow:inset 0 -3px 0 var(--warn)}
+  .ev-res{width:100%;resize:none;overflow:hidden;font:inherit;line-height:1.45;padding:.6rem;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);box-sizing:border-box}
+  .ev-tb button.lk{background:none;border:0;padding:0;color:var(--navy);text-decoration:underline;cursor:pointer;font:inherit;text-align:left}
+  .ev-leg{display:grid;gap:.15rem;margin:.3rem 0 0;padding:0;list-style:none}
+  </style>
+  <p class="small"><b>La puntuación es siempre una propuesta automática:</b> revísala y cambia cualquier nivel antes de calificar.</p>
+  ${Math.abs(TOP-10)>1e-9?`<p class="fb ko">La rúbrica suma ${fN(TOP)} puntos en lugar de 10: revísala.</p>`:""}
+  <label class="ev-dz" id="evDz"><b>Arrastra aquí los archivos del alumnado (${A.json?"PDF, MD o resultados .json":"PDF o MD"})</b><span class="small muted">o pulsa para elegirlos de una carpeta · puedes soltar varios a la vez</span><input type="file" id="evIn" multiple accept="${A.json?".pdf,.md,.json,application/json,":".pdf,.md,"}application/pdf,text/markdown" hidden></label>
+  <p class="small muted" id="evMsg" aria-live="polite"></p>
+  <div class="btns"><button class="btn ghost" type="button" id="evCsv">Descargar calificaciones (CSV)</button><span class="spacer"></span><button class="btn warn" type="button" id="evClr">Vaciar evaluaciones</button></div>
+  <div class="tbl"><table class="ev-tb"><thead><tr><th>Alumno</th>${RUB.map((r,i)=>`<th class="num" title="${esc(r.t)}">${esc(A.cols[i])}</th>`).join("")}<th class="num">Total</th><th>Estado</th></tr></thead><tbody id="evT"></tbody></table></div>
+  ${A.cols[0]==="C1"?`<ul class="ev-leg small muted">${RUB.map((r,i)=>`<li><b>C${i+1}</b> ${esc(r.t)} (${esc(r.ce)}) · máx. ${fN(MAX[i])}</li>`).join("")}</ul>`:""}
+  ${A.panel?'<section id="evX" style="margin-top:1.2rem"></section>':""}
+  <section id="evD" hidden aria-label="Evaluación del archivo"></section>`;
+  const msg=t=>$("#evMsg").textContent=t;
+  const ids=()=>Object.keys(S.E).sort((a,b)=>(S.E[a].al||"").localeCompare(S.E[b].al||"","es"));
+  function tabla(){const I=ids();$("#evT").innerHTML=I.length?I.map(id=>{const E=S.E[id],ok=completo(E)&&E.vis;
+    return `<tr><td><button class="lk" type="button" data-ab="${esc(id)}">${esc(E.al||E.name)}</button>${E.src==="error"?' <span class="pill warn">no legible</span>':""}${E.otra?` <span class="pill ko" title="El archivo parece de otra actividad">${esc(E.otra)}</span>`:""}</td>${RUB.map((_,i)=>`<td class="num">${pts(E,i)==null?"—":fN(pts(E,i))}</td>`).join("")}<td class="num"><b>${fN(total(E))}</b>${completo(E)?"":" <span class='small muted'>prov.</span>"}</td><td>${ok?'<span class="pill ok">Evaluado</span>':'<span class="pill">Pendiente</span>'}</td></tr>`}).join(""):`<tr><td colspan="${RUB.length+3}" class="muted">Aún no hay archivos. Suéltalos en el recuadro.</td></tr>`;
+   $$("[data-ab]").forEach(b=>b.onclick=()=>abre(b.dataset.ab))}
+  const fit=t=>{if(!t)return;t.style.height="auto";t.style.height=t.scrollHeight+2+"px"};
+  if(window.ResizeObserver)new ResizeObserver(()=>fit($("#evR"))).observe(root);
+  const SRC={app:"datos exactos de la herramienta",md:"Markdown",texto:"texto extraído del PDF (sin datos de la herramienta)",otro:"documento sin el informe de la herramienta",error:"no legible"};
+  async function abre(id){CUR=id;const E=S.E[id];if(!E)return;E.vis=true;sv();const rec=await dbGet(id),I=ids(),k=I.indexOf(id);
+   if(rec&&!URLS[id])URLS[id]=URL.createObjectURL(rec.blob);const url=URLS[id],isMD=/\.md$/i.test(E.name),n=total(E);
+   $("#evD").hidden=false;$("#evD").innerHTML=`<hr style="border:0;border-top:1px solid var(--line)">
+   <div class="btns" style="align-items:end"><label class="f" style="flex:1;min-width:12rem;margin:0">Alumno<input type="text" id="evAl" value="${esc(E.al||"")}"></label><button class="btn ghost sm" type="button" id="evPv" ${k<=0?"disabled":""}>← Anterior</button><button class="btn ghost sm" type="button" id="evNx" ${k>=I.length-1?"disabled":""}>Siguiente →</button><button class="btn ghost sm" type="button" id="evRm">Quitar este archivo</button></div>
+   <p class="small muted">${esc(E.name)} · ${SRC[E.src]||""}</p>
+   ${E.otra?`<p class="fb ko">Este archivo parece de la actividad ${esc(E.otra)}, no de la ${esc(A.aev)}. Revisa que lo has cargado en la actividad correcta.</p>`:""}
+   ${E.err?`<p class="fb ko">${esc(E.err)}</p>`:""}${A.extra?A.extra(E):""}
+   <div class="ev-det"><div class="ev-doc">${!rec?`<p class="fb ko">El archivo ya no está guardado en este navegador.</p>`:isMD?`<pre>${esc(rec.md||"")}</pre>`:`<iframe src="${url}" title="Documento de ${esc(E.al||E.name)}"></iframe>`}
+    ${rec?`<p class="small"><a href="${url}" target="_blank" rel="noopener">Abrir en pestaña nueva</a></p>`:""}
+    ${rec&&rec.md&&!isMD?`<details class="ev-md"><summary>Contenido en Markdown</summary><div class="btns"><button class="btn ghost sm" type="button" id="evMd">Descargar .md</button></div><pre>${esc(rec.md)}</pre></details>`:""}</div>
+   <div style="display:grid;gap:.6rem">
+    ${RUB.map((r,i)=>{const v=lvl(E,i),au=E.auto?E.auto[i]:null;return `<div class="ev-cr"><b>${esc(r.t)}${r.ce?` <span class="small muted">· ${esc(r.ce)}</span>`:""}</b><div class="ev-lv" role="radiogroup" aria-label="${esc(r.t)}">${r.lv.map(([t,p,ds],j)=>`<button type="button" role="radio" aria-checked="${v===j}" data-c="${i}" data-l="${j}" class="${au===j?"au":""}" title="${au===j?"Propuesta automática":""}">${esc(t)} · ${fN(p)} p${ds?`<small>${esc(ds)}</small>`:""}</button>`).join("")}</div>
+     <span class="small"><b>Detectado:</b> ${esc(E.det?E.det[i]:"—")}</span></div>`}).join("")}
+    <p><b>Total: ${fN(n)} / 10</b>${completo(E)?"":" <span class='pill warn'>provisional</span>"} <span class="small muted">· la raya naranja marca la propuesta automática</span></p>
+    <div class="btns"><button class="btn ghost sm" type="button" id="evRc">Recalcular propuesta automática</button></div>
+    <label class="f" for="evR"><b>Resumen para el alumno</b></label>
+    <div class="btns"><button class="btn sm" type="button" id="evCp">Copiar texto</button><button class="btn ghost sm" type="button" id="evRg">Regenerar</button>${E.resMan?'<span class="small muted">Editado a mano: no se actualiza solo.</span>':""}</div>
+    <textarea class="ev-res" id="evR" rows="2">${esc(E.res||"")}</textarea></div></div>`;
+   fit($("#evR"));tabla();
+   $("#evAl").onchange=()=>{E.al=$("#evAl").value.trim();E.alMan=true;if(!E.resMan)E.res=resumen(E);sv();abre(id)};
+   $("#evPv").onclick=()=>abre(I[k-1]);$("#evNx").onclick=()=>abre(I[k+1]);
+   $("#evRm").onclick=async()=>{const b=$("#evRm");if(!b.dataset.c){b.dataset.c=1;b.textContent="Pulsa otra vez para quitarlo";return}await dbDel(id);delete S.E[id];sv();$("#evD").hidden=true;tabla();toast("Archivo quitado")};
+   if($("#evMd"))$("#evMd").onclick=()=>saveFile(E.name.replace(/\.pdf$/i,"")+".md",rec.md);
+   $$("#evD [data-c]").forEach(b=>b.onclick=()=>{const i=+b.dataset.c;E.lv=E.lv||RUB.map(()=>null);E.lv[i]=+b.dataset.l;if(!E.resMan)E.res=resumen(E);sv();abre(id)});
+   $("#evRc").onclick=async()=>{const r=await dbGet(id);if(!r){toast("El archivo ya no está guardado.");return}msg("Releyendo el archivo…");E.lv=null;await procesa(r);msg("");abre(id)};
+   $("#evR").oninput=e=>{E.res=e.target.value;E.resMan=true;sv();fit(e.target)};
+   $("#evRg").onclick=()=>{E.resMan=false;E.res=resumen(E);sv();abre(id)};
+   $("#evCp").onclick=()=>copyText($("#evR").value)}
+  async function carga(files){files=[...files];const ok=files.filter(f=>ext.test(f.name)),no=files.length-ok.length;if(!ok.length){msg(no?`Solo se admiten archivos ${A.json?"PDF, MD o JSON":"PDF o MD"}.`:"");return}
+   const js=ok.filter(f=>/\.json$/i.test(f.name)),docs=ok.filter(f=>!/\.json$/i.test(f.name));let jn=[0,0];
+   if(js.length){jn=A.carga(await Promise.all(js.map(f=>f.text())));A.panel($("#evX"))}
+   let n=0;for(const f of docs){n++;msg(`Leyendo ${n} de ${docs.length}: ${f.name}…`);const id=f.name+"|"+f.size,rec={id,name:f.name,size:f.size,type:f.type,blob:f,added:Date.now()};
+    S.E[id]=S.E[id]||{id,name:f.name};if(URLS[id]){URL.revokeObjectURL(URLS[id]);delete URLS[id]}await dbPut(rec);await procesa(rec);tabla()}
+   msg(`${docs.length} archivo(s) cargado(s)${js.length?` · ${jn[0]} resultado(s) .json${jn[1]?` (${jn[1]} no válidos)`:""}`:""}${no?` · ${no} ignorado(s) por no ser ${A.json?"PDF, MD ni JSON":"PDF ni MD"}`:""}.`);if(CUR&&S.E[CUR])abre(CUR)}
+  const dz=$("#evDz");DZ=dz;$("#evIn").onchange=e=>{carga(e.target.files);e.target.value=""};
+  ["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("on")}));
+  ["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();if(t==="drop"||!dz.contains(e.relatedTarget))dz.classList.remove("on")}));
+  dz.addEventListener("drop",e=>{e.stopPropagation();carga(e.dataTransfer.files)});
+  if(!glob){glob=true;addEventListener("dragover",e=>e.preventDefault());addEventListener("drop",e=>{e.preventDefault();if(!DZ||!DZ.contains(e.target))toast("Suelta los archivos dentro del recuadro de evaluación.",3500)});
+   addEventListener("resize",()=>fit($("#evR")))}
+  $("#evCsv").onclick=()=>{const I=ids();if(!I.length){toast("No hay evaluaciones.");return}
+   saveFile(A.csv,csv([["Alumno","Archivo",...RUB.map(r=>r.t),"Total","Estado","Resumen"],...I.map(id=>{const E=S.E[id];return[E.al,E.name,...RUB.map((_,i)=>pts(E,i)==null?"":fN(pts(E,i))),fN(total(E)),completo(E)&&E.vis?"Evaluado":"Pendiente",E.res||""]})]))};
+  $("#evClr").onclick=async()=>{const b=$("#evClr");if(!b.dataset.c){b.dataset.c=1;b.textContent="¿Seguro? Pulsa otra vez para vaciar";setTimeout(()=>{delete b.dataset.c;b.textContent="Vaciar evaluaciones"},4000);return}
+   await dbClr();S={E:{}};sv();CUR=null;$("#evD").hidden=true;tabla();b.textContent="Vaciar evaluaciones";delete b.dataset.c;toast("Evaluaciones vaciadas")};
+  if(A.panel)A.panel($("#evX"));
+  tabla()}
+ return{ACTS,evaluador}})();
+
+// solo se entra como docente: una sesión de alumno abierta en otra herramienta no vale aquí
+let DOCM=null;acceso({soloDoc:true,doc(el){DOCM=el}});
+if(DOCM){const h=DOCM.parentElement.querySelector("h3");if(h)h.textContent="Evaluación";
+ const ws=document.querySelector(".acc-who span");if(ws)ws.innerHTML="<b>Docente</b> · evaluación de las entregas del alumnado.";
+ const ACTS=EVV.ACTS(window.RUBRICAS),q=(new URLSearchParams(location.search).get("a")||"").toUpperCase(),on=ACTS.filter(a=>!a.off);
+ let cur=(ACTS.find(a=>a.aev===q&&!a.off)||ACTS.find(a=>a.k===store.get("eval_act",""))||on[0]).k;
+ DOCM.innerHTML=`<div class="ev-act"><label class="f">Actividad que quieres evaluar<select id="evSel">${ACTS.map(a=>`<option value="${a.k}" ${a.off?"disabled":""}>${esc(a.aev+" · "+a.n)}${a.off?" (sin rúbrica: pendiente)":""}</option>`).join("")}</select></label><a class="btn ghost sm" id="evApp" target="_blank" rel="noopener">Abrir la herramienta del alumnado</a></div>
+  <p class="small muted" id="evTit"></p><div id="evRoot"></div>`;
+ const pon=()=>{const A=ACTS.find(a=>a.k===cur);$("#evSel").value=cur;store.set("eval_act",cur);$("#evTit").textContent=A.tit;
+  $("#evApp").hidden=!A.app;if(A.app)$("#evApp").href=A.app;
+  try{history.replaceState(null,"","?a="+A.aev)}catch(e){}EVV.evaluador($("#evRoot"),A)};
+ $("#evSel").onchange=e=>{cur=e.target.value;pon()};pon()}
+</script>
+
+</body></html>

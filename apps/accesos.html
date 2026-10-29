@@ -158,11 +158,7 @@ th .ayuda .tip{font-weight:400}
     <div class="row"><label class="row">Personas a atender por ronda <input type="number" id="dCas" min="5" max="40" step="1" style="width:5rem"></label><span class="small muted">De 5 a 40. Se aplica a las rondas nuevas del alumnado.</span></div>
     <div class="row" id="dTokR" hidden><label class="row" style="flex:1">Clave de GitHub <input type="password" id="dTok" style="flex:1" placeholder="La misma del panel Docente de la web"></label></div>
     <div class="row"><button class="btn" type="button" id="dPub">Publicar cambios</button><span class="small muted" id="dMsg" aria-live="polite"></span></div>
-    <hr style="border:0;border-top:1px solid var(--line);width:100%">
-    <h3>Seguimiento del alumnado</h3>
-    <p class="small muted">Cada alumno descarga su archivo de resultados al terminar y lo entrega en el Campus. Cárgalos aquí todos a la vez.</p>
-    <div class="row"><label class="btn ghost" style="cursor:pointer">Cargar resultados (.json)<input type="file" id="dRes" accept=".json,application/json" multiple hidden></label><button class="btn ghost" type="button" id="dCsv">Notas (.csv)</button><button class="btn ghost" type="button" id="dClr">Vaciar seguimiento</button></div>
-    <div class="tbl"><table><thead><tr><th>Alumno</th><th>Fecha</th><th class="num">Atendidas</th><th class="num">Correctas</th><th class="num">Fallos detectados</th><th class="num">Nota</th><th>A revisar</th></tr></thead><tbody id="dTab"></tbody></table></div>
+    <p class="small">El seguimiento y la evaluación de las entregas (PDF y resultados .json) están en la <a href="evaluacion.html?a=AEV1.1">Herramienta de Evaluación</a>.</p>
   </section>
   <div class="intro"><p class="eyebrow">Turno de control · 20/11/2026</p><h2>Comprueba, decide y registra</h2>
     <p class="muted">Llegan <span id="nCas">10</span> personas al acceso principal. Compara la acreditación con el documento de identidad y la lista de invitados, revisa fecha, zona y elementos de seguridad, y decide. Cada decisión queda en el registro del puesto.</p></div>
@@ -209,12 +205,18 @@ const kNom=n=>String(n).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/
 let UPRE="";const UK=k=>UPRE+k;
 const store={get(k,d){try{const v=localStorage.getItem(UK(k));return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(UK(k),JSON.stringify(v))}catch(e){}}};
 // o.doc(el): rellena el panel docente de la herramienta. Sin sesión muestra la entrada y detiene la app (throw).
+// enlace a la Herramienta de Evaluación (VIB) desde el panel docente de cada herramienta
+const evAev=()=>{const k=window.RUBRICAS&&Object.keys(window.RUBRICAS).find(x=>x.startsWith("vib:"));return k?k.split(":")[1]:""};
+const evLink=()=>evAev()?`<p class="small" style="margin-top:.6rem">La evaluación de las entregas de esta actividad está en la <a href="evaluacion.html?a=${evAev()}">Herramienta de Evaluación</a>.</p>`:"";
 function acceso(o){o=o||{};const main=document.querySelector("main"),setWho=w=>{try{w?sessionStorage.setItem("vib_who",JSON.stringify(w)):sessionStorage.removeItem("vib_who")}catch(e){}};
  if(!document.getElementById("acc-css")){const st=document.createElement("style");st.id="acc-css";st.textContent=`.acc-gate{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.1rem;max-width:52rem}.acc-gate form{display:grid;gap:.7rem;align-content:start}.acc-gate input{padding:.5rem;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:inherit;min-width:0}.acc-who{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between;background:var(--sunk);border-radius:6px;padding:.5rem .8rem;margin-bottom:1rem}`;document.head.appendChild(st)}
+ // o.soloDoc: página solo para el profesorado (sin entrada de alumno)
+ if(o.soloDoc&&WHO&&WHO.rol!=="doc")WHO=null;
  if(!WHO){[...main.children].forEach(c=>c.hidden=true);const g=document.createElement("section");g.setAttribute("aria-labelledby","accH");
   g.innerHTML=`<div class="intro"><p class="eyebrow">Acceso</p><h2 id="accH">¿Quién entra?</h2><p class="muted">Cada alumno entra con su nombre: su trabajo se guarda por separado en este navegador.</p></div><div class="acc-gate"><form class="panel" id="accA"><h3>Alumno</h3><label class="f">Nombre y apellidos<input type="text" id="accN" autocomplete="name" required placeholder="Ej.: Nayra Santana Déniz"></label><button class="btn" type="submit">Entrar</button><p class="small muted" id="accAm"></p></form><form class="panel" id="accD"><h3>Docente</h3><label class="f">Código<input type="password" id="accC" inputmode="numeric" autocomplete="off"></label><button class="btn ghost" type="submit">Entrar como docente</button><p class="small muted" id="accDm"></p></form></div>`;
+  if(o.soloDoc){g.querySelector("#accA").remove();g.querySelector(".intro .muted").textContent="Herramienta solo para el profesorado: entra con el código docente."}
   main.prepend(g);
-  $("#accA").onsubmit=e=>{e.preventDefault();const n=$("#accN").value.replace(/\s+/g," ").trim();if(n.split(" ").length<2){$("#accAm").textContent="Escribe tu nombre y al menos un apellido.";return}setWho({rol:"al",nom:n});location.reload()};
+  if($("#accA"))$("#accA").onsubmit=e=>{e.preventDefault();const n=$("#accN").value.replace(/\s+/g," ").trim();if(n.split(" ").length<2){$("#accAm").textContent="Escribe tu nombre y al menos un apellido.";return}setWho({rol:"al",nom:n});location.reload()};
   // shortcut: el código solo separa la vista docente (la web es pública)
   $("#accD").onsubmit=async e=>{e.preventDefault();const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("artefactos-26-27:"+$("#accC").value.trim()));
    if([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")!=="6c8f4c40e57cfdb9e934b46b9b1b54ec714fd36841e273e170f027766ccda77a"){$("#accDm").textContent="Código incorrecto.";return}
@@ -224,7 +226,7 @@ function acceso(o){o=o||{};const main=document.querySelector("main"),setWho=w=>{
  if(!doc&&window.RUBRICAS)Object.keys(window.RUBRICAS).forEach(k=>{const st=store.get("rub_"+k,{al:"",gr:"",self:{}});if(!st.al){st.al=WHO.nom;store.set("rub_"+k,st)}});
  const w=document.createElement("div");w.className="acc-who";w.innerHTML=`<span>${doc?"<b>Docente</b> · ves la herramienta como el alumnado, con tu panel.":"<b>Alumno:</b> "+esc(WHO.nom)}</span><button class="btn ghost sm" type="button">Cambiar de usuario</button>`;
  w.querySelector("button").onclick=()=>{setWho(null);location.reload()};main.prepend(w);
- if(doc){const d=document.createElement("section");d.className="panel";d.setAttribute("aria-label","Panel docente");d.style.marginBottom="1rem";d.innerHTML=`<h3>Panel docente</h3><div id="accP"><p class="small muted">Aún no hay ajustes propios en esta herramienta.</p></div>`;w.after(d);if(o.doc)o.doc($("#accP"))}
+ if(doc){const d=document.createElement("section");d.className="panel";d.setAttribute("aria-label","Panel docente");d.style.marginBottom="1rem";d.innerHTML=`<h3>Panel docente</h3><div id="accP"><p class="small muted">Aún no hay ajustes propios en esta herramienta.</p></div>${o.soloDoc?"":evLink()}`;w.after(d);if(o.doc)o.doc($("#accP"))}
  return WHO}
 function toast(t,ms){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,ms||2600)}
 const today=()=>new Date().toISOString().slice(0,10);
@@ -275,7 +277,9 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
  const fmt=x=>(Math.round(x*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
  // o.btn: id de un botón de la app que pasa a abrir la rúbrica (en lugar del botón flotante)
  (o.hide||[]).forEach(id=>{const e=document.getElementById(id);if(e)e.hidden=true});
- let b=o.btn&&document.getElementById(o.btn);if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
+ let b=o.btn&&document.getElementById(o.btn);
+ if(WHO&&WHO.rol==="doc"&&key.startsWith("vib:")){if(b){b.className="btn ghost";b.textContent="Evaluar entregas (Herramienta de Evaluación)";b.onclick=()=>location.href="evaluacion.html?a="+RB.aev}return}
+ if(b){b.className="btn rubin";b.textContent=o.label||"Descarga PDF"}else{b=document.createElement("button");b.type="button";b.className="rubfab";b.textContent="Rúbrica e informe PDF";document.body.appendChild(b)}
  const dl=document.createElement("dialog");dl.className="rubdlg";document.body.appendChild(dl);
  function draw(){const C=calc(),tot=C.reduce((a,c)=>a+c.pts,0);
   dl.innerHTML=`<div class="rub-h"><div><p class="eyebrow">${esc(RB.aev)} · ${esc(RB.mod)}</p><h3>${esc(RB.titulo)}</h3><p class="small muted">${esc(RB.ra_ce)}</p></div><button type="button" class="rub-x" aria-label="Cerrar">×</button></div>
@@ -315,6 +319,8 @@ function rubrica(o){const R=window.RUBRICAS;if(!R)return;
   if(y>250){doc.addPage();y=20}
   doc.setFontSize(8.5);doc.setFont("helvetica","normal");doc.splitTextToSize(T("Nota propuesta por la herramienta según la rúbrica de la AEV (cada criterio suma el 25 %, 50 %, 75 % o 100 % de su valor). Los criterios autoevaluados y la calificación final los valida el docente."),W-2*M).forEach(l=>{doc.text(l,M,y);y+=4});
   const n=doc.getNumberOfPages();for(let p=1;p<=n;p++){doc.setPage(p);doc.setFontSize(7.5);doc.setTextColor(85,98,117);doc.text(T(RB.aev+" · "+st.al+" · página "+p+" de "+n),M,290)}
+  const meta={key,al:st.al,gr:st.gr,fecha:new Date().toISOString(),C:C.map(c=>({t:c.t,n:c.n,auto:c.auto,ok:!!c.ok,ev:c.ev||"",pts:c.pts,max:c.max})),tot};
+  doc.setProperties({title:T("Informe de evaluación · "+RB.aev),author:T(st.al),subject:"RUBKIT1:"+btoa(unescape(encodeURIComponent(JSON.stringify(meta)))),keywords:"VIB "+RB.aev});
   const fn=("Informe_"+key.replace(":","_")+"_"+st.al).normalize("NFD").replace(/[^\w.-]+/g,"_")+".pdf";
   saveFile(fn,doc.output("blob"))}}
 /* Ayuda flotante: ayuda({"#id-del-campo o selector de cabecera": "texto"}) añade un icono «i» junto a la etiqueta */
@@ -465,7 +471,7 @@ async function ghGet(f){const r=await fetch(GH+f+"?t="+Date.now(),{headers:ghH()
 async function ghPut(f,j,sha,m){const r=await fetch(GH+f,{method:"PUT",headers:ghH(),body:JSON.stringify({message:m,content:b64e(j),...(sha?{sha}:{})})});if(!r.ok)throw r.status}
 async function panel(){$("#dCas").value=CFG.casos;$("#dTokR").hidden=!!TOK;let vis={};
  try{if(TOK){const v=await ghGet("visibilidad.json"),c=await ghGet("accesos.json");vis=v.j||{};if(c.j){CFG={...CFG,...c.j};$("#dCas").value=CFG.casos}}else{const r=await fetch("../visibilidad.json",{cache:"no-store"});if(r.ok)vis=await r.json()}}catch(e){if(e===401||e===403){TOK="";$("#dTokR").hidden=false}}
- $("#dVis").checked=vis[RKEY]!==false;tabla()}
+ $("#dVis").checked=vis[RKEY]!==false}
 $("#dPub").onclick=async()=>{if(!TOK){TOK=$("#dTok").value.trim();if(!TOK){$("#dMsg").textContent="Escribe la clave de GitHub.";return}try{localStorage.setItem("gh_tok",TOK)}catch(e){}}
  const n=Math.min(40,Math.max(5,Math.round(+$("#dCas").value||10)));$("#dCas").value=n;$("#dPub").disabled=true;$("#dMsg").textContent="Publicando…";
  try{const v=await ghGet("visibilidad.json"),vis=v.j||{};vis[RKEY]=$("#dVis").checked;await ghPut("visibilidad.json",vis,v.sha,"Control de accesos: visibilidad (panel docente)");
@@ -474,12 +480,6 @@ $("#dPub").onclick=async()=>{if(!TOK){TOK=$("#dTok").value.trim();if(!TOK){$("#d
   if(!R.log.length&&R.cases.length!==n){R=ronda(n);sv();$("#nCas").textContent=n;render()}}
  catch(e){$("#dMsg").textContent=e===401||e===403?"GitHub rechaza la clave: está caducada o sin permiso de escritura (Contents: Read and write). Escribe una nueva.":e===409?"Otra edición se cruzó: vuelve a pulsar «Publicar cambios».":typeof e==="number"?`No se pudo publicar (${e}).`:"Sin conexión con GitHub: no se ha publicado nada (en la versión de Claude no se puede publicar).";if(e===401||e===403){TOK="";try{localStorage.removeItem("gh_tok")}catch(x){}$("#dTokR").hidden=false}}
  finally{$("#dPub").disabled=false}};
-let RES=store.get("acc_seg",[]);
-function tabla(){$("#dTab").innerHTML=RES.length?RES.map(r=>`<tr><td>${esc(r.alumno)}${r.mod?' <span class="pill warn">editado</span>':""}</td><td class="mono">${esc(new Date(r.fecha).toLocaleString("es-ES",{dateStyle:"short",timeStyle:"short"}))}</td><td class="num">${r.atendidas}/${r.casos}</td><td class="num">${r.correctas}</td><td class="num">${r.detectados}/${r.fallos}</td><td class="num"><b>${String(r.nota).replace(".",",")}</b></td><td class="small">${esc(r.log.filter(l=>!l.ok).map(l=>l.n+": "+l.exp).join("; ")||"—")}</td></tr>`).join(""):`<tr><td colspan="7" class="muted">Aún no has cargado resultados.</td></tr>`}
-$("#dRes").onchange=async e=>{let n=0,m=0;for(const f of e.target.files){try{const o=JSON.parse(await f.text());if(o.app!=="accesos"){m++;continue}const {firma:fi,...rest}=o;o.mod=firma(rest)!==fi;RES=RES.filter(r=>kNom(r.alumno)!==kNom(o.alumno)||r.fecha>o.fecha);if(!RES.some(r=>kNom(r.alumno)===kNom(o.alumno)))RES.push(o);n++}catch(x){m++}}
- RES.sort((a,b)=>a.alumno.localeCompare(b.alumno,"es"));store.set("acc_seg",RES);tabla();e.target.value="";toast(`${n} resultado(s) cargado(s)${m?` · ${m} archivo(s) no válidos`:""}.`)};
-$("#dCsv").onclick=()=>saveFile("notas_control_accesos.csv",csv([["Alumno","Fecha","Atendidas","Casos","Correctas","Fallos detectados","Fallos","Nota","Archivo editado","A revisar"],...RES.map(r=>[r.alumno,new Date(r.fecha).toLocaleString("es-ES"),r.atendidas,r.casos,r.correctas,r.detectados,r.fallos,String(r.nota).replace(".",","),r.mod?"Sí":"No",r.log.filter(l=>!l.ok).map(l=>l.n+": "+l.exp).join("; ")])]));
-$("#dClr").onclick=()=>{if(!RES.length)return;if($("#dClr").dataset.c!=="1"){$("#dClr").dataset.c="1";$("#dClr").textContent="Pulsa otra vez para vaciar";setTimeout(()=>{$("#dClr").dataset.c="";$("#dClr").textContent="Vaciar seguimiento"},3000);return}RES=[];store.set("acc_seg",RES);tabla();$("#dClr").dataset.c="";$("#dClr").textContent="Vaciar seguimiento"};
 entrar();
 rubrica({btn:"docB",label:"Descarga PDF",auto(){const L=R.log,n=L.length;if(!n)return[[0,"No hay ninguna persona atendida en la ronda."],[0,"No hay ninguna persona atendida en la ronda."]];
  const ok=L.filter(l=>l.ok).length,fx=L.map((l,k)=>[l,R.cases[k]]).filter(([,c])=>c.act!=="ok"),fo=fx.filter(([l])=>l.ok).length;
