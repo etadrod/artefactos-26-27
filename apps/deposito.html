@@ -359,7 +359,9 @@ const shuf=a=>a.map(x=>[rnd(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 function nueva(m){if(m==null){const prev=R?R.m:-1;do{m=Math.floor(rnd()*NPL)}while(m===prev)}return{m,ko:plano(m).ko,v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:shuf(Object.keys(DIV)).slice(0,4).map(d=>({d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]})),la:{},lDone:false}}
 // docente: sustituye la vista del alumno por la Evaluación de los informes entregados
 // enlace «Evaluación» (?ev=1): pide entrar como docente aunque haya una sesión de alumno abierta
-if(new URLSearchParams(location.search).get("ev")&&WHO&&WHO.rol!=="doc"){WHO=null;try{sessionStorage.removeItem("vib_who")}catch(e){}}
+if(new URLSearchParams(location.search).get("ev")){if(WHO&&WHO.rol!=="doc"){WHO=null;try{sessionStorage.removeItem("vib_who")}catch(e){}}
+ // en este enlace solo se entra como docente: se oculta la entrada de alumno
+ const st=document.createElement("style");st.textContent="#accA{display:none}";document.head.appendChild(st)}
 let DOCM=null;acceso({doc(el){DOCM=el}});
 if(DOCM){const nav=document.querySelector("nav.tabs");if(nav)nav.hidden=true;$$("main > section[role=tabpanel]").forEach(x=>x.hidden=true);const h=DOCM.parentElement.querySelector("h3");if(h)h.textContent="Evaluación";const ws=document.querySelector(".acc-who span");if(ws)ws.innerHTML="<b>Docente</b> · evaluación de los informes entregados por el alumnado.";evaluador(DOCM);throw new Error("acceso: vista docente")}
 let R=null;R=store.get("dep_r",null);if(!R||R.m==null)R=nueva();let G=plano(R.m),P=G.P;const sv=()=>store.set("dep_r",R);
