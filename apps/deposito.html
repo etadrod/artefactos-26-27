@@ -146,11 +146,12 @@ th .ayuda .tip{font-weight:400}
 <main>
   <section id="v-ronda" role="tabpanel" aria-labelledby="tab-ronda" class="panel">
     <div class="intro"><p class="eyebrow">Supuesto · depósito ficticio</p><h2>Ronda de vigilancia de las 22:00</h2>
-      <p class="muted">Recorre los 13 puntos del plano. En cada uno lee lo que observas y decide si está correcto o hay una deficiencia. Las deficiencias cambian en cada ronda.</p></div>
+      <p class="muted">Cada ronda te asigna uno de los 15 planos del depósito. Recorre todos sus puntos: en cada uno lee lo que observas y decide si está correcto o hay una deficiencia. Puede que en tu plano no haya ninguna.</p></div>
     <div class="ronda">
       <svg class="map" id="map" viewBox="0 0 900 560" role="img" aria-label="Plano del depósito con puntos de control"></svg>
       <div class="panel" id="side"></div>
     </div>
+    <div class="btns"><span class="small muted" id="savedT"></span><span class="spacer"></span><button class="btn ghost" id="saveB" type="button">Guardar</button><button class="btn" id="nextB" type="button">Siguiente: 2 · Cierre y llaves →</button></div>
   </section>
 
   <section id="v-cierre" role="tabpanel" aria-labelledby="tab-cierre" class="panel" hidden>
@@ -302,42 +303,70 @@ function ayuda(map){Object.entries(map).forEach(([sel,txt])=>{const el=document.
  if(!ayuda._b){ayuda._b=1;document.addEventListener("click",e=>{if(!e.target.closest(".ayuda"))document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)});document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".ayuda .tip").forEach(x=>x.hidden=true)})}}
 
 "use strict";
-acceso();
-/* [id, nombre, x, y, observación correcta, observación con deficiencia, tipo de deficiencia] */
-const P=[
- ["P1","Puerta principal del recinto",450,520,"Puerta cerrada con candado; cerradura sin daños.","La cadena de la puerta está puesta pero sin candado.","Cerramiento"],
- ["P2","Valla perimetral norte",450,40,"Malla íntegra, tensa y sin huecos.","Malla cortada a ras de suelo: hueco de unos 40 cm.","Cerramiento"],
- ["P3","Valla perimetral este",860,280,"Valla en buen estado y franja exterior limpia.","Vegetación seca acumulada junto a la valla.","Cerramiento"],
- ["P4","Señal de acceso «Prohibido fumar y encender fuego»",380,500,"Señal fijada, visible y legible.","La señal está descolorida y no se lee.","Señalización"],
- ["P5","Señal «Materias explosivas» del polvorín 1",250,150,"Señal fijada en la puerta del polvorín.","La señal está caída en el suelo.","Señalización"],
- ["P6","Puerta del polvorín 1",250,250,"Puerta cerrada; cerradura intacta.","Marcas de palanca junto a la cerradura.","Cerramiento"],
- ["P7","Puerta del polvorín 2",640,250,"Puerta cerrada y bloqueada.","Puerta entreabierta sin personal en la zona.","Cerramiento"],
- ["P8","Merlón de protección del polvorín 2",640,120,"Talud continuo, sin erosión.","Erosión del talud con un hueco visible.","Cerramiento"],
- ["P9","Cámara de CCTV del lado norte",130,60,"Cámara orientada a la valla norte, piloto encendido.","Cámara girada hacia el exterior: no cubre la valla.","Medios de seguridad"],
- ["P10","Iluminación perimetral oeste",40,300,"Focos encendidos en todo el lado oeste.","Un foco fundido: tramo oeste a oscuras.","Medios de seguridad"],
- ["P11","Extintor junto a la garita",560,470,"Precinto intacto, manómetro en zona verde.","Precinto roto y manómetro en zona roja.","Medios de seguridad"],
- ["P12","Señal «Prohibido el paso a personas no autorizadas»",520,520,"Señal fijada junto a la puerta.","No hay señal: solo quedan los tornillos.","Señalización"],
- ["P13","Libro de registro de la garita",610,500,"Libro al día con la última ronda anotada.","Última anotación de hace dos turnos.","Documentación"]];
+
+/* 15 planos de depósito generados con semilla fija (siempre los mismos). 11 de 15 (≥70 %) tienen incidencias (3 a 5 puntos);
+   los otros 4 están todos correctos. Cada punto: [id, nombre, x, y, obs. correcta, obs. con deficiencia, tipo] */
+const NPL=15;
+const sr=n=>{let a=n>>>0;return()=>{a=a+0x6D2B79F5>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}};
+const PCON=(()=>{const r=sr(20261029),a=Array.from({length:NPL},(_,i)=>[r(),i]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);return new Set(a.slice(0,11))})();
+const OBS={
+ puerta:[["Puerta cerrada con candado; cerradura sin daños.","La cadena de la puerta está puesta pero sin candado."],["Puerta cerrada y candado bloqueado.","El candado está abierto y colgado de la malla."],["Cierre correcto; bisagras sin manipular.","Una bisagra está doblada y la hoja no ajusta."]],
+ valla:[["Malla íntegra, tensa y sin huecos.","Malla cortada a ras de suelo: hueco de unos 40 cm."],["Valla en buen estado y franja exterior limpia.","Vegetación seca acumulada junto a la valla."],["Postes firmes y alambre de espino completo.","Un poste inclinado y el espino suelto en un tramo."],["Malla sin daños; sin objetos junto a la valla.","Hay un palé apoyado por fuera de la valla: permite trepar."]],
+ sfumar:[["Señal «Prohibido fumar y encender fuego» fijada y legible.","La señal «Prohibido fumar y encender fuego» está descolorida y no se lee."],["Señal «Prohibido fumar y encender fuego» visible desde el acceso.","La señal «Prohibido fumar y encender fuego» está tapada por un cartel publicitario."]],
+ spaso:[["Señal «Prohibido el paso a personas no autorizadas» fijada junto a la puerta.","No hay señal de prohibido el paso: solo quedan los tornillos."],["Señal de prohibido el paso visible y en buen estado.","La señal de prohibido el paso está doblada y vuelta hacia la valla."]],
+ sexp:[["Señal «Materias explosivas» fijada en la puerta.","La señal «Materias explosivas» está caída en el suelo."],["Señal de materias explosivas visible y limpia.","La señal de materias explosivas está rota por la mitad."]],
+ ppol:[["Puerta cerrada; cerradura intacta.","Marcas de palanca junto a la cerradura."],["Puerta cerrada y bloqueada.","Puerta entreabierta sin personal en la zona."],["Puerta cerrada; precinto de control intacto.","El precinto de control de la puerta está roto."]],
+ merlon:[["Talud continuo, sin erosión.","Erosión del talud con un hueco visible."],["Merlón completo y sin objetos encima.","Hay herramientas abandonadas sobre el merlón."]],
+ cctv:[["Cámara orientada a su zona, piloto encendido.","Cámara girada hacia el exterior: no cubre la valla."],["Cámara limpia y con el piloto encendido.","Piloto apagado: la cámara no graba."]],
+ luz:[["Focos encendidos en todo el tramo.","Un foco fundido: tramo a oscuras."],["Iluminación correcta y sin zonas de sombra.","El foco apunta al suelo y deja la valla en sombra."]],
+ ext:[["Precinto intacto, manómetro en zona verde.","Precinto roto y manómetro en zona roja."],["Extintor en su soporte y revisión al día.","El extintor no está en su soporte."]],
+ libro:[["Libro al día con la última ronda anotada.","Última anotación de hace dos turnos."],["Libro de registro firmado en el último relevo.","Faltan las firmas del último relevo."]],
+ alarma:[["Central de alarma armada, sin averías.","La central de alarma muestra «avería en zona 2»."],["Teclado de alarma operativo y armado.","La alarma está desarmada sin anotación en el libro."]]};
+function plano(m){const r=sr((m+1)*7919),ri=(a,b)=>a+Math.floor(r()*(b-a+1)),pk=a=>a[Math.floor(r()*a.length)];
+ const x0=ri(30,70),y0=ri(30,60),x1=900-ri(30,70),y1=560-ri(35,55),gx=ri(260,640),n=r()<.25?1:r()<.6?2:3,pol=[];
+ for(let k=0;k<n;k++){const cx=Math.max(x0+108,Math.min(x1-108,Math.round(x0+(x1-x0)*(k+.5)/n+ri(-25,25)))),cy=Math.max(y0+130,ri(175,235));pol.push([cx,cy])}
+ let gR=r()<.5;if(gx+250>x1)gR=false;if(gx-250<x0)gR=true;const ga=[gx+(gR?120:-190),y1-47];
+ const pts=[],T=[];const add=(t,tipo,nm,x,y,req)=>pts.push({t,tipo,nm,x,y,req});
+ add("puerta","Cerramiento","Puerta principal del recinto",gx,y1,1);
+ const sides=[["valla","Cerramiento","Valla perimetral norte",ri(x0+120,x1-120),y0],["valla","Cerramiento","Valla perimetral este",x1,ri(y0+90,y1-120)],["valla","Cerramiento","Valla perimetral oeste",x0,ri(y0+90,y1-120)],["valla","Cerramiento","Valla perimetral sur",gx<450?ri(gx+180,x1-60):ri(x0+60,gx-180),y1]];
+ sides.sort(()=>r()-.5).slice(0,ri(2,3)).forEach(a=>add(...a,0));
+ add("sfumar","Señalización","Señal de acceso",gx-55,y1-30,0);if(r()<.7)add("spaso","Señalización","Señal de prohibido el paso",gx+55,y1-30,0);
+ pol.forEach(([cx,cy],k)=>{const N=n>1?" "+(k+1):"";add("ppol","Cerramiento","Puerta del polvorín"+N,cx+22,cy+62,1);if(r()<.75)add("sexp","Señalización","Señal del polvorín"+N,cx-28,cy+62,0);if(r()<.6)add("merlon","Cerramiento","Merlón del polvorín"+N,cx,cy-95,0)});
+ const cor=[[x0+18,y0+18,"noroeste"],[x1-18,y0+18,"noreste"],[x0+18,y1-18,"suroeste"],[x1-18,y1-18,"sureste"]].sort(()=>r()-.5);
+ cor.slice(0,ri(1,2)).forEach(([x,y,c])=>add("cctv","Medios de seguridad","Cámara de CCTV "+c,x,y,0));
+ [["oeste",x0+30,ri(y0+150,y1-150)],["este",x1-30,ri(y0+150,y1-150)],["norte",ri(x0+200,x1-200),y0+30]].sort(()=>r()-.5).slice(0,ri(1,2)).forEach(([c,x,y])=>add("luz","Medios de seguridad","Iluminación perimetral "+c,x,y,0));
+ const gs=ga[0]>gx?1:-1,ge=gs>0?ga[0]+92:ga[0]-22;add("libro","Documentación","Libro de registro de la garita",ge,ga[1]+20,1);add("ext","Medios de seguridad","Extintor junto a la garita",ge,ga[1]-22,0);if(r()<.5)add("alarma","Medios de seguridad","Central de alarma de la garita",ge+gs*38,ga[1]+20,0);
+ // separa puntos solapados y deja entre 10 y 14
+ let L=pts.filter(p=>p.req).concat(pts.filter(p=>!p.req).sort(()=>r()-.5));L=L.slice(0,Math.min(14,Math.max(10,L.length)));
+ const inG=p=>p.x>ga[0]-16&&p.x<ga[0]+86&&p.y>ga[1]-16&&p.y<ga[1]+56;
+ L.forEach((p,i)=>{for(let k=0;k<14&&(inG(p)||L.slice(0,i).some(q=>Math.hypot(q.x-p.x,q.y-p.y)<36));k++){if(k>5&&k%2)p.y+=p.y>280?-36:36;else p.x+=inG(p)?(p.x<ga[0]+35?-36:36):p.x<450?36:-36}p.x=Math.max(18,Math.min(882,p.x));p.y=Math.max(18,Math.min(542,p.y))});
+ L.sort((a,b)=>a.y-b.y||a.x-b.x);
+ const Pm=L.map((p,i)=>{const o=pk(OBS[p.t]);return["P"+(i+1),p.nm,p.x,p.y,o[0],o[1],p.tipo]});
+ const ko=PCON.has(m)?Pm.map(p=>p[0]).sort(()=>r()-.5).slice(0,ri(3,5)):[];
+ return{P:Pm,ko,x0,y0,x1,y1,gx,pol,ga}}
 const STEPS=["Comprobar que no queda personal en el interior y que el material está en su sitio","Cerrar las puertas de los polvorines y comprobar el cierre","Cerrar la puerta del recinto","Activar el sistema de alarma y confirmar la recepción con la central","Depositar las llaves en el lugar de custodia que fija el plan de seguridad","Anotar en el libro de registro la hora de cierre, las llaves y el responsable"];
 const DIV={"1.1":"Riesgo de explosión en masa","1.2":"Riesgo de proyección sin explosión en masa","1.3":"Riesgo de incendio con ligero riesgo de explosión o proyección","1.4":"Sin riesgo significativo de explosión","1.5":"Materias muy poco sensibles con riesgo de explosión en masa","1.6":"Objetos extremadamente poco sensibles"};
 let seed=Date.now()%2147483647;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
 const shuf=a=>a.map(x=>[rnd(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
-function nueva(){const ko=new Set(shuf(P.map(p=>p[0])).slice(0,5));return{ko:[...ko],v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:shuf(Object.keys(DIV)).slice(0,4).map(d=>({d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]})),la:{},lDone:false}}
-let R=store.get("dep_r",null)||nueva();const sv=()=>store.set("dep_r",R);
+function nueva(m){if(m==null){const prev=R?R.m:-1;do{m=Math.floor(rnd()*NPL)}while(m===prev)}return{m,ko:plano(m).ko,v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:shuf(Object.keys(DIV)).slice(0,4).map(d=>({d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]})),la:{},lDone:false}}
+acceso({doc(el){el.innerHTML=`<div class="btns" style="align-items:center"><label class="f" style="margin:0">Plano<select id="dPl">${Array.from({length:NPL},(_,i)=>`<option value="${i}">nº ${i+1}${PCON.has(i)?"":" · sin incidencias"}</option>`).join("")}</select></label><button class="btn ghost sm" type="button" id="dGo">Cargar este plano</button></div><p class="small muted" id="dKo"></p>`;
+ const show=()=>{const g=plano(+$("#dPl").value);$("#dKo").textContent=g.ko.length?"Incidencias: "+g.P.filter(p=>g.ko.includes(p[0])).map(p=>p[0]+" "+p[1]+" ("+p[5]+")").join(" · "):"Plano sin incidencias: todos los puntos están correctos."};
+ setTimeout(()=>{$("#dPl").value=R.m;show();$("#dPl").onchange=show;$("#dGo").onclick=()=>{usa(+$("#dPl").value);show();toast(`Plano nº ${R.m+1} cargado`)}})}});
+let R=null;R=store.get("dep_r",null);if(!R||R.m==null)R=nueva();let G=plano(R.m),P=G.P;const sv=()=>store.set("dep_r",R);
 function map(){const hs=P.map(p=>{const v=R.v[p[0]];return `<g class="hs ${v?(v.ok==="C"?"ok":"ko"):""} ${R.cur===p[0]?"cur":""}" data-id="${p[0]}" tabindex="0" role="button" aria-label="${esc(p[0]+" "+p[1])}"><circle cx="${p[2]}" cy="${p[3]}" r="16"/><text x="${p[2]}" y="${p[3]+4}" text-anchor="middle">${p[0].slice(1)}</text></g>`}).join("");
- $("#map").innerHTML=`<rect class="ground" x="0" y="0" width="900" height="560"/><path class="road" d="M450 560 L450 420 L250 420 M450 420 L640 420"/>
- <rect class="fence" x="40" y="40" width="820" height="480"/>
- <path class="berm" d="M150 110 h200 v190 h-40 v-150 h-120 v150 h-40z"/><rect class="bld" x="200" y="160" width="100" height="90"/><text x="250" y="210" text-anchor="middle">Polvorín 1</text>
- <path class="berm" d="M540 80 h200 v220 h-40 v-180 h-120 v180 h-40z"/><rect class="bld" x="590" y="160" width="100" height="90"/><text x="640" y="210" text-anchor="middle">Polvorín 2</text>
- <rect class="bld" x="580" y="450" width="70" height="50"/><text x="615" y="480" text-anchor="middle" class="s">Garita</text>
- <text x="450" y="548" text-anchor="middle" class="s">Acceso</text><text x="760" y="510" class="s">Merlones en verde</text>${hs}`;
+ const g=G,berm=([cx,cy])=>`<path class="berm" d="M${cx-100} ${cy-120} h200 v${190} h-40 v-150 h-120 v150 h-40z"/><rect class="bld" x="${cx-50}" y="${cy-45}" width="100" height="90"/>`;
+ $("#map").innerHTML=`<rect class="ground" x="0" y="0" width="900" height="560"/><path class="road" d="M${g.gx} 560 L${g.gx} ${g.y1-60} ${g.pol.map(([cx,cy])=>`M${g.gx} ${g.y1-60} L${cx} ${g.y1-60} L${cx} ${cy+75}`).join(" ")}"/>
+ <rect class="fence" x="${g.x0}" y="${g.y0}" width="${g.x1-g.x0}" height="${g.y1-g.y0}"/>
+ ${g.pol.map((c,k)=>berm(c)+`<text x="${c[0]}" y="${c[1]+5}" text-anchor="middle">Polvorín${g.pol.length>1?" "+(k+1):""}</text>`).join("")}
+ <rect class="bld" x="${g.ga[0]}" y="${g.ga[1]}" width="70" height="40"/><text x="${g.ga[0]+35}" y="${g.ga[1]+25}" text-anchor="middle" class="s">Garita</text>
+ <text x="${g.gx}" y="${Math.min(552,g.y1+30)}" text-anchor="middle" class="s">Acceso</text><text x="8" y="18" class="s">Plano nº ${R.m+1} · merlones en verde</text>${hs}`;
  $$(".hs").forEach(g=>{const go=()=>{R.cur=g.dataset.id;sv();map();side()};g.onclick=go;g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}})}
-function side(){const S=$("#side"),done=Object.keys(R.v).length;if(!R.cur){S.innerHTML=`<h3>Puntos revisados: ${done}/13</h3><p class="muted">Pulsa un punto del plano para acercarte.</p>`;return}
+function side(){const S=$("#side"),done=Object.keys(R.v).length;$("#savedT").textContent=R.saved?"Guardado: "+new Date(R.saved).toLocaleString("es-ES",{dateStyle:"short",timeStyle:"short"}):"";if(!R.cur){S.innerHTML=`<h3>Puntos revisados: ${done}/${P.length}</h3><p class="muted">Pulsa un punto del plano para acercarte.</p>`;return}
  const p=P.find(x=>x[0]===R.cur),ko=R.ko.includes(p[0]),v=R.v[p[0]]||{};
  S.innerHTML=`<p class="eyebrow">${esc(p[0])}</p><h3>${esc(p[1])}</h3><p class="obs">${esc(ko?p[5]:p[4])}</p>
  <div class="seg" role="group" aria-label="Valoración"><button type="button" data-o="C" aria-pressed="${v.ok==="C"}">Correcto</button><button type="button" data-o="D" aria-pressed="${v.ok==="D"}">Deficiencia</button></div>
  ${v.ok==="D"?`<label class="f">Tipo<select id="tipo">${["Cerramiento","Señalización","Medios de seguridad","Documentación"].map(t=>`<option ${v.t===t?"selected":""}>${t}</option>`).join("")}</select></label><label class="f">Actuación<input type="text" id="act" value="${esc(v.a||"")}" placeholder="Qué haces y a quién lo comunicas"></label>`:""}
- <p class="small muted">Puntos revisados: ${done}/13</p>`;
+ <p class="small muted">Puntos revisados: ${done}/${P.length}</p>`;
  S.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{R.v[p[0]]={...v,ok:b.dataset.o,t:v.t||"Cerramiento"};sv();map();side()});
  const t=$("#tipo");if(t)t.onchange=()=>{R.v[p[0]].t=t.value;sv()};const a=$("#act");if(a)a.oninput=()=>{R.v[p[0]].a=a.value;sv()}}
 function steps(){$("#steps").innerHTML=R.order.map((s,k)=>`<li class="${R.sDone?(s===k?"ok":"ko"):""}"><span class="mono">${k+1}</span><span class="t">${esc(STEPS[s])}</span><button type="button" data-u="${k}" aria-label="Subir">↑</button><button type="button" data-d="${k}" aria-label="Bajar">↓</button></li>`).join("");
@@ -349,14 +378,17 @@ function labs(){$("#labels").innerHTML=R.labs.map((l,k)=>{const a=R.la[k];return
  $$("[data-l]").forEach(s=>s.onchange=()=>{R.la[s.dataset.l]=s.value;R.lDone=false;sv();labs()})}
 $("#chkLab").onclick=()=>{R.lDone=true;sv();labs()};
 function score(){const pts=P.filter(p=>{const v=R.v[p[0]];return v&&(v.ok==="D")===R.ko.includes(p[0])}).length,st=R.sDone?R.order.filter((s,k)=>s===k).length:0,lb=R.lDone?R.labs.filter((l,k)=>R.la[k]===l.d).length:0;
- const nota=6*pts/13+2*st/6+2*lb/4;return{pts,st,lb,nota}}
-function res(){const s=score();$("#resK").innerHTML=[["Ronda",`${s.pts}/13`],["Cierre",R.sDone?`${s.st}/6`:"sin comprobar"],["Etiquetas",R.lDone?`${s.lb}/4`:"sin comprobar"],["Nota orientativa",s.nota.toFixed(1).replace(".",",")]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("");
+ const nota=6*pts/P.length+2*st/6+2*lb/4;return{pts,st,lb,nota}}
+function res(){const s=score();$("#resK").innerHTML=[["Ronda",`${s.pts}/${P.length}`],["Cierre",R.sDone?`${s.st}/6`:"sin comprobar"],["Etiquetas",R.lDone?`${s.lb}/4`:"sin comprobar"],["Nota orientativa",s.nota.toFixed(1).replace(".",",")]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("");
  $("#resT").innerHTML=P.map(p=>{const v=R.v[p[0]],ko=R.ko.includes(p[0]);return `<tr><td>${p[0]} · ${esc(p[1])}</td><td>${esc(ko?p[5]:p[4])}</td><td>${v?(v.ok==="D"?"Deficiencia"+(v.a?": "+esc(v.a):""):"Correcto"):"Sin revisar"}</td><td>${ko?'<span class="pill ko">Deficiencia</span>':'<span class="pill ok">Correcto</span>'} ${v&&(v.ok==="D")===ko?"✓":"✗"}</td></tr>`}).join("")}
 $("#tab-res").addEventListener("click",res);
-$("#newR").onclick=()=>{R=nueva();sv();all();toast("Nueva ronda: las deficiencias han cambiado")};
-$("#docB").onclick=()=>{const D=DOCX,s=score();let b=D.Title("Parte de ronda · Depósito de explosivos (simulación)")+D.tbl(null,[["Fecha y hora","[dd/mm/aaaa] · 22:00"],["Vigilante de explosivos","[Nombre]"],["Puntos revisados",Object.keys(R.v).length+" de 13"]]);
+const usa=m=>{R=nueva(m);G=plano(R.m);P=G.P;sv();all()};
+$("#newR").onclick=()=>{usa();toast(`Nueva ronda: plano nº ${R.m+1}`)};
+$("#saveB").onclick=()=>{R.saved=new Date().toISOString();sv();side();toast(`Ronda guardada (${Object.keys(R.v).length} de ${P.length} puntos revisados)`)};
+$("#nextB").onclick=()=>{R.saved=R.saved||new Date().toISOString();sv();$("#tab-cierre").click();scrollTo({top:0,behavior:"smooth"})};
+$("#docB").onclick=()=>{const D=DOCX,s=score();let b=D.Title("Parte de ronda · Depósito de explosivos (simulación)")+D.tbl(null,[["Fecha y hora","[dd/mm/aaaa] · 22:00"],["Vigilante de explosivos","[Nombre]"],["Plano",`nº ${R.m+1} de ${NPL}`],["Puntos revisados",Object.keys(R.v).length+" de "+P.length]]);
  b+=D.H1("Deficiencias detectadas")+(P.filter(p=>R.v[p[0]]?.ok==="D").map(p=>{const v=R.v[p[0]];return D.P(`${p[0]} · ${p[1]} (${v.t}): ${R.ko.includes(p[0])?p[5]:p[4]} Actuación: ${v.a||"[sin indicar]"}`)}).join("")||D.P("Sin deficiencias."));
- b+=D.H1("Cierre del depósito")+R.order.map((x,k)=>D.P(`${k+1}. ${STEPS[x]}`)).join("")+D.H1("Autoevaluación")+D.P(`Ronda ${s.pts}/13 · Cierre ${s.st}/6 · Etiquetas ${s.lb}/4 · Nota orientativa ${s.nota.toFixed(1)}`);
+ b+=D.H1("Cierre del depósito")+R.order.map((x,k)=>D.P(`${k+1}. ${STEPS[x]}`)).join("")+D.H1("Autoevaluación")+D.P(`Ronda ${s.pts}/${P.length} · Cierre ${s.st}/6 · Etiquetas ${s.lb}/4 · Nota orientativa ${s.nota.toFixed(1)}`);
  saveFile("Parte_ronda_deposito.docx",D.build(b))};
 function all(){map();side();steps();labs();res()}
 tabs(["ronda","cierre","etiq","res"],"dep_tab");all();
