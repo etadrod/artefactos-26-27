@@ -151,6 +151,13 @@ th .ayuda .tip{font-weight:400}
       <svg class="map" id="map" viewBox="0 0 900 560" role="img" aria-label="Plano del depósito con puntos de control"></svg>
       <div class="panel" id="side"></div>
     </div>
+    <section class="panel" aria-labelledby="hImg" style="margin-top:1rem">
+      <h3 id="hImg">Registro de visualización de imágenes (CCTV)</h3>
+      <p class="small muted">Si durante la ronda visualizas imágenes de las cámaras, anótalo respetando la protección de datos (LOPDGDD y RGPD).</p>
+      <div class="grid3"><label class="f">Finalidad de la visualización<textarea id="imgF" rows="3" placeholder="Para qué y por qué se visualizan las imágenes"></textarea></label>
+      <label class="f">Mínima captación<textarea id="imgM" rows="3" placeholder="Qué cámaras o zonas, solo lo imprescindible"></textarea></label>
+      <label class="f">Custodia<textarea id="imgC" rows="3" placeholder="Quién las custodia, dónde y durante cuánto tiempo"></textarea></label></div>
+    </section>
     <div class="btns"><span class="small muted" id="savedT"></span><span class="spacer"></span><button class="btn ghost" id="saveB" type="button">Guardar</button><button class="btn" id="nextB" type="button">Siguiente: 2 · Cierre y llaves →</button></div>
   </section>
 
@@ -173,7 +180,8 @@ th .ayuda .tip{font-weight:400}
     <div class="intro"><p class="eyebrow">Parte de ronda</p><h2>Resultado</h2></div>
     <div class="grid3" id="resK"></div>
     <div class="tbl"><table><thead><tr><th>Punto</th><th>Observación</th><th>Tu valoración</th><th>Real</th></tr></thead><tbody id="resT"></tbody></table></div>
-    <div class="btns"><button class="btn" id="docB" type="button">Parte de ronda (.docx)</button><button class="btn warn" id="newR" type="button">Nueva ronda</button></div>
+    <div class="btns"><button class="btn" id="pdfB" type="button">Descarga en PDF</button><span class="spacer"></span><button class="btn warn" id="newR" type="button">Nueva ronda</button></div>
+    <p class="small muted">Entrega en el Campus el PDF descargado. «Nueva ronda» borra todo tu trabajo y empieza otra ronda desde el punto 1.</p>
   </section>
 </main>
 <div class="toast" id="toast" hidden role="status"></div>
@@ -349,9 +357,9 @@ const DIV={"1.1":"Riesgo de explosión en masa","1.2":"Riesgo de proyección sin
 let seed=Date.now()%2147483647;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
 const shuf=a=>a.map(x=>[rnd(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 function nueva(m){if(m==null){const prev=R?R.m:-1;do{m=Math.floor(rnd()*NPL)}while(m===prev)}return{m,ko:plano(m).ko,v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:shuf(Object.keys(DIV)).slice(0,4).map(d=>({d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]})),la:{},lDone:false}}
-acceso({doc(el){el.innerHTML=`<div class="btns" style="align-items:center"><label class="f" style="margin:0">Plano<select id="dPl">${Array.from({length:NPL},(_,i)=>`<option value="${i}">nº ${i+1}${PCON.has(i)?"":" · sin incidencias"}</option>`).join("")}</select></label><button class="btn ghost sm" type="button" id="dGo">Cargar este plano</button></div><p class="small muted" id="dKo"></p>`;
- const show=()=>{const g=plano(+$("#dPl").value);$("#dKo").textContent=g.ko.length?"Incidencias: "+g.P.filter(p=>g.ko.includes(p[0])).map(p=>p[0]+" "+p[1]+" ("+p[5]+")").join(" · "):"Plano sin incidencias: todos los puntos están correctos."};
- setTimeout(()=>{$("#dPl").value=R.m;show();$("#dPl").onchange=show;$("#dGo").onclick=()=>{usa(+$("#dPl").value);show();toast(`Plano nº ${R.m+1} cargado`)}})}});
+// docente: sustituye la vista del alumno por la Evaluación de los informes entregados
+let DOCM=null;acceso({doc(el){DOCM=el}});
+if(DOCM){const nav=document.querySelector("nav.tabs");if(nav)nav.hidden=true;$$("main > section[role=tabpanel]").forEach(x=>x.hidden=true);const h=DOCM.parentElement.querySelector("h3");if(h)h.textContent="Evaluación";const ws=document.querySelector(".acc-who span");if(ws)ws.innerHTML="<b>Docente</b> · evaluación de los informes entregados por el alumnado.";evaluador(DOCM);throw new Error("acceso: vista docente")}
 let R=null;R=store.get("dep_r",null);if(!R||R.m==null)R=nueva();let G=plano(R.m),P=G.P;const sv=()=>store.set("dep_r",R);
 function map(){const hs=P.map(p=>{const v=R.v[p[0]];return `<g class="hs ${v?(v.ok==="C"?"ok":"ko"):""} ${R.cur===p[0]?"cur":""}" data-id="${p[0]}" tabindex="0" role="button" aria-label="${esc(p[0]+" "+p[1])}"><circle cx="${p[2]}" cy="${p[3]}" r="16"/><text x="${p[2]}" y="${p[3]+4}" text-anchor="middle">${p[0].slice(1)}</text></g>`}).join("");
  const g=G,berm=([cx,cy])=>`<path class="berm" d="M${cx-100} ${cy-120} h200 v${190} h-40 v-150 h-120 v150 h-40z"/><rect class="bld" x="${cx-50}" y="${cy-45}" width="100" height="90"/>`;
@@ -383,22 +391,213 @@ function res(){const s=score();$("#resK").innerHTML=[["Ronda",`${s.pts}/${P.leng
  $("#resT").innerHTML=P.map(p=>{const v=R.v[p[0]],ko=R.ko.includes(p[0]);return `<tr><td>${p[0]} · ${esc(p[1])}</td><td>${esc(ko?p[5]:p[4])}</td><td>${v?(v.ok==="D"?"Deficiencia"+(v.a?": "+esc(v.a):""):"Correcto"):"Sin revisar"}</td><td>${ko?'<span class="pill ko">Deficiencia</span>':'<span class="pill ok">Correcto</span>'} ${v&&(v.ok==="D")===ko?"✓":"✗"}</td></tr>`}).join("")}
 $("#tab-res").addEventListener("click",res);
 const usa=m=>{R=nueva(m);G=plano(R.m);P=G.P;sv();all()};
-$("#newR").onclick=()=>{usa();toast(`Nueva ronda: plano nº ${R.m+1}`)};
+$("#newR").onclick=()=>{const b=$("#newR");if(!b.dataset.c){b.dataset.c=1;b.textContent="Se borrará todo. Pulsa otra vez";setTimeout(()=>{delete b.dataset.c;b.textContent="Nueva ronda"},4000);return}
+ delete b.dataset.c;b.textContent="Nueva ronda";usa();$("#tab-ronda").click();scrollTo({top:0,behavior:"smooth"});toast(`Nueva ronda: plano nº ${R.m+1}`)};
 $("#saveB").onclick=()=>{R.saved=new Date().toISOString();sv();side();toast(`Ronda guardada (${Object.keys(R.v).length} de ${P.length} puntos revisados)`)};
 $("#nextB").onclick=()=>{R.saved=R.saved||new Date().toISOString();sv();$("#tab-cierre").click();scrollTo({top:0,behavior:"smooth"})};
-$("#docB").onclick=()=>{const D=DOCX,s=score();let b=D.Title("Parte de ronda · Depósito de explosivos (simulación)")+D.tbl(null,[["Fecha y hora","[dd/mm/aaaa] · 22:00"],["Vigilante de explosivos","[Nombre]"],["Plano",`nº ${R.m+1} de ${NPL}`],["Puntos revisados",Object.keys(R.v).length+" de "+P.length]]);
- b+=D.H1("Deficiencias detectadas")+(P.filter(p=>R.v[p[0]]?.ok==="D").map(p=>{const v=R.v[p[0]];return D.P(`${p[0]} · ${p[1]} (${v.t}): ${R.ko.includes(p[0])?p[5]:p[4]} Actuación: ${v.a||"[sin indicar]"}`)}).join("")||D.P("Sin deficiencias."));
- b+=D.H1("Cierre del depósito")+R.order.map((x,k)=>D.P(`${k+1}. ${STEPS[x]}`)).join("")+D.H1("Autoevaluación")+D.P(`Ronda ${s.pts}/${P.length} · Cierre ${s.st}/6 · Etiquetas ${s.lb}/4 · Nota orientativa ${s.nota.toFixed(1)}`);
- saveFile("Parte_ronda_deposito.docx",D.build(b))};
-function all(){map();side();steps();labs();res()}
+/* Informe PDF del alumno (sin nota). Lleva el trabajo en JSON base64 en «Subject» (prefijo VIBDEP1:) para la Evaluación docente */
+$("#pdfB").onclick=async()=>{const load=src=>new Promise((ok,ko)=>{const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=ko;document.head.appendChild(e)});
+ if(!window.jspdf?.jsPDF)try{await load("../vendor/jspdf.umd.min.js")}catch(e){try{await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")}catch(e2){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}}
+ const s=score(),al=WHO&&WHO.rol==="al"?WHO.nom:"",img=R.img||{},T=x=>String(x??"").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
+ const data={app:"deposito",v:1,alumno:al,fecha:new Date().toISOString(),plano:R.m+1,P:P.map(p=>{const v=R.v[p[0]]||{};return{id:p[0],n:p[1],obs:R.ko.includes(p[0])?p[5]:p[4],ko:R.ko.includes(p[0]),val:v.ok||null,t:v.ok==="D"?v.t||"":"",a:v.ok==="D"?v.a||"":""}}),
+  cierre:{done:!!R.sDone,ok:s.st,order:R.order.map(x=>STEPS[x])},etiq:{done:!!R.lDone,ok:s.lb,n:R.labs.length},img:{fin:img.fin||"",min:img.min||"",cus:img.cus||""}};
+ const {jsPDF}=window.jspdf,d=new jsPDF({unit:"mm",format:"a4"}),X=15,W=180;let y=16;
+ d.setProperties({title:"Informe de ronda · Depósito de explosivos",author:al,subject:"VIBDEP1:"+btoa(unescape(encodeURIComponent(JSON.stringify(data)))),keywords:"VIB AEV4.1"});
+ const need=h=>{if(y+h>285){d.addPage();y=16}};
+ const tx=(t,o={})=>{d.setFont("helvetica",o.b?"bold":"normal");d.setFontSize(o.s||9.5);d.setTextColor(20);const L=d.splitTextToSize(T(t),o.w||W);need(L.length*(o.s||9.5)*.42+1);d.text(L,o.x||X,y);y+=L.length*(o.s||9.5)*.42+(o.g??2)};
+ const h=t=>{y+=2;tx(t,{b:1,s:12,g:3})};
+ // fila de tabla: celdas con anchos fijos; las vacías se escriben «-» para que se detecten al leer el PDF
+ const row=(cells,ws,b)=>{d.setFont("helvetica",b?"bold":"normal");d.setFontSize(8.5);const L=cells.map((c,i)=>d.splitTextToSize(T(c===""||c==null?"-":c),ws[i]-3.5));const hh=Math.max(...L.map(l=>l.length))*3.7+1.5;need(hh);
+  let x=X;L.forEach((l,i)=>{d.text(l,x,y);x+=ws[i]});y+=hh;d.setDrawColor(210);d.line(X,y-2.2,X+W,y-2.2)};
+ tx("Informe de ronda · Depósito de explosivos (simulación)",{b:1,s:15,g:4});
+ tx(`Alumno: ${al||"[sin nombre]"}`,{b:1,s:11});tx(`Fecha: ${new Date().toLocaleString("es-ES",{dateStyle:"short",timeStyle:"short"})} · Plano nº ${R.m+1} de ${NPL} · VIB AEV4.1`);
+ tx(`Puntos revisados: ${Object.keys(R.v).length} de ${P.length} · Ronda: ${s.pts}/${P.length} bien valorados · Cierre: ${R.sDone?s.st+"/6":"sin comprobar"} · Etiquetas: ${R.lDone?s.lb+"/4":"sin comprobar"}`);
+ h("1 · Ronda perimetral (checklist de puntos)");const ws=[13,37,45,20,25,30,10];row(["Punto","Elemento","Observación","Valoración","Tipo","Actuación","Res."],ws,1);
+ P.forEach(p=>{const v=R.v[p[0]],ko=R.ko.includes(p[0]);row([p[0],p[1],ko?p[5]:p[4],v?(v.ok==="D"?"Deficiencia":"Correcto"):"",v&&v.ok==="D"?v.t:"",v&&v.ok==="D"?v.a:"",v?((v.ok==="D")===ko?"Bien":"Mal"):""],ws)});
+ h("Registro de visualización de imágenes (CCTV)");tx("Finalidad: "+(img.fin||"-"));tx("Mínima captación: "+(img.min||"-"));tx("Custodia: "+(img.cus||"-"));
+ h("2 · Cierre y llaves");R.order.forEach((x,k)=>tx(`${k+1}. ${STEPS[x]}${R.sDone?(x===k?" (en su sitio)":" (fuera de orden)"):""}`,{g:1}));tx(R.sDone?`${s.st} de 6 pasos en su sitio.`:"Orden sin comprobar.",{b:1});
+ h("3 · Etiquetas de clase 1");R.labs.forEach((l,k)=>tx(`Bulto ${k+1} (etiqueta ${l.d} ${l.g}): ${R.la[k]?"respuesta "+R.la[k]+" · "+DIV[R.la[k]]:"sin responder"}${R.lDone?(R.la[k]===l.d?" · correcta":" · incorrecta"):""}`,{g:1}));
+ saveFile(`Informe_ronda_deposito_${(al||"alumno").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"_")}.pdf`,d.output("blob"))};
+function imgs(){R.img=R.img||{fin:"",min:"",cus:""};[["imgF","fin"],["imgM","min"],["imgC","cus"]].forEach(([id,k])=>{const t=$("#"+id);t.value=R.img[k]||"";t.oninput=()=>{R.img[k]=t.value;sv()}})}
+function all(){map();side();steps();labs();res();imgs()}
 tabs(["ronda","cierre","etiq","res"],"dep_tab");all();
-rubrica({btn:"docB",label:"Descarga PDF",auto(){const s=score(),ko=R.ko,det=P.filter(p=>ko.includes(p[0])&&R.v[p[0]]?.ok==="D"),act=det.filter(p=>words(R.v[p[0]].a)>=4).length;
- const se=P.filter(p=>p[6]==="Cerramiento"||p[6]==="Señalización"),seOk=se.filter(p=>{const v=R.v[p[0]];return v&&(v.ok==="D")===ko.includes(p[0])}).length;
- return[[R.lDone?s.lb/4:0,R.lDone?`${s.lb} de 4 etiquetas identificadas correctamente.`:"Etiquetas sin comprobar."],
-  [(s.pts/13+(det.length?act/det.length:0))/2,`Ronda: ${s.pts} de 13 puntos bien valorados; ${act} de ${det.length} deficiencias reales con actuación descrita.`],
-  [seOk/se.length,`${seOk} de ${se.length} puntos de señalización y cerramiento bien valorados.`],
-  [R.sDone?s.st/6:0,R.sDone?`${s.st} de 6 pasos del cierre en su orden.`:"Cierre sin comprobar."]]},
- resumen(){const s=score();return[["Puntos revisados",Object.keys(R.v).length+" de 13"],["Ronda",s.pts+"/13"],["Cierre",R.sDone?s.st+"/6":"sin comprobar"],["Etiquetas",R.lDone?s.lb+"/4":"sin comprobar"]]}});
+/* Evaluación docente de la Ronda en el Depósito: PDF/MD del alumnado, propuesta automática con la rúbrica y resumen.
+   Archivos en IndexedDB («depeval»), puntuaciones en localStorage («depeval_v1»). */
+function evaluador(root){
+ const RUB=[
+  {c:"rec",t:"Realiza el recorrido de verificación",lv:[["No lo realiza",0],["Sí lo realiza",1]]},
+  {c:"chk",t:"Realiza el checklist cumplimentado",lv:[["No lo realiza",0],["Sí lo realiza",1]]},
+  {c:"c",t:"(c) Procedimiento de rondas coherente con el plan/instalación y correctamente ejecutado",lv:[["No entrega o no realiza",0],["Recorrido inconexo; omite puntos críticos",1],["Recorrido válido con algunas lagunas",2],["Recorrido completo, frecuencias y puntos críticos bien definidos",3]]},
+  {c:"d",t:"(d) Seguimiento del estado de bienes y medios (alarmas, accesos, etc.) y propuestas de acción",lv:[["No entrega o no verifica / no propone acciones",0],["Verifica parcialmente; propuestas vagas",1],["Verifica sistemáticamente y propone acciones adecuadas",2],["Verifica sistemáticamente y propone acciones mejoradas",3]]},
+  {c:"e",t:"(e) Visualización/registro de imágenes respetando LOPD (anotación de finalidad, mínima captación, custodia)",lv:[["No entrega. Incumple LOPD o no registra",0],["Registra sin detallar finalidad o custodia",1],["Registra con finalidad y custodia descritas",2]]}];
+ const MAX=RUB.map(r=>Math.max(...r.lv.map(l=>l[1]))),TOP=MAX.reduce((a,b)=>a+b,0);
+ // frases del resumen: [punto fuerte en presente, mejora en infinitivo, mejora cuando falta la información]
+ const FR=[["realizas el recorrido completo de verificación","completar el recorrido por todos los puntos de la ronda","incluir el recorrido de verificación, que no aparece en tu entrega"],
+  ["cumplimentas el checklist de todos los puntos","cumplimentar el checklist completo, con el tipo y la actuación de cada deficiencia","incluir el checklist cumplimentado, que no aparece en tu entrega"],
+  ["tu ronda es completa y detectas bien los puntos críticos","detectar todos los puntos críticos de la ronda y valorar bien cada uno","incluir la valoración de los puntos de la ronda, que no aparece en tu entrega"],
+  ["verificas los medios de forma sistemática y propones acciones muy acertadas","proponer acciones concretas para cada deficiencia (a quién avisas y cómo se corrige)","incluir las propuestas de acción ante las deficiencias, que no aparecen en tu entrega"],
+  ["registras las imágenes con su finalidad y custodia, respetando la LOPD","detallar en el registro de imágenes la finalidad, la mínima captación y la custodia","incluir el registro de visualización de imágenes (finalidad, mínima captación y custodia), que no aparece en tu entrega"]];
+ const KEY="depeval_v1",PRE="VIBDEP1:";
+ let S=store.get(KEY,null)||{E:{}};const sv=()=>store.set(KEY,S);let CUR=null;const URLS={};
+ /* ---------- IndexedDB ---------- */
+ const db=()=>new Promise((ok,ko)=>{const r=indexedDB.open("depeval",1);r.onupgradeneeded=()=>r.result.createObjectStore("f",{keyPath:"id"});r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)});
+ const tx=(m,f)=>db().then(d=>new Promise((ok,ko)=>{const t=d.transaction("f",m),s=t.objectStore("f"),r=f(s);t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>ko(t.error)}));
+ const dbPut=o=>tx("readwrite",s=>s.put(o)),dbGet=id=>tx("readonly",s=>s.get(id)),dbDel=id=>tx("readwrite",s=>s.delete(id)),dbClr=()=>tx("readwrite",s=>s.clear());
+ /* ---------- pdf.js (copia local o cdnjs) ---------- */
+ let PJ=null;
+ function pdfjs(){if(PJ)return PJ;const load=src=>new Promise((ok,ko)=>{const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=ko;document.head.appendChild(e)});
+  const set=b=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc=b+"pdf.worker.min.js";return window.pdfjsLib};
+  PJ=load("../vendor/pdfjs/pdf.min.js").then(()=>set("../vendor/pdfjs/")).catch(()=>{const b="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";return load(b+"pdf.min.js").then(()=>set(b))}).catch(e=>{PJ=null;throw e});return PJ}
+ /* ---------- lectura: texto por líneas, tablas y Markdown ---------- */
+ async function leePDF(buf){const lib=await pdfjs(),pdf=await lib.getDocument({data:buf}).promise;let meta=null;
+  try{const i=(await pdf.getMetadata()).info||{},s=String(i.Subject||"");if(s.startsWith(PRE))meta=JSON.parse(decodeURIComponent(escape(atob(s.slice(PRE.length)))))}catch(e){}
+  const L=[];for(let p=1;p<=pdf.numPages;p++){const tc=await(await pdf.getPage(p)).getTextContent(),rows=[];
+   tc.items.forEach(it=>{if(!it.str||!it.str.trim())return;const x=it.transform[4],y=it.transform[5],h=Math.abs(it.transform[3])||it.height||10;let r=rows.find(q=>Math.abs(q.y-y)<=Math.max(2.5,h*.3));if(!r)rows.push(r={y,it:[]});r.it.push({x,w:it.width,s:it.str,h})});
+   // celdas: hueco horizontal > 6 pt; una línea alineada con las columnas de la fila de tabla anterior es continuación de esa fila
+   let last=null;rows.sort((a,b)=>b.y-a.y).forEach(r=>{r.it.sort((a,b)=>a.x-b.x);const cs=[];let prev=null;
+    r.it.forEach(i=>{if(!prev||i.x-(prev.x+prev.w)>6)cs.push({x:i.x,s:""});const c=cs[cs.length-1];c.s+=(c.s&&i.x-(prev.x+prev.w)>1.2?" ":"")+i.s;prev=i});
+    const size=Math.max(...r.it.map(i=>i.h));
+    if(last&&last.y-r.y<size*1.9&&cs.every(c=>last.xs.some(x=>Math.abs(x-c.x)<3))&&!cs.some(c=>Math.abs(c.x-last.xs[0])<3)){cs.forEach(c=>{const k=last.xs.findIndex(x=>Math.abs(x-c.x)<3);last.l.cells[k]=(last.l.cells[k]+" "+c.s).trim()});last.y=r.y;return}
+    const l={cells:cs.map(c=>c.s.trim()),size};L.push(l);last=cs.length>1?{xs:cs.map(c=>c.x),l,y:r.y}:null})}
+  return{meta,L}}
+ function aMD(L){const sz=L.map(l=>l.size).sort((a,b)=>a-b),body=sz[Math.floor(sz.length/2)]||10;let out=[],inT=false;
+  L.forEach(l=>{if(l.cells.length>1){const row="| "+l.cells.map(c=>c||"-").join(" | ")+" |";if(!inT){out.push("",row,"|"+l.cells.map(()=>" --- ").join("|")+"|");inT=true}else out.push(row);return}
+   inT=false;const t=l.cells[0];out.push(l.size>=body*1.2?"\n## "+t:t)});return out.join("\n").replace(/\n{3,}/g,"\n\n").trim()+"\n"}
+ // MD (o texto) → líneas con celdas
+ const deMD=t=>t.split(/\r?\n/).filter(x=>x.trim()&&!/^\s*\|?\s*:?-{3,}/.test(x)).map(x=>{x=x.trim();if(x.startsWith("|"))return{cells:x.replace(/^\||\|$/g,"").split("|").map(c=>c.trim()),size:10};return{cells:[x.replace(/^#+\s*/,"").replace(/^[-*]\s+/,"")],size:/^#/.test(x)?14:10}});
+ /* ---------- nombre del alumno ---------- */
+ const CON=new Set(["de","la","del","y","las","los"]);
+ const STOP=/^(informe|informes|final|definitivo|def|v|ver|version|versión|copia|entrega|tarea|trabajo|actividad|ronda|deposito|depósito|explosivos|parte|resultado|resultados|aev|vib|curso|grupo|gm|gs|cfgm|cfgs|seguridad|evaluacion|evaluación|documento|doc|pdf|md|primero|segundo|práctica|practica|ejercicio|alumno|alumna|nombre|apellidos|submission|assignsubmission|file|onlinetext|moodle|classroom|ºa|ºb|º|ª|t\d*)$/i;
+ function limpia(raw){let t=String(raw||"").replace(/\.(pdf|md)$/i,"").replace(/_?\d+_assignsubmission_(file|onlinetext)_?/gi," ");
+  const plain=t.replace(/[_]+/g," ").replace(/\s+/g," ").trim();if(/^(equipo|grupo)\s*\d+$/i.test(plain))return plain.charAt(0).toUpperCase()+plain.slice(1);
+  t=t.replace(/\d{1,4}[\/.-]\d{1,2}[\/.-]\d{1,4}/g," ").replace(/[_\-.()\[\]{}·,;:|]+/g," ").replace(/\d+\s*º?/g," ");
+  let w=t.split(/\s+/).filter(x=>x&&!STOP.test(x)&&(x.length>1||x.toLowerCase()==="y"));
+  while(w.length&&CON.has(w[0].toLowerCase()))w.shift();while(w.length&&CON.has(w[w.length-1].toLowerCase()))w.pop();
+  if(!w.length)return plain;
+  return w.map(x=>{const l=x.toLowerCase();if(CON.has(l))return l;const mix=x!==x.toUpperCase()&&x!==l;return mix?x:l.charAt(0).toUpperCase()+l.slice(1)}).join(" ")}
+ function nombreTexto(L){for(const l of L){const t=l.cells.join(" | ");const m=t.match(/(?:^|\|)\s*(?:alumno\/?a?|nombre(?: y apellidos)?|vigilante(?: de explosivos)?)\s*[:|]\s*([^|]+)/i);
+  if(m){const v=m[1].trim();if(v&&!/^\[|^-$|^nombre/i.test(v)&&/[a-záéíóúñ]{2}/i.test(v))return v}}return""}
+ /* ---------- propuesta automática ---------- */
+ const nw=s=>String(s||"").trim().split(/\s+/).filter(Boolean).length;
+ const COM=/comunic|avis|inform|supervisor|central|jefe|responsable|libro|registr|anot|parte/i,COR=/repar|sustitu|repon|cierr|cerrar|asegur|retir|revis|manten|solicit|bloque|precint|tens|limpi|desbroz|recoloc|cambi/i,MEJ=/propon|propuesta|mejora|recomiend|instalar|reforzar|añadir|ampliar|periódic|preventiv/i;
+ function deMeta(m){const P=m.P||[],N=P.length,rev=P.filter(p=>p.val),ok=rev.filter(p=>(p.val==="D")===!!p.ko),real=P.filter(p=>p.ko),tp=real.filter(p=>p.val==="D"),fp=P.filter(p=>!p.ko&&p.val==="D"),marc=P.filter(p=>p.val==="D"),sinAct=marc.filter(p=>nw(p.a)<3),cie=m.cierre||{},img=m.img||{};
+  const r=[],d=[],miss=[false,false,false,false,false];
+  r[0]=N&&rev.length===N?1:0;d[0]=`${rev.length} de ${N} puntos del plano nº ${m.plano} revisados.`+(rev.length&&rev.length<N?" Recorrido incompleto: revisa este criterio.":"");if(!rev.length)miss[0]=true;
+  r[1]=N&&rev.length===N&&!sinAct.length?1:0;d[1]=`${rev.length} de ${N} puntos valorados; ${marc.length} deficiencias marcadas${sinAct.length?`, ${sinAct.length} sin tipo o actuación descrita`:", todas con actuación"}.`;if(!rev.length)miss[1]=true;
+  const acc=N?ok.length/N:0,todas=tp.length===real.length,cOk=cie.done&&cie.ok>=5;
+  r[2]=!rev.length?0:rev.length===N&&acc>=.9&&todas&&cOk?3:acc>=.7?2:1;
+  d[2]=`${ok.length} de ${N} puntos bien valorados; ${real.length?`${tp.length} de ${real.length} deficiencias reales detectadas`:"plano sin deficiencias reales"}${fp.length?`, ${fp.length} falsas alarmas`:""}; cierre ${cie.done?cie.ok+" de 6 pasos en orden":"sin comprobar"}.`+(rev.length&&!cie.done?" Revisa este criterio.":"");if(!rev.length)miss[2]=true;
+  const aw=tp.length?tp.reduce((s,p)=>s+nw(p.a),0)/tp.length:0,mej=tp.filter(p=>COM.test(p.a)&&COR.test(p.a)).length;
+  if(real.length){r[3]=!tp.length&&!marc.length?0:tp.length<real.length||aw<5?1:mej===tp.length&&aw>=8&&fp.length<=1?3:2;
+   d[3]=`${tp.length} de ${real.length} deficiencias detectadas; actuaciones con ${aw.toFixed(0)} palabras de media; ${mej} incluyen aviso y corrección.`;if(!marc.length)miss[3]=true}
+  else{r[3]=fp.length?1:2;d[3]=`Plano sin deficiencias reales; ${fp.length?fp.length+" falsas alarmas":"ninguna falsa alarma"}. No hay acciones que proponer: revisa este criterio.`}
+  const f=nw(img.fin),mi=nw(img.min),cu=nw(img.cus);
+  r[4]=!f&&!mi&&!cu?0:f>=5&&cu>=5?2:1;d[4]=f||mi||cu?`Registro de imágenes: finalidad ${f} palabras, mínima captación ${mi}, custodia ${cu}.`+(r[4]===1?" Falta detallar finalidad o custodia.":""):"No aparece el registro de visualización de imágenes.";if(r[4]===0)miss[4]=true;
+  return{r,d,miss}}
+ function deTexto(L){const lines=L.map(l=>l.cells.join(" | ")),all=lines.join("\n");
+  const pts=L.filter(l=>/^(P\d{1,2}|punto\s*\d+)\b/i.test(l.cells[0]||"")),val=pts.filter(l=>/correct|deficien|incidenc|anomal|\bok\b|conforme|bien|mal\b/i.test(l.cells.join(" "))),
+   cells=pts.reduce((s,l)=>s+l.cells.length,0),vac=pts.reduce((s,l)=>s+l.cells.filter(c=>!c||/^[-–—]$/.test(c)).length,0),pv=cells?vac/cells:1,
+   defs=pts.filter(l=>/deficien|incidenc|anomal|no conforme|mal\b/i.test(l.cells.join(" "))).length,acts=lines.filter(t=>nw(t)>=4&&COM.test(t)&&COR.test(t)).length,actsV=lines.filter(t=>COR.test(t)||COM.test(t)).length,
+   mej=(all.match(new RegExp(MEJ.source,"gi"))||[]).length,img=/imagen|imágenes|grabaci|visualiz|videovigil/i.test(all),fin=/finalidad/i.test(all),cus=/custodia|conserva|plazo|supresi|borrad/i.test(all),min=/mínima|minimiz|imprescindible|solo (?:la|las) zona/i.test(all),frec=/frecuenc|cada \d+\s*(h|hora|min)|horario/i.test(all);
+  const r=[],d=[],miss=[!pts.length,!val.length,!pts.length,!defs&&!actsV,!img],rv=" Archivo sin datos de la app: revisa este criterio.";
+  r[0]=pts.length>=8?1:0;d[0]=`${pts.length} puntos de la ronda en el documento.`+rv;
+  r[1]=val.length>=8&&pv<=.1?1:0;d[1]=`${val.length} puntos valorados; ${vac} celdas vacías o con «-».`+rv;
+  r[2]=!pts.length?0:val.length<8||pv>.25?1:val.length>=12&&pv<=.05&&frec?3:2;d[2]=`${val.length} puntos valorados${frec?"; indica frecuencias u horario":"; no indica frecuencias"}. No se puede comparar con la solución.`+rv;
+  r[3]=!defs&&!actsV?0:acts<Math.max(1,defs)?1:mej>=2?3:2;d[3]=`${defs} deficiencias anotadas; ${acts} actuaciones con aviso y corrección; ${mej} propuestas de mejora.`+rv;
+  r[4]=!img?0:fin&&cus?2:1;d[4]=img?`Registro de imágenes: ${fin?"indica":"no indica"} finalidad, ${min?"indica":"no indica"} mínima captación y ${cus?"indica":"no indica"} custodia.`+rv:"No aparece el registro de visualización de imágenes."+rv;
+  return{r,d,miss}}
+ async function procesa(rec){const E=S.E[rec.id];try{let L,meta=null,md;
+   if(/\.md$/i.test(rec.name)||/markdown|text\/plain/.test(rec.type)){md=await rec.blob.text();L=deMD(md)}
+   else{const o=await leePDF(await rec.blob.arrayBuffer());meta=o.meta;L=o.L;md=aMD(L)}
+   const p=meta&&meta.app==="deposito"?deMeta(meta):deTexto(L);rec.md=md;await dbPut(rec);
+   E.src=meta?"app":/\.md$/i.test(rec.name)?"md":"texto";E.err="";E.auto=p.r;E.det=p.d;E.miss=p.miss;
+   if(!E.alMan)E.al=limpia((meta&&meta.alumno)||nombreTexto(L)||rec.name)}
+  catch(e){E.src="error";E.err="No se ha podido leer el archivo. Puntúalo a mano.";E.auto=RUB.map(()=>null);E.det=RUB.map(()=>"Sin datos: archivo no legible.");E.miss=RUB.map(()=>false);if(!E.alMan)E.al=limpia(rec.name)}
+  if(!E.resMan)E.res=resumen(E);sv()}
+ /* ---------- puntuación y resumen ---------- */
+ const lvl=(E,i)=>E.lv&&E.lv[i]!=null?E.lv[i]:E.auto?E.auto[i]:null;
+ const pts=(E,i)=>{const v=lvl(E,i);return v==null?null:RUB[i].lv[v][1]};
+ const total=E=>RUB.reduce((s,_,i)=>s+(pts(E,i)||0),0),completo=E=>RUB.every((_,i)=>lvl(E,i)!=null);
+ const fN=n=>(Math.round(n*100)/100).toLocaleString("es-ES",{maximumFractionDigits:2});
+ function resumen(E){if(!completo(E))return"";const n=total(E),nm=/^(equipo|grupo)\b/i.test(E.al||"")?E.al:(E.al||"").split(" ")[0]||"";
+  const ini=n>=8.5?`¡Excelente trabajo, ${nm}!`:n>=6.5?`¡Buen trabajo, ${nm}!`:n>=5?`¡Vas por buen camino, ${nm}!`:`¡Gracias por tu entrega, ${nm}!`;
+  const fu=RUB.map((_,i)=>i).filter(i=>pts(E,i)===MAX[i]).slice(0,3).map(i=>FR[i][0]);
+  const me=RUB.map((_,i)=>i).filter(i=>pts(E,i)<MAX[i]).sort((a,b)=>pts(E,a)/MAX[a]-pts(E,b)/MAX[b]).slice(0,3).map(i=>pts(E,i)===0&&E.miss&&E.miss[i]?FR[i][2]:FR[i][1]);
+  const lista=x=>x.length>1?x.slice(0,-1).join(", ")+" y "+x[x.length-1]:x[0]||"";
+  let t=ini+(fu.length?` Lo mejor de tu actividad: ${lista(fu)}.`:"");
+  if(me.length)t+=fu.length?` Sin embargo faltó ${lista(me)}.`:` Faltó ${lista(me)}.`;
+  t+=me.length?(n>=5?" ¡Has estado muy cerca!":" ¡Con estos ajustes se podría haber mejorado!"):" ¡Sigue así!";
+  return t+` Nota: ${fN(n)}/10.`}
+ /* ---------- interfaz ---------- */
+ root.innerHTML=`<style>
+ .ev-dz{display:grid;place-items:center;gap:.4rem;min-height:9rem;border:3px dashed var(--line);border-radius:var(--radius);padding:1.2rem;text-align:center;cursor:pointer;background:var(--surface)}
+ .ev-dz:hover,.ev-dz:focus-within{border-color:var(--navy)}.ev-dz.on{border-color:var(--navy);background:color-mix(in srgb,var(--navy) 10%,var(--surface))}
+ .ev-det{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1rem;align-items:start}@media (max-width:900px){.ev-det{grid-template-columns:1fr}}
+ .ev-doc iframe{width:100%;height:min(80vh,900px);border:1px solid var(--line);border-radius:6px;background:#fff}
+ .ev-doc pre,.ev-md pre{white-space:pre-wrap;word-break:break-word;max-height:70vh;overflow:auto;background:var(--sunk);padding:.8rem;border-radius:6px;font-size:.85rem}
+ .ev-cr{border:1px solid var(--line);border-radius:6px;padding:.7rem;display:grid;gap:.45rem}
+ .ev-lv{display:flex;flex-wrap:wrap;gap:.35rem}.ev-lv button{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:.35rem .55rem;cursor:pointer;text-align:left;font:inherit;font-size:.9rem;flex:1 1 9rem}
+ .ev-lv button[aria-checked="true"]{border-color:var(--navy);background:color-mix(in srgb,var(--navy) 14%,var(--surface));font-weight:700}
+ .ev-lv button.au{box-shadow:inset 0 -3px 0 var(--warn)}
+ .ev-res{width:100%;resize:none;overflow:hidden;font:inherit;line-height:1.45;padding:.6rem;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);box-sizing:border-box}
+ .ev-tb button.lk{background:none;border:0;padding:0;color:var(--navy);text-decoration:underline;cursor:pointer;font:inherit;text-align:left}
+ </style>
+ <p class="small"><b>La puntuación es siempre una propuesta automática:</b> revísala y cambia cualquier nivel antes de calificar.</p>
+ ${TOP!==10?`<p class="fb ko">La rúbrica suma ${TOP} puntos en lugar de 10: revísala.</p>`:""}
+ <label class="ev-dz" id="evDz"><b>Arrastra aquí los archivos del alumnado (PDF o MD)</b><span class="small muted">o pulsa para elegirlos de una carpeta · puedes soltar varios a la vez</span><input type="file" id="evIn" multiple accept=".pdf,.md,application/pdf,text/markdown" hidden></label>
+ <p class="small muted" id="evMsg" aria-live="polite"></p>
+ <div class="btns"><button class="btn ghost" type="button" id="evCsv">Descargar calificaciones (CSV)</button><span class="spacer"></span><button class="btn warn" type="button" id="evClr">Vaciar evaluaciones</button></div>
+ <div class="tbl"><table class="ev-tb"><thead><tr><th>Alumno</th>${RUB.map((r,i)=>`<th class="num" title="${esc(r.t)}">${["Recorrido","Checklist","(c)","(d)","(e)"][i]}</th>`).join("")}<th class="num">Total</th><th>Estado</th></tr></thead><tbody id="evT"></tbody></table></div>
+ <section id="evD" hidden aria-label="Evaluación del archivo"></section>`;
+ const msg=t=>$("#evMsg").textContent=t;
+ const ids=()=>Object.keys(S.E).sort((a,b)=>(S.E[a].al||"").localeCompare(S.E[b].al||"","es"));
+ function tabla(){const I=ids();$("#evT").innerHTML=I.length?I.map(id=>{const E=S.E[id],ok=completo(E)&&E.vis;
+   return `<tr><td><button class="lk" type="button" data-ab="${esc(id)}">${esc(E.al||E.name)}</button>${E.src==="error"?' <span class="pill warn">no legible</span>':""}</td>${RUB.map((_,i)=>`<td class="num">${pts(E,i)??"—"}</td>`).join("")}<td class="num"><b>${fN(total(E))}</b>${completo(E)?"":" <span class='small muted'>prov.</span>"}</td><td>${ok?'<span class="pill ok">Evaluado</span>':'<span class="pill">Pendiente</span>'}</td></tr>`}).join(""):`<tr><td colspan="${RUB.length+3}" class="muted">Aún no hay archivos. Suéltalos en el recuadro.</td></tr>`;
+  $$("[data-ab]").forEach(b=>b.onclick=()=>abre(b.dataset.ab))}
+ const fit=t=>{if(!t)return;t.style.height="auto";t.style.height=t.scrollHeight+2+"px"};
+ if(window.ResizeObserver)new ResizeObserver(()=>fit($("#evR"))).observe(root);addEventListener("resize",()=>fit($("#evR")));
+ async function abre(id){CUR=id;const E=S.E[id];if(!E)return;E.vis=true;sv();const rec=await dbGet(id),I=ids(),k=I.indexOf(id);
+  if(rec&&!URLS[id])URLS[id]=URL.createObjectURL(rec.blob);const url=URLS[id],isMD=/\.md$/i.test(E.name),n=total(E);
+  $("#evD").hidden=false;$("#evD").innerHTML=`<hr style="border:0;border-top:1px solid var(--line)">
+  <div class="btns" style="align-items:end"><label class="f" style="flex:1;min-width:12rem;margin:0">Alumno<input type="text" id="evAl" value="${esc(E.al||"")}"></label><button class="btn ghost sm" type="button" id="evPv" ${k<=0?"disabled":""}>← Anterior</button><button class="btn ghost sm" type="button" id="evNx" ${k>=I.length-1?"disabled":""}>Siguiente →</button><button class="btn ghost sm" type="button" id="evRm">Quitar este archivo</button></div>
+  <p class="small muted">${esc(E.name)} · ${E.src==="app"?"datos exactos de la app":E.src==="md"?"Markdown":E.src==="texto"?"texto extraído del PDF (sin datos de la app)":"no legible"}</p>
+  ${E.err?`<p class="fb ko">${esc(E.err)}</p>`:""}
+  <div class="ev-det"><div class="ev-doc">${!rec?`<p class="fb ko">El archivo ya no está guardado en este navegador.</p>`:isMD?`<pre>${esc(rec.md||"")}</pre>`:`<iframe src="${url}" title="Documento de ${esc(E.al||E.name)}"></iframe>`}
+   ${rec?`<p class="small"><a href="${url}" target="_blank" rel="noopener">Abrir en pestaña nueva</a></p>`:""}
+   ${rec&&rec.md&&!isMD?`<details class="ev-md"><summary>Contenido en Markdown</summary><div class="btns"><button class="btn ghost sm" type="button" id="evMd">Descargar .md</button></div><pre>${esc(rec.md)}</pre></details>`:""}</div>
+  <div style="display:grid;gap:.6rem">
+   ${RUB.map((r,i)=>{const v=lvl(E,i),au=E.auto?E.auto[i]:null;return `<div class="ev-cr"><b>${esc(r.t)}</b><div class="ev-lv" role="radiogroup" aria-label="${esc(r.t)}">${r.lv.map(([t,p],j)=>`<button type="button" role="radio" aria-checked="${v===j}" data-c="${i}" data-l="${j}" class="${au===j?"au":""}" title="${au===j?"Propuesta automática":""}">${esc(t)} · ${p} p</button>`).join("")}</div>
+    <span class="small"><b>Detectado:</b> ${esc(E.det?E.det[i]:"—")}</span></div>`}).join("")}
+   <p><b>Total: ${fN(n)} / 10</b>${completo(E)?"":" <span class='pill warn'>provisional</span>"} <span class="small muted">· la raya naranja marca la propuesta automática</span></p>
+   <div class="btns"><button class="btn ghost sm" type="button" id="evRc">Recalcular propuesta automática</button></div>
+   <label class="f" for="evR"><b>Resumen para el alumno</b></label>
+   <div class="btns"><button class="btn sm" type="button" id="evCp">Copiar texto</button><button class="btn ghost sm" type="button" id="evRg">Regenerar</button>${E.resMan?'<span class="small muted">Editado a mano: no se actualiza solo.</span>':""}</div>
+   <textarea class="ev-res" id="evR" rows="2">${esc(E.res||"")}</textarea></div></div>`;
+  fit($("#evR"));tabla();
+  $("#evAl").onchange=()=>{E.al=$("#evAl").value.trim();E.alMan=true;if(!E.resMan)E.res=resumen(E);sv();abre(id)};
+  $("#evPv").onclick=()=>abre(I[k-1]);$("#evNx").onclick=()=>abre(I[k+1]);
+  $("#evRm").onclick=async()=>{const b=$("#evRm");if(!b.dataset.c){b.dataset.c=1;b.textContent="Pulsa otra vez para quitarlo";return}await dbDel(id);delete S.E[id];sv();$("#evD").hidden=true;tabla();toast("Archivo quitado")};
+  if($("#evMd"))$("#evMd").onclick=()=>saveFile(E.name.replace(/\.pdf$/i,"")+".md",rec.md);
+  $$("#evD [data-c]").forEach(b=>b.onclick=()=>{const i=+b.dataset.c;E.lv=E.lv||RUB.map(()=>null);E.lv[i]=+b.dataset.l;if(!E.resMan)E.res=resumen(E);sv();abre(id)});
+  $("#evRc").onclick=async()=>{const r=await dbGet(id);if(!r){toast("El archivo ya no está guardado.");return}msg("Releyendo el archivo…");E.lv=null;await procesa(r);msg("");abre(id)};
+  $("#evR").oninput=e=>{E.res=e.target.value;E.resMan=true;sv();fit(e.target)};
+  $("#evRg").onclick=()=>{E.resMan=false;E.res=resumen(E);sv();abre(id)};
+  $("#evCp").onclick=()=>copyText($("#evR").value)}
+ async function carga(files){const ok=[...files].filter(f=>/\.(pdf|md)$/i.test(f.name)),no=files.length-ok.length;if(!ok.length){msg(no?"Solo se admiten archivos PDF o MD.":"");return}
+  let n=0;for(const f of ok){n++;msg(`Leyendo ${n} de ${ok.length}: ${f.name}…`);const id=f.name+"|"+f.size,rec={id,name:f.name,size:f.size,type:f.type,blob:f,added:Date.now()};
+   const E=S.E[id]=S.E[id]||{id,name:f.name};if(URLS[id]){URL.revokeObjectURL(URLS[id]);delete URLS[id]}await dbPut(rec);await procesa(rec);tabla()}
+  msg(`${ok.length} archivo(s) cargado(s)${no?` · ${no} ignorado(s) por no ser PDF ni MD`:""}.`);if(CUR&&S.E[CUR])abre(CUR)}
+ const dz=$("#evDz");$("#evIn").onchange=e=>{carga(e.target.files);e.target.value=""};
+ ["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("on")}));
+ ["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();if(t==="drop"||!dz.contains(e.relatedTarget))dz.classList.remove("on")}));
+ dz.addEventListener("drop",e=>{e.stopPropagation();carga(e.dataTransfer.files)});
+ addEventListener("dragover",e=>e.preventDefault());addEventListener("drop",e=>{e.preventDefault();if(!dz.contains(e.target))toast("Suelta los archivos dentro del recuadro de evaluación.",3500)});
+ $("#evCsv").onclick=()=>{const I=ids();if(!I.length){toast("No hay evaluaciones.");return}
+  saveFile("calificaciones_ronda_deposito.csv",csv([["Alumno","Archivo",...RUB.map(r=>r.t),"Total","Estado","Resumen"],...I.map(id=>{const E=S.E[id];return[E.al,E.name,...RUB.map((_,i)=>pts(E,i)==null?"":fN(pts(E,i))),fN(total(E)),completo(E)&&E.vis?"Evaluado":"Pendiente",E.res||""]})]))};
+ $("#evClr").onclick=async()=>{const b=$("#evClr");if(!b.dataset.c){b.dataset.c=1;b.textContent="¿Seguro? Pulsa otra vez para vaciar";setTimeout(()=>{delete b.dataset.c;b.textContent="Vaciar evaluaciones"},4000);return}
+  await dbClr();S={E:{}};sv();CUR=null;$("#evD").hidden=true;tabla();b.textContent="Vaciar evaluaciones";delete b.dataset.c;toast("Evaluaciones vaciadas")};
+ tabla()}
+
 </script>
 
 </body></html>
