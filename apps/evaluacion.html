@@ -427,7 +427,7 @@ const EVV=(()=>{
   const LV=H.map((c,i)=>i).filter(i=>i>0&&i!==iP&&i!==iC);if(LV.length<2)throw"La tabla necesita al menos dos columnas de niveles (por ejemplo Insuficiente y Suficiente).";
   const hp=LV.map(i=>ptsDe(H[i])),hMax=Math.max(...hp.filter(x=>x!=null)),warn=[];
   const RUB=body.map((r,ri)=>{const max=iP>0?NUM(r[iP]):NaN;let lv=LV.map((i,j)=>{const c=r[i]||"";if(!c||/^[-–—]$/.test(c))return null;
-    let p=ptsDe(c);if(p==null&&hp[j]!=null)p=isNaN(max)?hp[j]:hp[j]*max/hMax;if(p==null&&!isNaN(max))p=max*j/(LV.length-1);return[sinPts(H[i])||"Nivel "+(j+1),p,sinPts(c)]}).filter(Boolean);
+    let p=ptsDe(c);if(p==null&&hp[j]!=null)p=isNaN(max)?hp[j]:hp[j]*max/hMax;if(p==null&&!isNaN(max))p=max*j/(LV.length-1);const lb=sinPts(H[i]);return lb?[lb,p,sinPts(c)]:[sinPts(c),p,""]}).filter(Boolean);
    if(lv.some(l=>l[1]==null||isNaN(l[1])))throw`No sé cuántos puntos vale cada nivel del criterio «${r[0]}». Pon los puntos en la cabecera del nivel, en cada celda «(2 p)» o una columna «Puntos» con el máximo.`;
    lv.sort((a,b)=>a[1]-b[1]);lv=lv.map(l=>[l[0],Math.round(l[1]*100)/100,l[2]]);
    if(!isNaN(max)&&Math.abs(Math.max(...lv.map(l=>l[1]))-max)>.01)warn.push(`En «${r[0]}» el nivel más alto vale ${fN(Math.max(...lv.map(l=>l[1])))} y la columna Puntos dice ${fN(max)}.`);
