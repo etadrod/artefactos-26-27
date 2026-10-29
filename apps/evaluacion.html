@@ -474,6 +474,7 @@ const EVV=(()=>{
   /* ---------- puntuación y resumen ---------- */
   const lvl=(E,i)=>E.lv&&E.lv[i]!=null?E.lv[i]:E.auto?E.auto[i]:null;
   const pts=(E,i)=>{const v=lvl(E,i);return v==null?null:RUB[i].lv[v][1]};
+  const hecha=E=>completo(E)&&(E.ok===true||(E.ok===undefined&&E.vis));
   const total=E=>RUB.reduce((s,_,i)=>s+(pts(E,i)||0),0),completo=E=>RUB.every((_,i)=>lvl(E,i)!=null);
   function resumen(E){if(!completo(E))return"";const n=total(E),nm=/^(equipo|grupo)\b/i.test(E.al||"")?E.al:(E.al||"").split(" ")[0]||"";
    const ini=n>=8.5?`¡Excelente trabajo, ${nm}!`:n>=6.5?`¡Buen trabajo, ${nm}!`:n>=5?`¡Vas por buen camino, ${nm}!`:`¡Gracias por tu entrega, ${nm}!`;
@@ -516,7 +517,7 @@ const EVV=(()=>{
   <section id="evD" hidden aria-label="Evaluación del archivo"></section>`;
   const msg=t=>$("#evMsg").textContent=t;
   const ids=()=>Object.keys(S.E).sort((a,b)=>(S.E[a].al||"").localeCompare(S.E[b].al||"","es"));
-  function tabla(){const I=ids();$("#evT").innerHTML=I.length?I.map(id=>{const E=S.E[id],ok=completo(E)&&E.vis;
+  function tabla(){const I=ids();$("#evT").innerHTML=I.length?I.map(id=>{const E=S.E[id],ok=hecha(E);
     return `<tr><td><button class="lk" type="button" data-ab="${esc(id)}">${esc(E.al||E.name)}</button>${E.src==="error"?' <span class="pill warn">no legible</span>':""}${E.otra?` <span class="pill ko" title="El archivo parece de otra actividad">${esc(E.otra)}</span>`:""}</td>${RUB.map((_,i)=>`<td class="num">${pts(E,i)==null?"—":fN(pts(E,i))}</td>`).join("")}<td class="num"><b>${fN(total(E))}</b>${completo(E)?"":" <span class='small muted'>prov.</span>"}</td><td>${ok?'<span class="pill ok">Evaluado</span>':'<span class="pill">Pendiente</span>'}</td></tr>`}).join(""):`<tr><td colspan="${RUB.length+3}" class="muted">Aún no hay archivos. Suéltalos en el recuadro.</td></tr>`;
    $$("[data-ab]").forEach(b=>b.onclick=()=>abre(b.dataset.ab))}
   const fit=t=>{if(!t)return;t.style.height="auto";t.style.height=t.scrollHeight+2+"px"};
@@ -536,7 +537,7 @@ const EVV=(()=>{
     ${RUB.map((r,i)=>{const v=lvl(E,i),au=E.auto?E.auto[i]:null;return `<div class="ev-cr"><b>${esc(r.t)}${r.ce?` <span class="small muted">· ${esc(r.ce)}</span>`:""}</b><div class="ev-lv" role="radiogroup" aria-label="${esc(r.t)}">${r.lv.map(([t,p,ds],j)=>`<button type="button" role="radio" aria-checked="${v===j}" data-c="${i}" data-l="${j}" class="${au===j?"au":""}" title="${au===j?"Propuesta automática":""}">${esc(t)} · ${fN(p)} p${ds?`<small>${esc(ds)}</small>`:""}</button>`).join("")}</div>
      <span class="small"><b>Detectado:</b> ${esc(E.det?E.det[i]:"—")}</span></div>`}).join("")}
     <p><b>Total: ${fN(n)} / 10</b>${completo(E)?"":" <span class='pill warn'>provisional</span>"} <span class="small muted">· la raya naranja marca la propuesta automática</span></p>
-    <div class="btns"><button class="btn ghost sm" type="button" id="evRc">Recalcular propuesta automática</button></div>
+    <div class="btns"><button class="btn ghost sm" type="button" id="evRc">Recalcular propuesta automática</button><button class="btn sm" type="button" id="evOk" ${completo(E)?"":"disabled"}>Guardar nota</button>${hecha(E)?'<span class="pill ok">Nota guardada</span>':E.ok===false?'<span class="small muted">Hay cambios sin guardar.</span>':""}</div>
     <label class="f" for="evR"><b>Resumen para el alumno</b></label>
     <div class="btns"><button class="btn sm" type="button" id="evCp">Copiar texto</button><button class="btn ghost sm" type="button" id="evRg">Regenerar</button>${E.resMan?'<span class="small muted">Editado a mano: no se actualiza solo.</span>':""}</div>
     <textarea class="ev-res" id="evR" rows="2">${esc(E.res||"")}</textarea></div></div>`;
@@ -545,16 +546,17 @@ const EVV=(()=>{
    $("#evPv").onclick=()=>abre(I[k-1]);$("#evNx").onclick=()=>abre(I[k+1]);
    $("#evRm").onclick=async()=>{const b=$("#evRm");if(!b.dataset.c){b.dataset.c=1;b.textContent="Pulsa otra vez para quitarlo";return}await dbDel(id);delete S.E[id];sv();$("#evD").hidden=true;tabla();toast("Archivo quitado")};
    if($("#evMd"))$("#evMd").onclick=()=>saveFile(E.name.replace(/\.pdf$/i,"")+".md",rec.md);
-   $$("#evD [data-c]").forEach(b=>b.onclick=()=>{const i=+b.dataset.c;E.lv=E.lv||RUB.map(()=>null);E.lv[i]=+b.dataset.l;if(!E.resMan)E.res=resumen(E);sv();abre(id)});
-   $("#evRc").onclick=async()=>{const r=await dbGet(id);if(!r){toast("El archivo ya no está guardado.");return}msg("Releyendo el archivo…");E.lv=null;await procesa(r);msg("");abre(id)};
+   $$("#evD [data-c]").forEach(b=>b.onclick=()=>{const i=+b.dataset.c;E.lv=E.lv||RUB.map(()=>null);E.lv[i]=+b.dataset.l;if(E.ok)E.ok=false;if(!E.resMan)E.res=resumen(E);sv();abre(id)});
+   $("#evRc").onclick=async()=>{const r=await dbGet(id);if(!r){toast("El archivo ya no está guardado.");return}msg("Releyendo el archivo…");E.lv=null;if(E.ok)E.ok=false;await procesa(r);msg("");abre(id)};
    $("#evR").oninput=e=>{E.res=e.target.value;E.resMan=true;sv();fit(e.target)};
+   $("#evOk").onclick=()=>{if(!completo(E)){toast("Elige un nivel en todos los criterios antes de guardar la nota.");return}E.ok=true;E.fecha=Date.now();sv();abre(id);toast(`Nota guardada: ${fN(total(E))}/10`)};
    $("#evRg").onclick=()=>{E.resMan=false;E.res=resumen(E);sv();abre(id)};
    $("#evCp").onclick=()=>copyText($("#evR").value)}
   async function carga(files){files=[...files];const ok=files.filter(f=>ext.test(f.name)),no=files.length-ok.length;if(!ok.length){msg(no?`Solo se admiten archivos ${A.json?"PDF, MD o JSON":"PDF o MD"}.`:"");return}
    const js=ok.filter(f=>/\.json$/i.test(f.name)),docs=ok.filter(f=>!/\.json$/i.test(f.name));let jn=[0,0];
    if(js.length){jn=A.carga(await Promise.all(js.map(f=>f.text())));A.panel($("#evX"))}
    let n=0;for(const f of docs){n++;msg(`Leyendo ${n} de ${docs.length}: ${f.name}…`);const id=f.name+"|"+f.size,rec={id,name:f.name,size:f.size,type:f.type,blob:f,added:Date.now()};
-    S.E[id]=S.E[id]||{id,name:f.name};if(URLS[id]){URL.revokeObjectURL(URLS[id]);delete URLS[id]}await dbPut(rec);await procesa(rec);tabla()}
+    S.E[id]=S.E[id]||{id,name:f.name,ok:false};if(URLS[id]){URL.revokeObjectURL(URLS[id]);delete URLS[id]}await dbPut(rec);await procesa(rec);tabla()}
    msg(`${docs.length} archivo(s) cargado(s)${js.length?` · ${jn[0]} resultado(s) .json${jn[1]?` (${jn[1]} no válidos)`:""}`:""}${no?` · ${no} ignorado(s) por no ser ${A.json?"PDF, MD ni JSON":"PDF ni MD"}`:""}.`);if(CUR&&S.E[CUR])abre(CUR)}
   const dz=$("#evDz");DZ=dz;$("#evIn").onchange=e=>{carga(e.target.files);e.target.value=""};
   ["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("on")}));
@@ -563,7 +565,7 @@ const EVV=(()=>{
   if(!glob){glob=true;addEventListener("dragover",e=>e.preventDefault());addEventListener("drop",e=>{e.preventDefault();if(!DZ||!DZ.contains(e.target))toast("Suelta los archivos dentro del recuadro de evaluación.",3500)});
    addEventListener("resize",()=>fit($("#evR")))}
   $("#evCsv").onclick=()=>{const I=ids();if(!I.length){toast("No hay evaluaciones.");return}
-   saveFile(A.csv,csv([["Alumno","Archivo",...RUB.map(r=>r.t),"Total","Estado","Resumen"],...I.map(id=>{const E=S.E[id];return[E.al,E.name,...RUB.map((_,i)=>pts(E,i)==null?"":fN(pts(E,i))),fN(total(E)),completo(E)&&E.vis?"Evaluado":"Pendiente",E.res||""]})]))};
+   saveFile(A.csv,csv([["Alumno","Archivo",...RUB.map(r=>r.t),"Total","Estado","Resumen"],...I.map(id=>{const E=S.E[id];return[E.al,E.name,...RUB.map((_,i)=>pts(E,i)==null?"":fN(pts(E,i))),fN(total(E)),hecha(E)?"Evaluado":"Pendiente",E.res||""]})]))};
   $("#evClr").onclick=async()=>{const b=$("#evClr");if(!b.dataset.c){b.dataset.c=1;b.textContent="¿Seguro? Pulsa otra vez para vaciar";setTimeout(()=>{delete b.dataset.c;b.textContent="Vaciar evaluaciones"},4000);return}
    await dbClr();S={E:{}};sv();CUR=null;$("#evD").hidden=true;tabla();b.textContent="Vaciar evaluaciones";delete b.dataset.c;toast("Evaluaciones vaciadas")};
   if(A.panel)A.panel($("#evX"));
