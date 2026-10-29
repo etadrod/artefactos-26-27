@@ -477,6 +477,8 @@ const EVV=(()=>{
   const total=E=>RUB.reduce((s,_,i)=>s+(pts(E,i)||0),0),completo=E=>RUB.every((_,i)=>lvl(E,i)!=null);
   function resumen(E){if(!completo(E))return"";const n=total(E),nm=/^(equipo|grupo)\b/i.test(E.al||"")?E.al:(E.al||"").split(" ")[0]||"";
    const ini=n>=8.5?`¡Excelente trabajo, ${nm}!`:n>=6.5?`¡Buen trabajo, ${nm}!`:n>=5?`¡Vas por buen camino, ${nm}!`:`¡Gracias por tu entrega, ${nm}!`;
+   // actividades añadidas por el docente: resumen corto (saludo + ajuste a lo solicitado + nota)
+   if(A.grp)return ini+" La actividad presentada "+(n>=8.5?"se ajusta plenamente a lo solicitado.":n>=6.5?"se ajusta a lo solicitado.":n>=5?"se ajusta en parte a lo solicitado.":"no se ajusta a lo solicitado.")+` Nota: ${fN(n)}/10.`;
    const lista=x=>x.length>1?x.slice(0,-1).join(", ")+" y "+x[x.length-1]:x[0]||"";
    const iF=RUB.map((_,i)=>i).filter(i=>pts(E,i)===MAX[i]).slice(0,3),iM=RUB.map((_,i)=>i).filter(i=>pts(E,i)<MAX[i]).sort((a,b)=>pts(E,a)/MAX[a]-pts(E,b)/MAX[b]).slice(0,3),fa=i=>lvl(E,i)===0&&E.miss&&E.miss[i];
    let fu,me;if(A.grp){fu=iF.length?["destacas en "+lista(iF.map(i=>FR[i]))]:[];const f=iM.filter(fa),m=iM.filter(i=>!fa(i));me=[];
@@ -520,7 +522,7 @@ const EVV=(()=>{
   const fit=t=>{if(!t)return;t.style.height="auto";t.style.height=t.scrollHeight+2+"px"};
   if(window.ResizeObserver)new ResizeObserver(()=>fit($("#evR"))).observe(root);
   const SRC={app:"datos exactos de la herramienta",md:"Markdown",texto:"texto extraído del PDF (sin datos de la herramienta)",otro:"documento sin el informe de la herramienta",error:"no legible"};
-  async function abre(id){CUR=id;const E=S.E[id];if(!E)return;E.vis=true;sv();const rec=await dbGet(id),I=ids(),k=I.indexOf(id);
+  async function abre(id){CUR=id;const E=S.E[id];if(!E)return;E.vis=true;if(!E.resMan)E.res=resumen(E);sv();const rec=await dbGet(id),I=ids(),k=I.indexOf(id);
    if(rec&&!URLS[id])URLS[id]=URL.createObjectURL(rec.blob);const url=URLS[id],isMD=/\.md$/i.test(E.name),n=total(E);
    $("#evD").hidden=false;$("#evD").innerHTML=`<hr style="border:0;border-top:1px solid var(--line)">
    <div class="btns" style="align-items:end"><label class="f" style="flex:1;min-width:12rem;margin:0">Alumno<input type="text" id="evAl" value="${esc(E.al||"")}"></label><button class="btn ghost sm" type="button" id="evPv" ${k<=0?"disabled":""}>← Anterior</button><button class="btn ghost sm" type="button" id="evNx" ${k>=I.length-1?"disabled":""}>Siguiente →</button><button class="btn ghost sm" type="button" id="evRm">Quitar este archivo</button></div>
