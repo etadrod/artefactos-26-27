@@ -18,5 +18,6 @@
  "vib:AEV10.1": true,
  "evb:AEV1.1": true,
  "ge6:AEV1.1 · 1.1.1": false,
- "vib:PlanoEDAM": true
+ "vib:PlanoEDAM": true,
+ "vib:Docente": false
 }
