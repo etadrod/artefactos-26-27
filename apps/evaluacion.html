@@ -478,7 +478,7 @@ const EVV=(()=>{
   function resumen(E){if(!completo(E))return"";const n=total(E),nm=/^(equipo|grupo)\b/i.test(E.al||"")?E.al:(E.al||"").split(" ")[0]||"";
    const ini=n>=8.5?`¡Excelente trabajo, ${nm}!`:n>=6.5?`¡Buen trabajo, ${nm}!`:n>=5?`¡Vas por buen camino, ${nm}!`:`¡Gracias por tu entrega, ${nm}!`;
    // actividades añadidas por el docente: resumen corto (saludo + ajuste a lo solicitado + nota)
-   if(A.grp)return ini+" La actividad presentada "+(n>=8.5?"se ajusta plenamente a lo solicitado.":n>=6.5?"se ajusta a lo solicitado.":n>=5?"se ajusta en parte a lo solicitado.":"no se ajusta a lo solicitado.")+` Nota: ${fN(n)}/10.`;
+   if(A.grp)return(n>=8.5?`¡Excelente trabajo, ${nm}! La actividad presentada se ajusta plenamente a lo solicitado.`:n>=6.5?`¡Buen trabajo, ${nm}! La actividad presentada se ajusta a lo solicitado.`:n>=5?`¡Buen trabajo, ${nm}! La actividad presentada está superada, pero necesita mejorar en los aspectos de menor puntuación.`:`¡Gracias por tu entrega, ${nm}! La actividad presentada no está superada: necesita mejorar en los aspectos de menor puntuación.`)+` Nota: ${fN(n)}/10.`;
    const lista=x=>x.length>1?x.slice(0,-1).join(", ")+" y "+x[x.length-1]:x[0]||"";
    const iF=RUB.map((_,i)=>i).filter(i=>pts(E,i)===MAX[i]).slice(0,3),iM=RUB.map((_,i)=>i).filter(i=>pts(E,i)<MAX[i]).sort((a,b)=>pts(E,a)/MAX[a]-pts(E,b)/MAX[b]).slice(0,3),fa=i=>lvl(E,i)===0&&E.miss&&E.miss[i];
    let fu,me;if(A.grp){fu=iF.length?["destacas en "+lista(iF.map(i=>FR[i]))]:[];const f=iM.filter(fa),m=iM.filter(i=>!fa(i));me=[];
