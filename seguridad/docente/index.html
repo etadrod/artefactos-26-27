@@ -116,7 +116,7 @@ th .ayuda .tip{font-weight:400}
 <p id="msg" class="small muted" style="margin-top:1rem" aria-live="polite"></p>
 </main>
 <script>
-const ITEMS=[["vib:AEV1.1", "VIB 1679", "AEV1.1", "Control de accesos"], ["vib:AEV3.1", "VIB 1679", "AEV3.1", "Simulador CRA seguridad privada"], ["vib:AEV4.1", "VIB 1679", "AEV4.1", "Ronda en el depósito"], ["vib:AEV5.1", "VIB 1679", "AEV5.1", "Hoja de ruta del transporte"], ["vib:AEV6.1", "VIB 1679", "AEV6.1", "Control documental de voladura"], ["vib:AEV9.1", "VIB 1679", "AEV9.1", "Plan de desplazamiento"], ["vib:AEV10.1", "VIB 1679", "AEV10.1", "Escenarios de escolta"]], API='https://api.github.com/repos/etadrod/artefactos-26-27/contents/visibilidad.json';
+const ITEMS=[["vib:AEV1.1", "VIB 1679", "AEV1.1", "Control de accesos"], ["vib:PlanoEDAM", "VIB 1679", "RA1", "Plano EDAM · medidas de seguridad"], ["vib:AEV3.1", "VIB 1679", "AEV3.1", "Simulador CRA seguridad privada"], ["vib:AEV4.1", "VIB 1679", "AEV4.1", "Ronda en el depósito"], ["vib:AEV5.1", "VIB 1679", "AEV5.1", "Hoja de ruta del transporte"], ["vib:AEV6.1", "VIB 1679", "AEV6.1", "Control documental de voladura"], ["vib:AEV9.1", "VIB 1679", "AEV9.1", "Plan de desplazamiento"], ["vib:AEV10.1", "VIB 1679", "AEV10.1", "Escenarios de escolta"]], API='https://api.github.com/repos/etadrod/artefactos-26-27/contents/visibilidad.json';
 const $=id=>document.getElementById(id), msg=t=>$('msg').textContent=t;
 let tok='', sha=null, vis={};
 try{tok=localStorage.getItem('gh_tok')||''}catch(e){}
