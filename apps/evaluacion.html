@@ -413,6 +413,42 @@ const EVV=(()=>{
    const b=el.querySelector("#aClr");b.onclick=()=>{if(!RES.length)return;if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Pulsa otra vez para vaciar";setTimeout(()=>{b.dataset.c="";b.textContent="Vaciar resultados"},3000);return}store.set("acc_seg",[]);ACC.panel(el)}},
   extra(E){const r=store.get("acc_seg",[]).find(x=>kNom(x.alumno)===kNom(E.al||""));return r?`<p class="fb"><b>Resultados de la ronda (.json):</b> ${r.atendidas} de ${r.casos} personas atendidas, ${r.correctas} correctas, ${r.detectados} de ${r.fallos} fallos detectados · nota de la ronda ${String(r.nota).replace(".",",")}${r.mod?' · <span class="pill warn">archivo editado</span>':""}</p>`:`<p class="small muted">No hay resultados .json de la ronda con este nombre.</p>`}};
 
+ /* ================= Actividades añadidas por el docente (rúbrica en Markdown) ================= */
+ // Tabla MD: 1.ª columna = criterio; columna opcional «Puntos/Máx/Peso» y «RA/CE»; el resto, un nivel por columna.
+ // Puntos de cada nivel: «(2 p)» en la celda, o número en la cabecera del nivel, o reparto lineal de 0 al máximo.
+ const NUM=x=>parseFloat(String(x).replace(",","."));
+ const ptsDe=t=>{const m=String(t).match(/\((\d+(?:[.,]\d+)?)\s*(?:p|pts?|puntos?)?\.?\)|(\d+(?:[.,]\d+)?)\s*(?:p|pts?|puntos?)\b\.?/i);return m?NUM(m[1]||m[2]):null};
+ const sinPts=t=>String(t).replace(/\((\d+(?:[.,]\d+)?)\s*(?:p|pts?|puntos?)?\.?\)|(\d+(?:[.,]\d+)?)\s*(?:p|pts?|puntos?)\b\.?/gi,"").replace(/\s*[·:–-]\s*$/,"").replace(/\s+/g," ").trim();
+ function rubMD(md){const lines=String(md||"").split(/\r?\n/),h1=(lines.find(l=>/^#\s+/.test(l))||"").replace(/^#\s+/,"").trim();
+  const rows=lines.filter(l=>/^\s*\|/.test(l)).map(l=>l.trim().replace(/^\||\|$/g,"").split("|").map(c=>c.trim().replace(/\*\*|__/g,"")));
+  const tb=rows.filter(r=>!r.every(c=>/^:?-{2,}:?$/.test(c)||!c));if(tb.length<2)throw"No encuentro ninguna tabla en el archivo. La rúbrica debe ir en una tabla Markdown (mira la plantilla).";
+  const H=tb[0],body=tb.slice(1).filter(r=>r[0]&&!/^(total|suma)\b/i.test(r[0]));
+  const iP=H.findIndex((c,i)=>i>0&&/^(puntos?|pts|peso|m[aá]x|valor|puntuaci[oó]n)/i.test(c)),iC=H.findIndex((c,i)=>i>0&&/^(ra\b|ce\b|ra ?y ?ce|resultados?|criterios? de evaluaci)/i.test(c));
+  const LV=H.map((c,i)=>i).filter(i=>i>0&&i!==iP&&i!==iC);if(LV.length<2)throw"La tabla necesita al menos dos columnas de niveles (por ejemplo Insuficiente y Suficiente).";
+  const hp=LV.map(i=>ptsDe(H[i])),hMax=Math.max(...hp.filter(x=>x!=null)),warn=[];
+  const RUB=body.map((r,ri)=>{const max=iP>0?NUM(r[iP]):NaN;let lv=LV.map((i,j)=>{const c=r[i]||"";if(!c||/^[-–—]$/.test(c))return null;
+    let p=ptsDe(c);if(p==null&&hp[j]!=null)p=isNaN(max)?hp[j]:hp[j]*max/hMax;if(p==null&&!isNaN(max))p=max*j/(LV.length-1);return[sinPts(H[i])||"Nivel "+(j+1),p,sinPts(c)]}).filter(Boolean);
+   if(lv.some(l=>l[1]==null||isNaN(l[1])))throw`No sé cuántos puntos vale cada nivel del criterio «${r[0]}». Pon los puntos en la cabecera del nivel, en cada celda «(2 p)» o una columna «Puntos» con el máximo.`;
+   lv.sort((a,b)=>a[1]-b[1]);lv=lv.map(l=>[l[0],Math.round(l[1]*100)/100,l[2]]);
+   if(!isNaN(max)&&Math.abs(Math.max(...lv.map(l=>l[1]))-max)>.01)warn.push(`En «${r[0]}» el nivel más alto vale ${fN(Math.max(...lv.map(l=>l[1])))} y la columna Puntos dice ${fN(max)}.`);
+   const t=sinPts(r[0]).replace(/\s*\((RA[^)]*)\)\s*$/i,""),ce=iC>0?r[iC]:(r[0].match(/\((RA[^)]*)\)\s*$/i)||[])[1]||"";return{t,ce,lv}});
+  if(!RUB.length)throw"La tabla no tiene filas de criterios.";
+  const top=RUB.reduce((a,c)=>a+Math.max(...c.lv.map(l=>l[1])),0);if(Math.abs(top-10)>.01)warn.push(`La rúbrica suma ${fN(top)} puntos en lugar de 10.`);
+  return{titulo:h1,RUB,warn,top}}
+ // propuesta orientativa: cuánto del vocabulario de cada criterio aparece en la entrega
+ const SW=new Set("para como cada este esta estos estas sobre entre desde hasta donde cuando porque segun según todas todos otras otros tiene tienen hace hacer realiza realizar correcta correcto correctamente adecuada adecuado adecuadas adecuados completa completo completas completos incompleta incompleto parcial parcialmente identifica describe describir explica justifica clara claro bien nivel niveles alumno alumna también ademas además mediante incluye incluir".split(" "));
+ const raiz=w=>w.slice(0,6),kw=t=>{const m=new Map();String(t||"").split(/[^\p{L}\d]+/u).forEach(o=>{const w=norm(o);if(w.length>=5&&!SW.has(w)&&!m.has(raiz(w)))m.set(raiz(w),o.toLowerCase())});return m};
+ function custom(c){const RUB=c.RUB,aev=c.aev;
+  const FR=RUB.map(r=>"«"+r.t.charAt(0).toLowerCase()+r.t.slice(1)+"»");
+  function parse(meta,L){const doc=L.map(l=>l.cells.join(" ")).join(" "),words=norm(doc).split(" ").filter(Boolean),set=new Set(words.map(raiz));
+   if(words.length<30)return{r:RUB.map(()=>0),d:RUB.map(()=>"El documento casi no tiene texto (¿es una imagen escaneada?). Puntúa a mano."),miss:RUB.map(()=>true),src:"texto"};
+   const r=[],d=[],miss=[];RUB.forEach((c,i)=>{const kt=kw(c.t),kd=kw(c.lv[c.lv.length-1][2]||""),ht=[...kt.keys()].filter(k=>set.has(k)),hd=[...kd.keys()].filter(k=>set.has(k)&&!kt.has(k));
+    const ct=kt.size?ht.length/kt.size:0,cd=kd.size?[...kd.keys()].filter(k=>set.has(k)).length/kd.size:ct,x=.6*ct+.4*cd,n=c.lv.length;
+    r[i]=!ht.length&&!hd.length?0:Math.min(n-1,Math.max(1,Math.round(x*(n-1))));miss[i]=!ht.length&&!hd.length;
+    d[i]=miss[i]?"No encuentro en la entrega el vocabulario de este criterio. Revisa este criterio.":`Aparecen en la entrega: ${[...ht.map(k=>kt.get(k)),...hd.map(k=>kd.get(k))].slice(0,8).join(", ")} (${ht.length} de ${kt.size} términos del criterio). Propuesta orientativa: revisa este criterio.`});
+   return{r,d,miss,src:"texto"}}
+  return{k:"cus:"+c.id,aev,n:c.n,app:null,cus:c,tit:(c.titulo||c.n)+" · rúbrica añadida por el docente",KEY:"eval_cus_"+c.id+"_v1",DBN:"eval_cus_"+c.id,csv:`calificaciones_${norm(aev+" "+c.n).split(" ").slice(0,5).join("_")}.csv`,cols:RUB.map((_,i)=>"C"+(i+1)),RUB,FR,grp:true,parse}}
+
  /* ================= catálogo de actividades ================= */
  function ACTS(R){R=R||{};const L=[["vib:AEV1.1","AEV1.1","Control de accesos","accesos.html"],["vib:AEV3.1","AEV3.1","Simulador CRA seguridad privada",null],["vib:AEV4.1","AEV4.1","Ronda en el depósito","deposito.html"],
    ["vib:AEV5.1","AEV5.1","Hoja de ruta del transporte","hojaruta.html"],["vib:AEV6.1","AEV6.1","Control documental de voladura","voladura.html"],["vib:AEV9.1","AEV9.1","Plan de desplazamiento","rutas.html"],["vib:AEV10.1","AEV10.1","Escenarios de escolta","escenarios.html"]];
@@ -441,9 +477,11 @@ const EVV=(()=>{
   const total=E=>RUB.reduce((s,_,i)=>s+(pts(E,i)||0),0),completo=E=>RUB.every((_,i)=>lvl(E,i)!=null);
   function resumen(E){if(!completo(E))return"";const n=total(E),nm=/^(equipo|grupo)\b/i.test(E.al||"")?E.al:(E.al||"").split(" ")[0]||"";
    const ini=n>=8.5?`¡Excelente trabajo, ${nm}!`:n>=6.5?`¡Buen trabajo, ${nm}!`:n>=5?`¡Vas por buen camino, ${nm}!`:`¡Gracias por tu entrega, ${nm}!`;
-   const fu=RUB.map((_,i)=>i).filter(i=>pts(E,i)===MAX[i]).slice(0,3).map(i=>FR[i][0]);
-   const me=RUB.map((_,i)=>i).filter(i=>pts(E,i)<MAX[i]).sort((a,b)=>pts(E,a)/MAX[a]-pts(E,b)/MAX[b]).slice(0,3).map(i=>lvl(E,i)===0&&E.miss&&E.miss[i]?FR[i][2]:FR[i][1]);
    const lista=x=>x.length>1?x.slice(0,-1).join(", ")+" y "+x[x.length-1]:x[0]||"";
+   const iF=RUB.map((_,i)=>i).filter(i=>pts(E,i)===MAX[i]).slice(0,3),iM=RUB.map((_,i)=>i).filter(i=>pts(E,i)<MAX[i]).sort((a,b)=>pts(E,a)/MAX[a]-pts(E,b)/MAX[b]).slice(0,3),fa=i=>lvl(E,i)===0&&E.miss&&E.miss[i];
+   let fu,me;if(A.grp){fu=iF.length?["destacas en "+lista(iF.map(i=>FR[i]))]:[];const f=iM.filter(fa),m=iM.filter(i=>!fa(i));me=[];
+    if(f.length)me.push("incluir "+lista(f.map(i=>FR[i]))+(f.length>1?", que no aparecen":", que no aparece")+" en tu entrega");if(m.length)me.push("mejorar "+lista(m.map(i=>FR[i])));if(me.length>1)me=[me.join(" y ")]}
+   else{fu=iF.map(i=>FR[i][0]);me=iM.map(i=>fa(i)?FR[i][2]:FR[i][1])}
    let t=ini+(fu.length?` Lo mejor de tu actividad: ${lista(fu)}.`:"");
    if(me.length)t+=fu.length?` Sin embargo faltó ${lista(me)}.`:` Faltó ${lista(me)}.`;
    t+=me.length?(n>=5?" ¡Has estado muy cerca!":" ¡Con estos ajustes se podría haber mejorado!"):" ¡Sigue así!";
@@ -528,20 +566,80 @@ const EVV=(()=>{
    await dbClr();S={E:{}};sv();CUR=null;$("#evD").hidden=true;tabla();b.textContent="Vaciar evaluaciones";delete b.dataset.c;toast("Evaluaciones vaciadas")};
   if(A.panel)A.panel($("#evX"));
   tabla()}
- return{ACTS,evaluador}})();
+ return{ACTS,evaluador,rubMD,custom,fN}})();
 
 // solo se entra como docente: una sesión de alumno abierta en otra herramienta no vale aquí
 let DOCM=null;acceso({soloDoc:true,doc(el){DOCM=el}});
 if(DOCM){const h=DOCM.parentElement.querySelector("h3");if(h)h.textContent="Evaluación";
  const ws=document.querySelector(".acc-who span");if(ws)ws.innerHTML="<b>Docente</b> · evaluación de las entregas del alumnado.";
- const ACTS=EVV.ACTS(window.RUBRICAS),q=(new URLSearchParams(location.search).get("a")||"").toUpperCase(),on=ACTS.filter(a=>!a.off);
- let cur=(ACTS.find(a=>a.aev===q&&!a.off)||ACTS.find(a=>a.k===store.get("eval_act",""))||on[0]).k;
- DOCM.innerHTML=`<div class="ev-act"><label class="f">Actividad que quieres evaluar<select id="evSel">${ACTS.map(a=>`<option value="${a.k}" ${a.off?"disabled":""}>${esc(a.aev+" · "+a.n)}${a.off?" (sin rúbrica: pendiente)":""}</option>`).join("")}</select></label><a class="btn ghost sm" id="evApp" target="_blank" rel="noopener">Abrir la herramienta del alumnado</a></div>
-  <p class="small muted" id="evTit"></p><div id="evRoot"></div>`;
- const pon=()=>{const A=ACTS.find(a=>a.k===cur);$("#evSel").value=cur;store.set("eval_act",cur);$("#evTit").textContent=A.tit;
-  $("#evApp").hidden=!A.app;if(A.app)$("#evApp").href=A.app;
-  try{history.replaceState(null,"","?a="+A.aev)}catch(e){}EVV.evaluador($("#evRoot"),A)};
- $("#evSel").onchange=e=>{cur=e.target.value;pon()};pon()}
+ const BASE=EVV.ACTS(window.RUBRICAS),q=(new URLSearchParams(location.search).get("a")||"").toUpperCase();
+ /* actividades añadidas por el docente: en este navegador (eval_custom) y, si las publica, en evaluacion_act.json del repositorio */
+ let CUS=store.get("eval_custom",[]),DEL=store.get("eval_custom_del",[]),WEB=[];const svC=()=>{store.set("eval_custom",CUS);store.set("eval_custom_del",DEL)};
+ const lista=()=>{const m=new Map();WEB.forEach(c=>m.set(c.id,c));CUS.forEach(c=>{const w=m.get(c.id);if(!w||(c.upd||0)>=(w.upd||0))m.set(c.id,c)});DEL.forEach(id=>m.delete(id));return[...m.values()].sort((x,y)=>x.aev.localeCompare(y.aev,"es",{numeric:true}))};
+ // una actividad añadida con el código de otra sin rúbrica (p. ej. AEV3.1, CRA) ocupa su lugar
+ const acts=()=>{const C=lista().map(EVV.custom);return BASE.filter(b=>!(b.off&&C.some(c=>c.aev===b.aev))).concat(C)};
+ let ACTS=acts(),cur=(ACTS.find(a=>a.aev===q&&!a.off)||ACTS.find(a=>a.k===store.get("eval_act",""))||ACTS.find(a=>!a.off)).k;
+ const TPL=`# Rúbrica · AEV7.1 Nombre de la actividad
+
+| Criterio | RA y CE | Puntos | Insuficiente | Suficiente | Notable | Sobresaliente |
+|---|---|---|---|---|---|---|
+| Identificación de riesgos | RA2 a | 4 | No identifica los riesgos. (0 p) | Identifica algunos riesgos. (1 p) | Identifica los riesgos principales. (3 p) | Identifica todos los riesgos y los justifica. (4 p) |
+| Medidas preventivas | RA2 b | 3 | No propone medidas. (0 p) | Medidas genéricas. (1 p) | Medidas adecuadas. (2 p) | Medidas adecuadas y priorizadas. (3 p) |
+| Presentación | RA2 c | 3 | Desordenada. (0 p) | Con errores. (1 p) | Clara. (2 p) | Clara, ordenada y sin errores. (3 p) |
+`;
+ DOCM.innerHTML=`<style>.ev-new{border:1px solid var(--line);border-radius:6px;padding:.8rem;display:grid;gap:.6rem;margin:.4rem 0 1rem}.ev-new textarea{min-height:8rem;font-family:var(--f-mono);font-size:.85rem}.ev-pv td,.ev-pv th{vertical-align:top;font-size:.88rem}</style>
+  <div class="ev-act"><label class="f">Actividad que quieres evaluar<select id="evSel"></select></label><a class="btn ghost sm" id="evApp" target="_blank" rel="noopener">Abrir la herramienta del alumnado</a><button class="btn ghost sm" type="button" id="evAdd">+ Añadir actividad</button></div>
+  <section class="ev-new" id="evNew" hidden aria-label="Añadir actividad"><b>Nueva actividad con tu rúbrica en Markdown</b>
+   <div class="grid2"><label class="f">Código<input type="text" id="nAev" placeholder="Ej.: AEV7.1"></label><label class="f">Nombre de la actividad<input type="text" id="nNom" placeholder="Ej.: Plan de protección de una joyería"></label></div>
+   <div class="btns"><label class="btn ghost sm" style="cursor:pointer">Elegir archivo .md<input type="file" id="nFile" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden></label><button class="btn ghost sm" type="button" id="nTpl">Descargar plantilla .md</button><span class="small muted">o pega aquí el texto de la rúbrica:</span></div>
+   <textarea id="nMd" spellcheck="false" placeholder="| Criterio | Puntos | Insuficiente | Suficiente | Notable | Sobresaliente |"></textarea>
+   <div id="nPv"></div>
+   <div class="btns"><button class="btn" type="button" id="nOk" disabled>Guardar actividad</button><button class="btn ghost" type="button" id="nNo">Cancelar</button></div></section>
+  <p class="small muted" id="evTit"></p><div class="btns" id="evCus" hidden><button class="btn ghost sm" type="button" id="cVer">Ver la rúbrica</button><button class="btn ghost sm" type="button" id="cEdit">Cambiar la rúbrica</button><button class="btn ghost sm" type="button" id="cPub">Publicar mis actividades en la web</button><button class="btn warn sm" type="button" id="cDel">Eliminar esta actividad</button><span class="small muted" id="cMsg" aria-live="polite"></span></div><div id="cRub" hidden></div>
+  <div id="evRoot"></div>`;
+ const opts=()=>{$("#evSel").innerHTML=ACTS.map(a=>`<option value="${esc(a.k)}" ${a.off?"disabled":""}>${esc(a.aev+" · "+a.n)}${a.off?" (sin rúbrica: pendiente)":a.cus?" · añadida por ti":""}</option>`).join("")};
+ const tablaRub=R=>`<div class="tbl"><table class="ev-pv"><thead><tr><th>Criterio</th><th>Niveles y puntos</th><th class="num">Máx.</th></tr></thead><tbody>${R.RUB.map(c=>`<tr><td><b>${esc(c.t)}</b>${c.ce?`<div class="small muted">${esc(c.ce)}</div>`:""}</td><td>${c.lv.map(l=>`<div><b>${esc(l[0])} · ${EVV.fN(l[1])} p</b> <span class="muted">${esc(l[2])}</span></div>`).join("")}</td><td class="num">${EVV.fN(Math.max(...c.lv.map(l=>l[1])))}</td></tr>`).join("")}</tbody></table></div>`;
+ const pon=()=>{const A=ACTS.find(a=>a.k===cur);opts();$("#evSel").value=cur;store.set("eval_act",cur);$("#evTit").textContent=A.tit;
+  $("#evApp").hidden=!A.app;if(A.app)$("#evApp").href=A.app;$("#evCus").hidden=!A.cus;$("#cRub").hidden=true;$("#cMsg").textContent="";const d=$("#cDel");delete d.dataset.c;d.textContent="Eliminar esta actividad";
+  try{history.replaceState(null,"","?a="+encodeURIComponent(A.aev))}catch(e){}EVV.evaluador($("#evRoot"),A)};
+ $("#evSel").onchange=e=>{cur=e.target.value;pon()};
+ /* ---- formulario de nueva actividad ---- */
+ let RN=null,EDIT=null;
+ const comprueba=()=>{const md=$("#nMd").value;RN=null;$("#nOk").disabled=true;if(!md.trim()){$("#nPv").innerHTML="";return}
+  try{RN=EVV.rubMD(md)}catch(e){$("#nPv").innerHTML=`<p class="fb ko">${esc(String(e))}</p>`;return}
+  if(!$("#nNom").value.trim()&&RN.titulo){const m=RN.titulo.replace(/^r[uú]brica\s*[·:-]?\s*/i,"").match(/^(AEV\s*\d+(?:\.\d+)?)?\s*[·:-]?\s*(.*)$/i);if(m){if(m[1]&&!$("#nAev").value.trim())$("#nAev").value=m[1].replace(/\s+/g,"").toUpperCase();if(m[2])$("#nNom").value=m[2].trim()}}
+  $("#nPv").innerHTML=`<p class="small"><b>${RN.RUB.length} criterios · suma ${EVV.fN(RN.top)} puntos.</b> Comprueba que los niveles y los puntos son los tuyos.</p>${RN.warn.map(w=>`<p class="fb ko">${esc(w)}</p>`).join("")}${tablaRub(RN)}`;$("#nOk").disabled=false};
+ const abreForm=c=>{EDIT=c||null;$("#evNew").hidden=false;$("#nAev").value=c?c.aev:"";$("#nNom").value=c?c.n:"";$("#nMd").value=c?c.md:"";$("#nOk").textContent=c?"Guardar cambios":"Guardar actividad";comprueba();$("#evNew").scrollIntoView({behavior:"smooth",block:"start"})};
+ $("#evAdd").onclick=()=>abreForm(null);$("#nNo").onclick=()=>{$("#evNew").hidden=true;EDIT=null};
+ $("#nTpl").onclick=()=>saveFile("plantilla_rubrica.md",TPL);
+ $("#nMd").oninput=comprueba;$("#nFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;$("#nMd").value=await f.text();comprueba()};
+ $("#nMd").addEventListener("dragover",e=>{e.preventDefault();e.stopPropagation()});$("#nMd").addEventListener("drop",async e=>{e.preventDefault();e.stopPropagation();const f=e.dataTransfer.files[0];if(f){$("#nMd").value=await f.text();comprueba()}});
+ $("#nOk").onclick=()=>{if(!RN)return;const aev=$("#nAev").value.trim().replace(/\s+/g,"").toUpperCase(),n=$("#nNom").value.trim();
+  if(!aev||!n){toast("Escribe el código y el nombre de la actividad.");return}
+  if(ACTS.some(a=>a.aev===aev&&!a.off&&(!EDIT||a.k!=="cus:"+EDIT.id))){toast(`Ya hay una actividad ${aev}. Usa otro código.`,3500);return}
+  const c={id:EDIT?EDIT.id:Date.now().toString(36),aev,n,titulo:RN.titulo,md:$("#nMd").value,RUB:RN.RUB,upd:Date.now()};
+  CUS=CUS.filter(x=>x.id!==c.id).concat(c);DEL=DEL.filter(x=>x!==c.id);svC();ACTS=acts();cur="cus:"+c.id;$("#evNew").hidden=true;EDIT=null;pon();
+  toast(`Actividad ${aev} guardada en este navegador. Para usarla en otro ordenador, pulsa «Publicar mis actividades en la web».`,5000)};
+ /* ---- acciones de una actividad añadida ---- */
+ const actual=()=>ACTS.find(a=>a.k===cur).cus;
+ $("#cVer").onclick=()=>{const el=$("#cRub");el.hidden=!el.hidden;if(!el.hidden)el.innerHTML=tablaRub(actual())};
+ $("#cEdit").onclick=()=>abreForm(actual());
+ $("#cDel").onclick=()=>{const b=$("#cDel"),c=actual();if(!b.dataset.c){b.dataset.c=1;b.textContent="Pulsa otra vez para eliminarla";return}
+  CUS=CUS.filter(x=>x.id!==c.id);if(!DEL.includes(c.id))DEL.push(c.id);svC();ACTS=acts();cur=ACTS.find(a=>!a.off).k;pon();toast(`Actividad ${c.aev} eliminada. Las evaluaciones guardadas no se borran.`,4000)};
+ // publicar: escribe evaluacion_act.json en el repositorio con la clave de GitHub del panel Docente
+ const GH="https://api.github.com/repos/etadrod/artefactos-26-27/contents/evaluacion_act.json";
+ $("#cPub").onclick=async()=>{let tok="";try{tok=localStorage.getItem("gh_tok")||""}catch(e){}
+  if(!tok){$("#cMsg").textContent="Falta la clave de GitHub: entra una vez en el panel Docente de la web con tu clave y vuelve a pulsar.";return}
+  $("#cPub").disabled=true;$("#cMsg").textContent="Publicando…";const H={Authorization:"Bearer "+tok,Accept:"application/vnd.github+json"};
+  try{const g=await fetch(GH+"?t="+Date.now(),{headers:H});if(!g.ok&&g.status!==404)throw g.status;const sha=g.ok?(await g.json()).sha:null;
+   const body={act:lista()},content=btoa(unescape(encodeURIComponent(JSON.stringify(body,null,1))));
+   const r=await fetch(GH,{method:"PUT",headers:H,body:JSON.stringify({message:"Herramienta de Evaluación: actividades añadidas por el docente",content,...(sha?{sha}:{})})});if(!r.ok)throw r.status;
+   WEB=body.act;$("#cMsg").textContent="Publicado. En otros ordenadores aparecerá en 1 a 10 minutos."}
+  catch(e){$("#cMsg").textContent=e===401||e===403?"GitHub rechaza la clave: está caducada o sin permiso de escritura.":typeof e==="number"?`No se pudo publicar (${e}).`:"Sin conexión con GitHub: no se ha publicado nada."}
+  finally{$("#cPub").disabled=false}};
+ pon();
+ fetch("../evaluacion_act.json",{cache:"no-store"}).then(r=>r.ok?r.json():{act:[]}).catch(()=>({act:[]})).then(j=>{WEB=Array.isArray(j.act)?j.act:[];const n=lista().length;ACTS=acts();
+  if(!ACTS.some(a=>a.k===cur))cur=ACTS.find(a=>!a.off).k;const want=ACTS.find(a=>a.aev===q&&a.cus);if(want)cur=want.k;opts();$("#evSel").value=cur;if(want||WEB.length)pon()})}
 </script>
 
 </body></html>
