@@ -147,7 +147,7 @@ body.pres .mk-layers h3{display:none}
     <div class="mk-tools" id="mk-tools" role="group" aria-label="Capas para dibujar"></div>
   </div>
   <p class="small" id="mk-hint" role="status"></p>
-  <div class="mk-zoom" role="group" aria-label="Zoom"><button class="btn ghost sm" id="mk-zin" type="button" aria-label="Acercar">+</button><button class="btn ghost sm" id="mk-zout" type="button" aria-label="Alejar">−</button><button class="btn ghost sm" id="mk-zfit" type="button">Ver todo</button><span class="small muted">Rueda del ratón para acercar; arrastra para moverte.</span></div>
+  <div class="mk-zoom" role="group" aria-label="Zoom"><button class="btn ghost sm" id="mk-zin" type="button" aria-label="Acercar">+</button><button class="btn ghost sm" id="mk-zout" type="button" aria-label="Alejar">−</button><button class="btn ghost sm" id="mk-zfit" type="button">Ver todo</button><span class="small muted" id="mk-zh">Rueda del ratón para acercar; arrastra para moverte.</span></div>
   <div class="mk-wrap"><svg id="mk-svg" class="mk-svg" role="img" aria-label="Mapa de trabajo"></svg></div>
   <div class="btns">
     <button class="btn ghost sm" id="mk-end" type="button" hidden>Terminar línea</button>
@@ -409,7 +409,7 @@ const MK=(()=>{
   return s}
  function grid(){const d=dims();let g=`<rect width="${d.w}" height="${d.h}" fill="var(--sunk)"/>`;for(let x=0;x<=d.w;x+=60)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${d.h}" stroke="var(--line)"/>`;for(let y=0;y<=d.h;y+=60)g+=`<line x1="0" y1="${y}" x2="${d.w}" y2="${y}" stroke="var(--line)"/>`;
   return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
- function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);
+ function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);if(CFG.fit){const w_=sv_.parentElement;w_.style.maxWidth=`calc((100vh - 7rem) / ${v.h/v.w})`;w_.style.margin="0 auto";w_.style.width="100%"}
   draw();sv_.classList.toggle("pan",!tool&&!cal);
   $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":l.t==="area"?"superficie":"punto"}</span></button>`).join("");
   $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
@@ -434,7 +434,8 @@ const MK=(()=>{
  const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
  function finish(){if(draft&&draft.p.length>(L(draft.l).t==="area"?2:1)){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n+" "+(M.f.filter(f=>f.l===draft.l).length+1),p:draft.p});sv()}draft=null}
  function bind(){const s=$("#mk-svg");
- s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.1:1/1.1,p[0],p[1])},{passive:false});
+ if(CFG.noWheel&&$("#mk-zh"))$("#mk-zh").textContent="Acerca o aleja con + y −; arrastra el mapa con el ratón para moverte.";
+ if(!CFG.noWheel)s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.1:1/1.1,p[0],p[1])},{passive:false});
   s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
   s.addEventListener("pointermove",e=>{if(!drag||(drag.v.w>=dims().w&&drag.v.h>=dims().h))return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.m&&Math.hypot(dx,dy)<6)return;drag.m=true;s.classList.add("drag");
    const r=s.getBoundingClientRect(),d=dims(),k=drag.v.w/r.width;V={...drag.v,x:Math.min(d.w-drag.v.w,Math.max(0,drag.v.x-dx*k)),y:Math.min(d.h-drag.v.h,Math.max(0,drag.v.y-dy*k))};s.setAttribute("viewBox",`${V.x} ${V.y} ${V.w} ${V.h}`)});
