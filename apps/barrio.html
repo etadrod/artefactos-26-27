@@ -497,7 +497,9 @@ const MK=(()=>{
   for(let j=0,y=0;y<=H;j++,y+=g){s+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1F3A68" stroke-opacity=".45" stroke-width="${2*z}"/>`;if(y+g/2<H)s+=`<text x="${(VV?VV.x:0)+10*z}" y="${y+g/2+8*z}" font-size="${22*z}" font-weight="700" fill="#1F3A68" stroke="#fff" stroke-width="${4*z}" paint-order="stroke" font-family="Arial,sans-serif">${j+1}</text>`}
   return s+`<text x="${(VV?VV.x:0)+10*z}" y="${(VV?VV.y+VV.h:H)-12*z}" font-size="${16*z}" fill="#1F3A68" stroke="#fff" stroke-width="${3*z}" paint-order="stroke" font-family="Arial,sans-serif">Cuadrícula de ${o.grid} m</text>`}
  // CFG.ar: max alto/ancho de la ventana; si el mapa es más alto se recorta y se desplaza arrastrando
- const AR=()=>{const d=dims();return Math.min(d.h/d.w,CFG.ar||Infinity)};
+ // CFG.fit: el mapa ocupa todo el ancho y su alto se ajusta a la pantalla (el resto se ve arrastrando)
+ const fitAR=()=>{const w=$("#mk-svg")&&$("#mk-svg").parentElement.clientWidth;return w?Math.max(.45,(innerHeight-112)/w):Infinity};
+ const AR=()=>{const d=dims();return Math.min(d.h/d.w,CFG.fit?fitAR():CFG.ar||Infinity)};
  const vb=()=>{const d=dims(),h=d.w*AR();return V||{x:0,y:0,w:d.w,h}};
  function zoom(f,cx,cy){const d=dims(),v=vb(),w=Math.min(d.w,Math.max(d.w/(M.bg&&M.bg.osm?64:8),v.w/f)),h=w*AR();cx=cx??v.x+v.w/2;cy=cy??v.y+v.h/2;
   const x=Math.min(d.w-w,Math.max(0,cx-(cx-v.x)*w/v.w)),y=Math.min(d.h-h,Math.max(0,cy-(cy-v.y)*h/v.h));V=w>=d.w&&h>=d.h?null:{x,y,w,h};$("#mk-svg").setAttribute("viewBox",`${vb().x} ${vb().y} ${vb().w} ${vb().h}`);redraw()}
@@ -518,7 +520,7 @@ const MK=(()=>{
   return s}
  function grid(){const d=dims();let g=`<rect width="${d.w}" height="${d.h}" fill="var(--sunk)"/>`;for(let x=0;x<=d.w;x+=60)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${d.h}" stroke="var(--line)"/>`;for(let y=0;y<=d.h;y+=60)g+=`<line x1="0" y1="${y}" x2="${d.w}" y2="${y}" stroke="var(--line)"/>`;
   return g+`<text x="${d.w/2}" y="${d.h-24}" text-anchor="middle" fill="var(--muted)" font-size="18" font-family="Source Sans 3,sans-serif">Fondo neutro de ejemplo · sube una captura del mapa con «Cambiar fondo»</text>`}
- function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);if(CFG.fit){const w_=sv_.parentElement;w_.style.maxWidth=`calc((100vh - 7rem) / ${v.h/v.w})`;w_.style.margin="0 auto";w_.style.width="100%"}
+ function render(){const d=dims(),sv_=$("#mk-svg");if(V&&(V.x+V.w>d.w+1||V.y+V.h>d.h+1))V=null;const v=vb();sv_.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);
   draw();sv_.classList.toggle("pan",!tool&&!cal);
   $("#mk-tools").innerHTML=CFG.layers.map(l=>`<button type="button" class="mk-t" data-t="${l.id}" aria-pressed="${tool===l.id}"><i style="background:${l.col}${l.dash?";background-image:repeating-linear-gradient(90deg,transparent 0 3px,var(--surface) 3px 5px)":""}"></i>${esc(l.n)}<span class="small muted">${l.t==="line"?"línea":l.t==="area"?"superficie":"punto"}</span></button>`).join("");
   $$(".mk-t").forEach(b=>b.onclick=()=>{finish();tool=tool===b.dataset.t?null:b.dataset.t;cal=null;hint();render()});
@@ -543,6 +545,7 @@ const MK=(()=>{
  const nid=()=>"f"+Date.now().toString(36)+Math.floor(Math.random()*1e4);
  function finish(){if(draft&&draft.p.length>(L(draft.l).t==="area"?2:1)){M.f.push({id:nid(),l:draft.l,n:L(draft.l).n+" "+(M.f.filter(f=>f.l===draft.l).length+1),p:draft.p});sv()}draft=null}
  function bind(){const s=$("#mk-svg");
+ if(CFG.fit){let t;addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(()=>{if(V){const a=AR();V.h=V.w*a;const d=dims();if(V.y+V.h>d.h)V.y=Math.max(0,d.h-V.h)}render()},150)})}
  if(CFG.noWheel&&$("#mk-zh"))$("#mk-zh").textContent="Acerca o aleja con + y −; arrastra el mapa con el ratón para moverte.";
  if(!CFG.noWheel)s.addEventListener("wheel",e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.1:1/1.1,p[0],p[1])},{passive:false});
   s.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,v:vb(),m:false}});
