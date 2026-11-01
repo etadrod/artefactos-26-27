@@ -167,7 +167,7 @@ th .ayuda .tip{font-weight:400}
     <div class="intro"><p class="eyebrow">Etiquetas de peligro ADR</p><h2>¿Qué indica cada etiqueta?</h2>
       <p class="muted">Llegan 4 bultos con etiquetas de peligro ADR. Elige qué indica cada una. Comprueba las definiciones con el ADR vigente.</p></div>
     <div class="labels" id="labels"></div>
-    <div class="btns"><button class="btn" id="chkLab" type="button">Comprobar etiquetas</button><button class="btn ghost" id="repLab" type="button">Repetir con otras 4 etiquetas</button></div>
+    <div class="btns"><button class="btn" id="chkLab" type="button">Comprobar etiquetas</button><button class="btn ghost" id="repLab" type="button">Repetir</button><button class="btn" id="nextL" type="button" hidden>Siguiente: Resultado →</button></div><div id="labMsg"></div>
   </section>
 
   <section id="v-res" role="tabpanel" aria-labelledby="tab-res" class="panel" hidden>
@@ -362,7 +362,7 @@ const DIV={"1.1":"Riesgo de explosión en masa","1.2":"Riesgo de proyección sin
 let seed=Date.now()%2147483647;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
 const shuf=a=>a.map(x=>[rnd(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 function nLabs(prev){const ex=(prev||[]).map(l=>l.d);let k=shuf(Object.keys(LBN).filter(d=>!ex.includes(d)));return k.slice(0,4).map(d=>({d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]}))}
-function nueva(m){if(m==null){const prev=R?R.m:-1;do{m=Math.floor(rnd()*NPL)}while(m===prev)}return{m,ko:plano(m).ko,v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:nLabs(),la:{},lDone:false}}
+function nueva(m){if(m==null){const prev=R?R.m:-1;do{m=Math.floor(rnd()*NPL)}while(m===prev)}return{m,ko:plano(m).ko,v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:nLabs(),lRep:0,la:{},lDone:false}}
 // el antiguo enlace de evaluación (?ev=1) lleva ahora a la Herramienta de Evaluación
 if(new URLSearchParams(location.search).get("ev")){location.replace("evaluacion.html?a=AEV4.1");throw new Error("acceso: redirigiendo")}
 acceso({doc(el){el.innerHTML=`<div class="btns" style="align-items:center"><label class="f" style="margin:0">Plano<select id="dPl">${Array.from({length:NPL},(_,i)=>`<option value="${i}">nº ${i+1}${PCON.has(i)?"":" · sin incidencias"}</option>`).join("")}</select></label><button class="btn ghost sm" type="button" id="dGo">Cargar este plano</button></div><p class="small muted" id="dKo"></p>`;
@@ -403,11 +403,18 @@ function label(d,g){const T=(x,y,z,t)=>`<text x="${x}" y="${y}" text-anchor="mid
  const k=["1.1","1.2","1.3"].includes(d)?"1":d;let ov="";
  if(k==="1")ov=`<rect x="36" y="62" width="32" height="16" fill="#e77817"/>`+T(51.6,74.5,11,d+" "+g);else if(d.startsWith("1."))ov=`<rect x="44" y="64" width="15" height="14" fill="#e77817"/>`+T(51.6,75,12,g);
  return `<svg viewBox="0 0 103.125 103.125" width="120" height="120" role="img" aria-label="Etiqueta de peligro ADR"><image href="${ADRIMG[k]}" width="103.125" height="103.125"/>${ov}</svg>`}
-function labs(){$("#labels").innerHTML=R.labs.map((l,k)=>{const a=R.la[k];return `<div class="lab">${label(l.d,l.g)}<select data-l="${k}" aria-label="Qué indica la etiqueta del bulto ${k+1}"><option value="">¿Qué indica esta etiqueta?…</option>${Object.entries(LBN).map(([d,t])=>`<option value="${d}" ${a===d?"selected":""}>${t}</option>`).join("")}</select>${R.lDone?`<p class="fb ${a===l.d?"ok":"ko"}">${a===l.d?"Correcto":"Es: "+LBN[l.d]}</p>`:""}</div>`}).join("");
- $$("[data-l]").forEach(s=>s.onchange=()=>{R.la[s.dataset.l]=s.value;R.lDone=false;sv();labs()})}
-$("#repLab").onclick=()=>{R.labs=nLabs(R.labs);R.la={};R.lDone=false;sv();labs()};
+function labs(){const all4=R.lDone&&R.labs.every((l,k)=>R.la[k]===l.d);
+ $("#labels").innerHTML=R.labs.map((l,k)=>{const a=R.la[k],fx=l.fix,sh=R.lDone||fx;return `<div class="lab">${label(l.d,l.g)}<select data-l="${k}" ${fx?"disabled":""} aria-label="Qué indica la etiqueta del bulto ${k+1}"><option value="">¿Qué indica esta etiqueta?…</option>${Object.entries(LBN).map(([d,t])=>`<option value="${d}" ${a===d?"selected":""}>${t}</option>`).join("")}</select>${sh?`<p class="fb ${a===l.d?"ok":"ko"}">${a===l.d?"Correcto":"Incorrecto. Pulsa «Repetir» para probar con otra etiqueta."}</p>`:""}</div>`}).join("");
+ $$("[data-l]").forEach(s=>s.onchange=()=>{R.la[s.dataset.l]=s.value;R.lDone=false;sv();labs()});
+ $("#repLab").hidden=all4;$("#chkLab").hidden=all4;$("#nextL").hidden=!all4;
+ $("#labMsg").innerHTML=all4?`<p class="fb ok">¡Las 4 etiquetas son correctas!${R.lRep?` Lo has conseguido tras ${R.lRep} ${R.lRep===1?"repetición":"repeticiones"}.`:""}</p>`:""}
+$("#repLab").onclick=()=>{const keep=R.labs.map((l,k)=>R.la[k]===l.d);const used=R.labs.map(l=>l.d);
+ const pool=shuf(Object.keys(LBN).filter(d=>!used.includes(d)));let i=0;const la={};
+ R.labs=R.labs.map((l,k)=>{if(keep[k]){la[k]=R.la[k];return {...l,fix:true}}const d=pool[i++];return {d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]}});
+ R.la=la;R.lDone=false;R.lRep=(R.lRep||0)+1;sv();labs()};
+$("#nextL").onclick=()=>{$("#tab-res").click();scrollTo({top:0,behavior:"smooth"})};
 $("#chkLab").onclick=()=>{R.lDone=true;sv();labs()};
-function score(){const pts=P.filter(p=>{const v=R.v[p[0]];return v&&(v.ok==="D")===R.ko.includes(p[0])}).length,st=R.sDone?R.order.filter((s,k)=>s===k).length:0,lb=R.lDone?R.labs.filter((l,k)=>R.la[k]===l.d).length:0;
+function score(){const pts=P.filter(p=>{const v=R.v[p[0]];return v&&(v.ok==="D")===R.ko.includes(p[0])}).length,st=R.sDone?R.order.filter((s,k)=>s===k).length:0,lb=R.labs.filter((l,k)=>(R.lDone||l.fix)&&R.la[k]===l.d).length;
  const nota=6*pts/P.length+2*st/6+2*lb/4;return{pts,st,lb,nota}}
 function res(){const s=score();$("#resK").innerHTML=[["Ronda",`${s.pts}/${P.length}`],["Cierre",R.sDone?`${s.st}/6`:"sin comprobar"],["Etiquetas",R.lDone?`${s.lb}/4`:"sin comprobar"],["Nota orientativa",s.nota.toFixed(1).replace(".",",")]].map(([a,b])=>`<div class="stat"><span>${a}</span><b class="big">${b}</b></div>`).join("");
  $("#resT").innerHTML=P.map(p=>{const v=R.v[p[0]],ko=R.ko.includes(p[0]);return `<tr><td>${p[0]} · ${esc(p[1])}</td><td>${esc(ko?p[5]:p[4])}</td><td>${v?(v.ok==="D"?"Deficiencia"+(v.a?": "+esc(v.a):""):"Correcto"):"Sin revisar"}</td><td>${ko?'<span class="pill ko">Deficiencia</span>':'<span class="pill ok">Correcto</span>'} ${v&&(v.ok==="D")===ko?"✓":"✗"}</td></tr>`}).join("")}
@@ -422,7 +429,7 @@ $("#pdfB").onclick=async()=>{const load=src=>new Promise((ok,ko)=>{const e=docum
  if(!window.jspdf?.jsPDF)try{await load("../vendor/jspdf.umd.min.js")}catch(e){try{await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")}catch(e2){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}}
  const s=score(),al=WHO&&WHO.rol==="al"?WHO.nom:"",img=R.img||{},T=x=>String(x??"").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
  const data={app:"deposito",v:1,alumno:al,fecha:new Date().toISOString(),plano:R.m+1,P:P.map(p=>{const v=R.v[p[0]]||{};return{id:p[0],n:p[1],obs:R.ko.includes(p[0])?p[5]:p[4],ko:R.ko.includes(p[0]),val:v.ok||null,t:v.ok==="D"?v.t||"":"",a:v.ok==="D"?v.a||"":""}}),
-  cierre:{done:!!R.sDone,ok:s.st,order:R.order.map(x=>STEPS[x])},etiq:{done:!!R.lDone,ok:s.lb,n:R.labs.length}};
+  cierre:{done:!!R.sDone,ok:s.st,order:R.order.map(x=>STEPS[x])},etiq:{done:!!R.lDone,ok:s.lb,n:R.labs.length,rep:R.lRep||0}};
  const {jsPDF}=window.jspdf,d=new jsPDF({unit:"mm",format:"a4"}),X=15,W=180;let y=16;
  d.setProperties({title:"Informe de ronda · Depósito de explosivos",author:al,subject:"VIBDEP1:"+btoa(unescape(encodeURIComponent(JSON.stringify(data)))),keywords:"VIB AEV4.1"});
  const need=h=>{if(y+h>285){d.addPage();y=16}};
@@ -438,7 +445,7 @@ $("#pdfB").onclick=async()=>{const load=src=>new Promise((ok,ko)=>{const e=docum
  P.forEach(p=>{const v=R.v[p[0]],ko=R.ko.includes(p[0]);row([p[0],p[1],ko?p[5]:p[4],v?(v.ok==="D"?"Deficiencia":"Correcto"):"",v&&v.ok==="D"?v.t:"",v&&v.ok==="D"?v.a:"",v?((v.ok==="D")===ko?"Bien":"Mal"):""],ws)});
  
  h("2 · Cierre y llaves");R.order.forEach((x,k)=>tx(`${k+1}. ${STEPS[x]}${R.sDone?(x===k?" (en su sitio)":" (fuera de orden)"):""}`,{g:1}));tx(R.sDone?`${s.st} de 6 pasos en su sitio.`:"Orden sin comprobar.",{b:1});
- h("3 · Etiquetas ADR");R.labs.forEach((l,k)=>tx(`Bulto ${k+1} (etiqueta ${l.d.startsWith("1.")?l.d+" "+l.g:l.d}): ${R.la[k]?"respuesta: "+LBN[R.la[k]]:"sin responder"}${R.lDone?(R.la[k]===l.d?" · correcta":" · incorrecta"):""}`,{g:1}));
+ h("3 · Etiquetas ADR");R.labs.forEach((l,k)=>tx(`Bulto ${k+1} (etiqueta ${l.d.startsWith("1.")?l.d+" "+l.g:l.d}): ${R.la[k]?"respuesta: "+LBN[R.la[k]]:"sin responder"}${R.lDone?(R.la[k]===l.d?" · correcta":" · incorrecta"):""}`,{g:1}));if(R.lRep)tx(`Repeticiones hasta acertar: ${R.lRep}.`,{g:1});
  saveFile(`Informe_ronda_deposito_${(al||"alumno").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"_")}.pdf`,d.output("blob"))};
 function all(){map();side();steps();labs();res()}
 tabs(["ronda","cierre","etiq","res"],"dep_tab");all();
