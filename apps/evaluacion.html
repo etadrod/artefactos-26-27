@@ -327,6 +327,8 @@ const EVV=(()=>{
   if(real.length){r[3]=!tp.length&&!marc.length?0:tp.length<real.length||aw<5?1:mej===tp.length&&aw>=8&&fp.length<=1?3:2;
    d[3]=`${tp.length} de ${real.length} deficiencias detectadas; actuaciones con ${aw.toFixed(0)} palabras de media; ${mej} incluyen aviso y corrección.`;if(!marc.length)miss[3]=true}
   else{r[3]=fp.length?1:2;d[3]=`Plano sin deficiencias reales; ${fp.length?fp.length+" falsas alarmas":"ninguna falsa alarma"}. No hay acciones que proponer: revisa este criterio.`}
+  // desde el 01/11/2026 la app no recoge el registro de imágenes: el criterio (e) lo puntúa el docente
+  if(!m.img){r[4]=null;d[4]="La herramienta ya no recoge el registro de imágenes (CCTV): puntúa este criterio a mano.";return{r,d,miss}}
   const f=nw(img.fin),mi=nw(img.min),cu=nw(img.cus);
   r[4]=!f&&!mi&&!cu?0:f>=5&&cu>=5?2:1;d[4]=f||mi||cu?`Registro de imágenes: finalidad ${f} palabras, mínima captación ${mi}, custodia ${cu}.`+(r[4]===1?" Falta detallar finalidad o custodia.":""):"No aparece el registro de visualización de imágenes.";if(r[4]===0)miss[4]=true;
   return{r,d,miss}}

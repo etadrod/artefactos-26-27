@@ -151,13 +151,6 @@ th .ayuda .tip{font-weight:400}
       <svg class="map" id="map" viewBox="0 0 900 560" role="img" aria-label="Plano del depósito con puntos de control"></svg>
       <div class="panel" id="side"></div>
     </div>
-    <section class="panel" aria-labelledby="hImg" style="margin-top:1rem">
-      <h3 id="hImg">Registro de visualización de imágenes (CCTV)</h3>
-      <p class="small muted">Si durante la ronda visualizas imágenes de las cámaras, anótalo respetando la protección de datos (LOPDGDD y RGPD).</p>
-      <div class="grid3"><label class="f">Finalidad de la visualización<textarea id="imgF" rows="3" placeholder="Para qué y por qué se visualizan las imágenes"></textarea></label>
-      <label class="f">Mínima captación<textarea id="imgM" rows="3" placeholder="Qué cámaras o zonas, solo lo imprescindible"></textarea></label>
-      <label class="f">Custodia<textarea id="imgC" rows="3" placeholder="Quién las custodia, dónde y durante cuánto tiempo"></textarea></label></div>
-    </section>
     <div class="btns"><span class="small muted" id="savedT"></span><span class="spacer"></span><button class="btn ghost" id="saveB" type="button">Guardar</button><button class="btn" id="nextB" type="button">Siguiente: 2 · Cierre y llaves →</button></div>
   </section>
 
@@ -412,7 +405,7 @@ $("#pdfB").onclick=async()=>{const load=src=>new Promise((ok,ko)=>{const e=docum
  if(!window.jspdf?.jsPDF)try{await load("../vendor/jspdf.umd.min.js")}catch(e){try{await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")}catch(e2){toast("No se pudo cargar el generador de PDF. Revisa la conexión.");return}}
  const s=score(),al=WHO&&WHO.rol==="al"?WHO.nom:"",img=R.img||{},T=x=>String(x??"").replace(/[^\x00-ÿ–—‘’“”•€]/g,"");
  const data={app:"deposito",v:1,alumno:al,fecha:new Date().toISOString(),plano:R.m+1,P:P.map(p=>{const v=R.v[p[0]]||{};return{id:p[0],n:p[1],obs:R.ko.includes(p[0])?p[5]:p[4],ko:R.ko.includes(p[0]),val:v.ok||null,t:v.ok==="D"?v.t||"":"",a:v.ok==="D"?v.a||"":""}}),
-  cierre:{done:!!R.sDone,ok:s.st,order:R.order.map(x=>STEPS[x])},etiq:{done:!!R.lDone,ok:s.lb,n:R.labs.length},img:{fin:img.fin||"",min:img.min||"",cus:img.cus||""}};
+  cierre:{done:!!R.sDone,ok:s.st,order:R.order.map(x=>STEPS[x])},etiq:{done:!!R.lDone,ok:s.lb,n:R.labs.length}};
  const {jsPDF}=window.jspdf,d=new jsPDF({unit:"mm",format:"a4"}),X=15,W=180;let y=16;
  d.setProperties({title:"Informe de ronda · Depósito de explosivos",author:al,subject:"VIBDEP1:"+btoa(unescape(encodeURIComponent(JSON.stringify(data)))),keywords:"VIB AEV4.1"});
  const need=h=>{if(y+h>285){d.addPage();y=16}};
@@ -426,12 +419,11 @@ $("#pdfB").onclick=async()=>{const load=src=>new Promise((ok,ko)=>{const e=docum
  tx(`Puntos revisados: ${Object.keys(R.v).length} de ${P.length} · Ronda: ${s.pts}/${P.length} bien valorados · Cierre: ${R.sDone?s.st+"/6":"sin comprobar"} · Etiquetas: ${R.lDone?s.lb+"/4":"sin comprobar"}`);
  h("1 · Ronda perimetral (checklist de puntos)");const ws=[13,37,45,20,25,30,10];row(["Punto","Elemento","Observación","Valoración","Tipo","Actuación","Res."],ws,1);
  P.forEach(p=>{const v=R.v[p[0]],ko=R.ko.includes(p[0]);row([p[0],p[1],ko?p[5]:p[4],v?(v.ok==="D"?"Deficiencia":"Correcto"):"",v&&v.ok==="D"?v.t:"",v&&v.ok==="D"?v.a:"",v?((v.ok==="D")===ko?"Bien":"Mal"):""],ws)});
- h("Registro de visualización de imágenes (CCTV)");tx("Finalidad: "+(img.fin||"-"));tx("Mínima captación: "+(img.min||"-"));tx("Custodia: "+(img.cus||"-"));
+ 
  h("2 · Cierre y llaves");R.order.forEach((x,k)=>tx(`${k+1}. ${STEPS[x]}${R.sDone?(x===k?" (en su sitio)":" (fuera de orden)"):""}`,{g:1}));tx(R.sDone?`${s.st} de 6 pasos en su sitio.`:"Orden sin comprobar.",{b:1});
  h("3 · Etiquetas de clase 1");R.labs.forEach((l,k)=>tx(`Bulto ${k+1} (etiqueta ${l.d} ${l.g}): ${R.la[k]?"respuesta "+R.la[k]+" · "+DIV[R.la[k]]:"sin responder"}${R.lDone?(R.la[k]===l.d?" · correcta":" · incorrecta"):""}`,{g:1}));
  saveFile(`Informe_ronda_deposito_${(al||"alumno").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"_")}.pdf`,d.output("blob"))};
-function imgs(){R.img=R.img||{fin:"",min:"",cus:""};[["imgF","fin"],["imgM","min"],["imgC","cus"]].forEach(([id,k])=>{const t=$("#"+id);t.value=R.img[k]||"";t.oninput=()=>{R.img[k]=t.value;sv()}})}
-function all(){map();side();steps();labs();res();imgs()}
+function all(){map();side();steps();labs();res()}
 tabs(["ronda","cierre","etiq","res"],"dep_tab");all();
 </script>
 
