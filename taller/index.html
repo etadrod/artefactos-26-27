@@ -1244,7 +1244,7 @@ function updM(){const c=calcM(),b=$("#mesBody");if(!b||!$("#mRes"))return;
  MY.forEach(it=>{const y=SM.y[it.id]||{},el=b.querySelector(`[data-yp="${it.id}"]`);if(!el)return;const c2=b.querySelector(`[data-yc="${it.id}"]`);if(c2)c2.classList.toggle("pend",!!y.has&&y.cra==null);
   el.textContent=SM.vig&&y.has!=null&&(!it.cra||!y.has||y.cra!=null)?yVal(it,y.has,y.cra,SM.vig):"—"});
  const dir=SM.meta.direccion,pq=SM.bomb.parque,lb=$("#mbBuscar"),lr=$("#mbRuta");
- if(lb){lb.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("parque de bomberos cerca de "+(dir||"Canarias"));
+ if(lb){lb.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(pq&&pq.trim()?pq.trim():"parque de bomberos cerca de "+(dir||"Canarias"));lb.title=pq&&pq.trim()?"Busca en Google Maps lo escrito en «Parque de bomberos»":"Escribe el parque de bomberos para buscarlo; sin él, busca parques cerca de la dirección";
   lr.href=pq&&dir?`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(pq)}&destination=${encodeURIComponent(dir)}&travelmode=driving`:"https://www.google.com/maps/dir/";
   lr.classList.toggle("off",!(pq&&dir));lr.title=pq&&dir?"Abre el recorrido en una pestaña nueva":"Escribe el parque y la dirección del establecimiento"}
  const sug=catBomb(SM.bomb.km,SM.bomb.min),ms=$("#mbSug");
