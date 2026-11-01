@@ -128,6 +128,7 @@ th .ayuda .tip{font-weight:400}
 .labels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:1rem}
 .lab{display:grid;gap:.5rem;justify-items:center;border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;background:var(--surface)}
 .lab select{width:100%}
+.avisoP{display:flex;gap:.6rem;align-items:flex-start;font-size:1.08rem;line-height:1.45;background:color-mix(in srgb,var(--warn) 18%,var(--surface));border-left:6px solid var(--warn);border-radius:6px;padding:.8rem 1rem;margin:.6rem 0 0;color:var(--ink)}.avisoP span{font-size:1.3rem;line-height:1}
 </style>
 
 <header class="top">
@@ -156,7 +157,7 @@ th .ayuda .tip{font-weight:400}
 
   <section id="v-cierre" role="tabpanel" aria-labelledby="tab-cierre" class="panel" hidden>
     <div class="intro"><p class="eyebrow">Custodia de llaves</p><h2>Ordena el cierre del depósito</h2>
-      <p class="muted">Pon los pasos en el orden correcto con las flechas. La referencia es el plan de seguridad del depósito [EDITABLE: adaptar al plan que se use en clase].</p></div>
+      <p class="avisoP"><span aria-hidden="true">⚠</span> <b>Para avanzar a la página siguiente, pon los pasos en el orden correcto con las flechas ↑ ↓, según el plan de seguridad de la instalación anterior.</b></p></div>
     <ol class="steps" id="steps"></ol>
     <div class="btns"><button class="btn" id="chkSteps" type="button">Comprobar orden</button></div>
     <div id="stepsFb"></div>
