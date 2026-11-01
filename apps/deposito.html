@@ -167,7 +167,7 @@ th .ayuda .tip{font-weight:400}
     <div class="intro"><p class="eyebrow">Etiquetas de peligro ADR</p><h2>¿Qué indica cada etiqueta?</h2>
       <p class="muted">Llegan 4 bultos con etiquetas de peligro ADR. Elige qué indica cada una. Comprueba las definiciones con el ADR vigente.</p></div>
     <div class="labels" id="labels"></div>
-    <div class="btns"><button class="btn" id="chkLab" type="button">Comprobar etiquetas</button></div>
+    <div class="btns"><button class="btn" id="chkLab" type="button">Comprobar etiquetas</button><button class="btn ghost" id="repLab" type="button">Repetir con otras 4 etiquetas</button></div>
   </section>
 
   <section id="v-res" role="tabpanel" aria-labelledby="tab-res" class="panel" hidden>
@@ -361,7 +361,8 @@ const LBN={"1.1": "Explosivo: riesgo de explosión en masa", "1.2": "Explosivo: 
 const DIV={"1.1":"Riesgo de explosión en masa","1.2":"Riesgo de proyección sin explosión en masa","1.3":"Riesgo de incendio con ligero riesgo de explosión o proyección","1.4":"Sin riesgo significativo de explosión","1.5":"Materias muy poco sensibles con riesgo de explosión en masa","1.6":"Objetos extremadamente poco sensibles"};
 let seed=Date.now()%2147483647;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
 const shuf=a=>a.map(x=>[rnd(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
-function nueva(m){if(m==null){const prev=R?R.m:-1;do{m=Math.floor(rnd()*NPL)}while(m===prev)}return{m,ko:plano(m).ko,v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:shuf(Object.keys(LBN)).slice(0,4).map(d=>({d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]})),la:{},lDone:false}}
+function nLabs(prev){const ex=(prev||[]).map(l=>l.d);let k=shuf(Object.keys(LBN).filter(d=>!ex.includes(d)));return k.slice(0,4).map(d=>({d,g:d==="1.5"?"D":d==="1.6"?"N":d==="1.4"?"S":"BCDEFG"[Math.floor(rnd()*6)]}))}
+function nueva(m){if(m==null){const prev=R?R.m:-1;do{m=Math.floor(rnd()*NPL)}while(m===prev)}return{m,ko:plano(m).ko,v:{},cur:null,order:shuf(STEPS.map((_,i)=>i)),sDone:false,labs:nLabs(),la:{},lDone:false}}
 // el antiguo enlace de evaluación (?ev=1) lleva ahora a la Herramienta de Evaluación
 if(new URLSearchParams(location.search).get("ev")){location.replace("evaluacion.html?a=AEV4.1");throw new Error("acceso: redirigiendo")}
 acceso({doc(el){el.innerHTML=`<div class="btns" style="align-items:center"><label class="f" style="margin:0">Plano<select id="dPl">${Array.from({length:NPL},(_,i)=>`<option value="${i}">nº ${i+1}${PCON.has(i)?"":" · sin incidencias"}</option>`).join("")}</select></label><button class="btn ghost sm" type="button" id="dGo">Cargar este plano</button></div><p class="small muted" id="dKo"></p>`;
@@ -404,6 +405,7 @@ function label(d,g){const T=(x,y,z,t)=>`<text x="${x}" y="${y}" text-anchor="mid
  return `<svg viewBox="0 0 103.125 103.125" width="120" height="120" role="img" aria-label="Etiqueta de peligro ADR"><image href="${ADRIMG[k]}" width="103.125" height="103.125"/>${ov}</svg>`}
 function labs(){$("#labels").innerHTML=R.labs.map((l,k)=>{const a=R.la[k];return `<div class="lab">${label(l.d,l.g)}<select data-l="${k}" aria-label="Qué indica la etiqueta del bulto ${k+1}"><option value="">¿Qué indica esta etiqueta?…</option>${Object.entries(LBN).map(([d,t])=>`<option value="${d}" ${a===d?"selected":""}>${t}</option>`).join("")}</select>${R.lDone?`<p class="fb ${a===l.d?"ok":"ko"}">${a===l.d?"Correcto":"Es: "+LBN[l.d]}</p>`:""}</div>`}).join("");
  $$("[data-l]").forEach(s=>s.onchange=()=>{R.la[s.dataset.l]=s.value;R.lDone=false;sv();labs()})}
+$("#repLab").onclick=()=>{R.labs=nLabs(R.labs);R.la={};R.lDone=false;sv();labs()};
 $("#chkLab").onclick=()=>{R.lDone=true;sv();labs()};
 function score(){const pts=P.filter(p=>{const v=R.v[p[0]];return v&&(v.ok==="D")===R.ko.includes(p[0])}).length,st=R.sDone?R.order.filter((s,k)=>s===k).length:0,lb=R.lDone?R.labs.filter((l,k)=>R.la[k]===l.d).length:0;
  const nota=6*pts/P.length+2*st/6+2*lb/4;return{pts,st,lb,nota}}
