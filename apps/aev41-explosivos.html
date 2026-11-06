@@ -131,9 +131,15 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--sunk);padding:.05
    <li>En cada bloque pulsa <kbd>Ctrl</kbd>+<kbd>F</kbd> (o <kbd>⌘</kbd>+<kbd>F</kbd> en Mac) y escribe el término indicado.</li>
    <li>Lee el artículo, anota su número y apartado y responde con tus palabras.</li>
    <li>Si usas una IA, copia el prompt del bloque, comprueba en el BOE cada artículo que te cite y corrige lo que no encuentres. Un artículo inventado resta puntos.</li>
-   <li>Tus respuestas se guardan en este dispositivo. Al final, usa «Imprimir / guardar PDF».</li>
+   <li>Tus respuestas se guardan en este dispositivo. Al terminar, escribe tu nombre y pulsa «Guardar Informe (PDF)».</li>
   </ol>
   <p class="small muted">Puedes cambiar el tamaño del texto (A− / A+) y el modo claro u oscuro desde la barra superior.</p>
+ </div>
+
+ <div class="panel">
+  <h3>Tus datos</h3>
+  <label class="f">Nombre y apellidos<input type="text" id="alumno" autocomplete="name" placeholder="Escribe tu nombre y apellidos"></label>
+  <p class="small muted">Se guarda en este dispositivo y encabeza el informe que descargues.</p>
  </div>
 
  <div id="bloques" class="grid-b"></div>
@@ -152,7 +158,7 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--sunk);padding:.05
   </table></div>
  </div>
 
- <div class="btns"><button class="btn" id="bPrint" type="button">Imprimir / guardar PDF</button><button class="btn ghost" id="bBorrar" type="button">Borrar mis respuestas</button><span id="msg" class="small muted" aria-live="polite"></span></div>
+ <div class="btns"><button class="btn" id="bPdf" type="button">Guardar Informe (PDF)</button><button class="btn ghost" id="bBorrar" type="button">Borrar mis respuestas</button><span id="msg" class="small muted" aria-live="polite"></span></div>
 </section>
 
 <section id="vDoc" hidden>
@@ -247,7 +253,77 @@ $('bBorrar').onclick=()=>{
   if(!confirm('¿Borrar todas tus respuestas de este dispositivo?'))return;
   resp={};save('aev41_resp',resp);document.querySelectorAll('#bloques [data-k]').forEach(el=>el.value='');$('msg').textContent='Respuestas borradas.';
 };
-$('bPrint').onclick=()=>window.print();
+// Nombre del alumnado
+const $al=$('alumno');
+$al.value=load('aev41_alumno','')||'';
+$al.oninput=()=>save('aev41_alumno',$al.value);
+
+// Informe PDF
+const cargaJS=src=>new Promise((ok,ko)=>{const e=document.createElement('script');e.src=src;e.onload=ok;e.onerror=ko;document.head.appendChild(e)});
+async function libsPDF(){
+  if(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API&&window.jspdf.jsPDF.API.autoTable)return;
+  try{await cargaJS('../vendor/jspdf.umd.min.js');await cargaJS('../vendor/jspdf.plugin.autotable.min.js')}
+  catch(e){
+    await cargaJS('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    await cargaJS('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
+  }
+}
+const T=t=>String(t==null?'':t).replace(/[\u2192]/g,'->').replace(/[\u2265]/g,'>=').replace(/[\u2264]/g,'<=');
+
+async function informePDF(){
+  const nombre=$al.value.trim();
+  if(!nombre){
+    $('msg').textContent='Escribe tu nombre y apellidos antes de guardar el informe.';
+    $al.focus();$al.scrollIntoView({block:'center'});return;
+  }
+  $('bPdf').disabled=true;$('msg').textContent='Generando el informe…';
+  try{
+    await libsPDF();
+    const {jsPDF}=window.jspdf, doc=new jsPDF({unit:'mm',format:'a4'}), M=16, W=210;
+    const bs=DATOS.bloques||[];
+    doc.setFillColor(31,58,104);doc.rect(0,0,W,24,'F');
+    doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(14);
+    doc.text(T('Informe del alumnado · AEV 4.1'),M,11);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);
+    doc.text(T('VIB 1679 · Vigilancia de Explosivos y Sustancias Peligrosas · RD 989/2015'),M,18);
+    doc.setTextColor(20,32,51);
+    let y=32;
+    doc.setFont('helvetica','bold');doc.setFontSize(12);
+    doc.text(T(nombre),M,y);y+=6;
+    doc.setFont('helvetica','normal');doc.setFontSize(9);
+    doc.text(T('Fecha: '+new Date().toLocaleDateString('es-ES')+'   ·   Bloques: '+bs.length),M,y);y+=6;
+    let sin=0;
+    bs.forEach((b,n)=>{
+      const filas=(b.preg||[]).map((q,i)=>{
+        const r=(resp['r'+(n+1)+'_'+i]||'').trim(), a=(resp['a'+(n+1)+'_'+i]||'').trim();
+        if(!r)sin++;
+        return [T(q),T(r||'(sin responder)'),T(a||'—')];
+      });
+      doc.autoTable({
+        startY:y,margin:{left:M,right:M},theme:'grid',
+        head:[[{content:T('Bloque '+(n+1)+' · '+b.t+'   ('+b.ra+')'),colSpan:3,
+          styles:{halign:'left',fillColor:[31,58,104],textColor:255,fontStyle:'bold'}}],
+          [T('Pregunta'),T('Respuesta'),T('Artículo')]],
+        body:filas,
+        styles:{font:'helvetica',fontSize:8.5,cellPadding:1.8,textColor:[20,32,51],lineColor:[211,218,228],overflow:'linebreak'},
+        headStyles:{fillColor:[232,236,242],textColor:[20,32,51],fontStyle:'bold'},
+        columnStyles:{0:{cellWidth:58},2:{cellWidth:34}}
+      });
+      y=doc.lastAutoTable.finalY+5;
+      if(y>255&&n<bs.length-1){doc.addPage();y=20}
+    });
+    if(y>250){doc.addPage();y=20}
+    doc.setFontSize(8.5);
+    doc.splitTextToSize(T('Cada bloque vale '+(Math.round((bs.length?10/bs.length:0)*100)/100).toString().replace('.',',')+' puntos sobre 10. Preguntas sin responder: '+sin+'. Las respuestas deben citar el artículo y apartado del texto consolidado del BOE (BOE-A-2015-12054).'),W-2*M)
+       .forEach(l=>{doc.text(l,M,y);y+=4.5});
+    const slug=nombre.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
+    doc.save('AEV4-1_Informe_'+(slug||'alumno')+'.pdf');
+    $('msg').textContent='Informe descargado.';
+  }catch(e){
+    $('msg').textContent='No se pudo generar el informe. Revisa la conexión y vuelve a intentarlo.';
+  }finally{$('bPdf').disabled=false}
+}
+$('bPdf').onclick=informePDF;
 
 // ---------- Vista docente ----------
 function verDoc(on){
