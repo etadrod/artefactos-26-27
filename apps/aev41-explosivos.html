@@ -111,7 +111,12 @@ kbd{font-family:var(--f-mono);font-size:.85rem;border:1px solid var(--line);bord
 #editor textarea{min-height:3rem}
 #vDoc .panel{margin-bottom:1rem}
 code{font-family:var(--f-mono);font-size:.9em;background:var(--sunk);padding:.05rem .3rem;border-radius:3px}
-@media print{header.top,.seg,.btns,#bloques .ia,#vDoc,.chips,#msg{display:none!important}.panel{break-inside:avoid;border:0}}
+#rubrica td{vertical-align:top}
+#rubrica td .small{margin-top:.25rem}
+#rubrica .cp{padding:.05rem .4rem;font-size:.78rem;float:right;margin-left:.3rem}
+#rubrica thead th{white-space:nowrap}
+#rubrica table{font-size:.88rem}
+@media print{header.top,.seg,.btns,#bloques .ia,#vDoc,.chips,#msg,#rubrica .cp{display:none!important}.panel{break-inside:avoid;border:0}}
 </style></head><body><header class="top"><div class="top-in"><div><b>AEV 4.1 · VIB 1679</b><span>Vigilancia de Explosivos y Sustancias Peligrosas · RD 989/2015 · Curso 2026-2027</span></div><div class="chips"><a href="../seguridad/vib/index.html" style="color:inherit">← Módulo VIB</a></div></div></header>
 <main>
 <div class="seg" role="group" aria-label="Vista"><button type="button" id="tAlu" aria-pressed="true">Alumnado</button><button type="button" id="tDoc" aria-pressed="false">Docente</button></div>
@@ -147,15 +152,8 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--sunk);padding:.05
  <div class="panel">
   <h3>Rúbrica de evaluación (10 puntos)</h3>
   <p class="small muted" id="rubInfo"></p>
-  <div class="tbl"><table>
-   <thead><tr><th>Criterio</th><th class="num">Peso</th><th>Insuficiente (0 %)</th><th>Básico (50 %)</th><th>Competente (75 %)</th><th>Excelente (100 %)</th></tr></thead>
-   <tbody>
-    <tr><td><b>Localización en el BOE</b></td><td class="num">10 %</td><td>No encuentra el artículo.</td><td>Lo encuentra tras varias búsquedas.</td><td>Lo encuentra con Ctrl+F en uno o dos intentos.</td><td>Lo encuentra y localiza también los apartados relacionados.</td></tr>
-    <tr><td><b>Exactitud de la respuesta</b></td><td class="num">50 %</td><td>Errónea o sin responder.</td><td>Parcialmente correcta; falta un dato.</td><td>Correcta, con un matiz menor.</td><td>Correcta y completa, con los términos del reglamento.</td></tr>
-    <tr><td><b>Cita de artículo y apartado</b></td><td class="num">30 %</td><td>Sin cita.</td><td>Cita el artículo sin apartado.</td><td>Artículo y apartado correctos.</td><td>Artículo, apartado y frase literal breve (máx. 15 palabras).</td></tr>
-    <tr><td><b>Contraste con la IA o fuentes</b></td><td class="num">10 %</td><td>Acepta la respuesta de la IA sin comprobarla o cita artículos que no existen.</td><td>Comprueba una parte.</td><td>Comprueba todo y corrige.</td><td>Comprueba, corrige y explica la diferencia. Sin IA: usa el BOE como única fuente citada.</td></tr>
-   </tbody>
-  </table></div>
+  <div class="tbl" id="rubrica"></div>
+  <p class="small muted">El botón de cada celda copia su texto al portapapeles.</p>
  </div>
 
  <div class="btns"><button class="btn" id="bPdf" type="button">Guardar Informe (PDF)</button><button class="btn ghost" id="bBorrar" type="button">Borrar mis respuestas</button><span id="msg" class="small muted" aria-live="polite"></span></div>
@@ -224,7 +222,8 @@ function pintarAlumnado(){
   $('nBloques').textContent=bs.length;
   const pp=bs.length?(10/bs.length):0;
   const ppT=(Math.round(pp*100)/100).toString().replace('.',',');
-  $('rubInfo').textContent='Cada bloque vale '+ppT+(pp===1?' punto':' puntos')+': '+bs.length+(bs.length===1?' bloque suma':' bloques suman')+' 10. Dentro de cada bloque, los criterios reparten su peso según el nivel alcanzado (0 %, 50 %, 75 % o 100 %).';
+  const pbl=bs.length?(10-3)/bs.length:0;
+  $('rubInfo').textContent='Los '+bs.length+' apartados reparten 7 puntos ('+(Math.round(pbl*100)/100).toFixed(2).replace(/\.?0+$/,'').replace('.',',')+' cada uno) y la presentación oral en clase vale 3. Total: 10 puntos.';
   $('bloques').innerHTML=bs.map((b,n)=>{
     const id=n+1;
     return '<article class="panel bloque" aria-labelledby="h'+id+'">'
@@ -237,7 +236,54 @@ function pintarAlumnado(){
      +'<button type="button" class="btn ghost sm" data-copy="p'+id+'">Copiar prompt</button></details></article>';
   }).join('');
   document.querySelectorAll('#bloques [data-k]').forEach(el=>{el.value=resp[el.dataset.k]||''});
+  pintarRubrica();
 }
+
+// ---------- Rúbrica por apartados ----------
+const ORAL=3;                      // presentación oral en clase
+const NIVELES=['0 · No entregado','1 · Insuficiente','2 · Básico','3 · Competente','4 · Excelente'];
+const FACTOR=[0,0.25,0.5,0.75,1];
+const num=n=>(Math.round(n*100)/100).toFixed(2).replace(/\.?0+$/,'').replace('.',',');
+const DESCR=b=>[
+ 'No entregado. No responde a las preguntas del apartado ni cita ningún artículo.',
+ 'Responde, pero el contenido no corresponde al reglamento, o cita artículos que no existen o que no regulan '+(b.t||'').toLowerCase()+'.',
+ 'Responde de forma incompleta: localiza el artículo pero falta parte de la respuesta o no indica el apartado.',
+ 'Responde correctamente y cita artículo y apartado, con algún matiz menor o alguna imprecisión en los términos.',
+ 'Responde de forma completa y precisa, con los términos del reglamento, cita artículo y apartado y lo respalda con una frase literal breve.'
+];
+const DESCR_ORAL=[
+ 'No realiza la presentación oral en clase.',
+ 'Presentación muy deficiente: lee el informe sin explicarlo, no cita la norma y no responde a las preguntas.',
+ 'Presentación pobre: expone sin estructura clara, cita la norma de forma vaga y responde con dificultad a las preguntas.',
+ 'Presentación adecuada: expone con orden, cita los artículos principales y responde a las preguntas con algún titubeo.',
+ 'Presentación correcta: expone con orden y lenguaje técnico, justifica cada afirmación con el artículo correspondiente y responde con solvencia a las preguntas.'
+];
+
+function pintarRubrica(){
+  const bs=DATOS.bloques||[], pb=bs.length?(10-ORAL)/bs.length:0;
+  const filas=bs.map((b,n)=>({t:'Apartado '+(n+1)+' · '+b.t, ra:b.ra, max:pb, d:DESCR(b)}));
+  filas.push({t:'Presentación oral en clase', ra:'Exposición del informe', max:ORAL, d:DESCR_ORAL});
+  const celda=(txt,pts)=>'<td><b class="mono">'+num(pts)+'</b> <button type="button" class="btn ghost sm cp" data-cp="'+esc(txt)+'" title="Copiar este texto" aria-label="Copiar este texto">Copiar</button><div class="small">'+esc(txt)+'</div></td>';
+  $('rubrica').innerHTML='<table><thead><tr><th>Apartado</th><th class="num">Máx.</th>'
+    +NIVELES.map(n=>'<th>'+n+'</th>').join('')+'</tr></thead><tbody>'
+    +filas.map(f=>'<tr><td><b>'+esc(f.t)+'</b><br><span class="small muted">'+esc(f.ra)+'</span></td>'
+       +'<td class="num">'+num(f.max)+'</td>'
+       +f.d.map((txt,i)=>celda(txt,f.max*FACTOR[i])).join('')+'</tr>').join('')
+    +'<tr><td><b>Total</b></td><td class="num"><b>10</b></td><td colspan="5" class="small muted">'
+    +bs.length+' apartados \u00d7 '+num(pb)+' puntos = '+num(pb*bs.length)+' · Presentación oral = '+num(ORAL)+'</td></tr>'
+    +'</tbody></table>';
+}
+
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('.cp'); if(!b)return;
+  const txt=b.dataset.cp;
+  try{await navigator.clipboard.writeText(txt);b.textContent='Copiado';setTimeout(()=>{b.textContent='Copiar'},1200)}
+  catch(err){
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');b.textContent='Copiado';setTimeout(()=>{b.textContent='Copiar'},1200)}catch(x){}
+    ta.remove();
+  }
+});
 
 $('bloques').addEventListener('input',e=>{
   const k=e.target.dataset.k; if(!k)return;
@@ -313,7 +359,7 @@ async function informePDF(){
     });
     if(y>250){doc.addPage();y=20}
     doc.setFontSize(8.5);
-    doc.splitTextToSize(T('Cada bloque vale '+(Math.round((bs.length?10/bs.length:0)*100)/100).toString().replace('.',',')+' puntos sobre 10. Preguntas sin responder: '+sin+'. Las respuestas deben citar el artículo y apartado del texto consolidado del BOE (BOE-A-2015-12054).'),W-2*M)
+    doc.splitTextToSize(T('Los '+bs.length+' apartados reparten 7 puntos sobre 10; la presentación oral en clase vale 3. Preguntas sin responder: '+sin+'. Las respuestas deben citar el artículo y apartado del texto consolidado del BOE (BOE-A-2015-12054).'),W-2*M)
        .forEach(l=>{doc.text(l,M,y);y+=4.5});
     const slug=nombre.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
     doc.save('AEV4-1_Informe_'+(slug||'alumno')+'.pdf');
