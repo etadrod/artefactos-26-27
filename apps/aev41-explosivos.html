@@ -1,0 +1,303 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>(function(){var d=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};var t=g("evb_theme"),z=+g("evb_scale")||1;function ap(){if(t)d.setAttribute("data-theme",t);d.style.fontSize=(16*z)+"px"}ap();document.addEventListener("DOMContentLoaded",function(){var w=document.createElement("div");w.setAttribute("role","group");w.setAttribute("aria-label","Accesibilidad");w.style.cssText="display:flex;gap:.3rem;align-items:center;flex-wrap:wrap";var bs="background:transparent;color:inherit;border:1px solid currentColor;border-radius:6px;padding:.2rem .55rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;line-height:1.4;opacity:.9";function b(txt,lab,fn){var e=document.createElement("button");e.type="button";e.textContent=txt;e.setAttribute("aria-label",lab);e.style.cssText=bs;e.onclick=fn;w.appendChild(e);return e}var dk=function(){return d.getAttribute("data-theme")==="dark"||(!d.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches)};b("A−","Reducir texto",function(){z=Math.max(.9,+(z-.1).toFixed(2));s("evb_scale",z);ap()});b("A+","Aumentar texto",function(){z=Math.min(1.4,+(z+.1).toFixed(2));s("evb_scale",z);ap()});var tb=b("","",function(){t=dk()?"light":"dark";s("evb_theme",t);ap();lt()});function lt(){var k=dk();tb.textContent=k?"☀ Claro":"☾ Oscuro";tb.setAttribute("aria-label",k?"Cambiar a modo claro":"Cambiar a modo oscuro")}lt();var dc=document.querySelector("header.top a.doc");if(dc){dc.style.position="static";w.appendChild(dc)}var h=document.querySelector("header.top .top-in");if(h){h.appendChild(w)}else{w.style.cssText+=";position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;background:var(--surface,#fff);color:var(--ink,#111);padding:.3rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2)";document.body.appendChild(w)}})})()</script><title>AEV 4.1 Vigilancia de Explosivos y Sustancias Peligrosas</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap"><style>/* Layout: barra de mando superior con módulo y AEV; zona de trabajo en una columna ancha (máx. 1200px) con paneles por tarea. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF2; --ink:#142033; --muted:#556275; --line:#D3DAE4;
+  --navy:#1F3A68; --navy-ink:#FFFFFF; --signal:#C9561A; --signal-soft:#FBE7DA;
+  --ok:#2F7D4F; --warn:#B98A12; --ko:#B3261E; --on-l:#FFFFFF;
+  --r1:#C9561A; --r2:#1F5AAA; --r3:#2F7D4F; --r4:#7A3FA0;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:6px; --maxw:1200px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1520; --surface:#162030; --sunk:#1C283A; --ink:#E5EBF3; --muted:#9BA8BA; --line:#2B384C;
+  --navy:#8EAEE6; --navy-ink:#0E1520; --signal:#F0894A; --signal-soft:#3A2416;
+  --ok:#55B77D; --warn:#D9AE3A; --ko:#E5675E; --on-l:#0B0F16;
+  --r1:#F0894A; --r2:#7FB0F0; --r3:#55B77D; --r4:#C08BE0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.7rem;font-weight:700} h3{font-size:1.25rem;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;color:var(--signal)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top-in{max-width:var(--maxw);margin:0 auto;padding-block:.65rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.top b{font-family:var(--f-display);font-size:1.4rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.1}
+.top span{font-size:.8rem;opacity:.85}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chips em{font-style:normal;font-family:var(--f-mono);font-size:.75rem;border:1px solid currentColor;border-radius:3px;padding:.05rem .45rem}
+.tabs{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:.2rem;overflow-x:auto}
+.tabs button{background:none;border:0;color:var(--navy-ink);opacity:.75;padding:.5rem .8rem .55rem;font-family:var(--f-display);font-size:1.08rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--signal)}
+main{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem;display:grid;gap:1.2rem}
+main>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;display:grid;gap:.9rem;min-width:0}
+.panel>*{min-width:0}
+.intro{display:grid;gap:.35rem;max-width:72ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.9rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:.7rem}
+label.f{display:grid;gap:.25rem;font-weight:600;font-size:.94rem}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem}
+textarea{min-height:4.5rem;resize:vertical}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink);border-radius:4px;padding:.45rem .95rem;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.warn{border-color:var(--signal);background:transparent;color:var(--signal)}
+.btn.sm{padding:.2rem .6rem;font-size:.86rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.03em}
+td.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:.05rem .55rem;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,var(--surface));color:var(--warn)}
+.pill.ko{background:color-mix(in srgb,var(--ko) 16%,var(--surface));color:var(--ko)}
+.note{border-left:4px solid var(--signal);background:var(--signal-soft);padding:.5rem .8rem;border-radius:0 4px 4px 0;font-size:.92rem}
+.fb{font-size:.93rem;padding:.55rem .8rem;border-radius:4px;background:var(--sunk)}
+.fb.ok{border-left:4px solid var(--ok)} .fb.ko{border-left:4px solid var(--ko)}
+.seg{justify-self:start;display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{background:transparent;border:0;padding:.35rem .75rem;cursor:pointer;color:var(--navy);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:4px;font-weight:600;z-index:30;max-width:calc(100vw - 32px)}
+.big{font-family:var(--f-mono);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:.15rem;border:1px solid var(--line);border-radius:var(--radius);padding:.7rem .85rem;background:var(--surface)}
+.stat span{font-size:.82rem;color:var(--muted)}
+@media (max-width:600px){.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.rubfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:999px;padding:.7rem 1.1rem;background:var(--signal);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+.btn.rubin{background:var(--signal);border-color:var(--signal);color:#fff}
+.rubdlg{width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--ink);padding:1rem}
+.rubdlg::backdrop{background:rgba(10,20,40,.55)}
+.rubdlg .rub-h{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.rubdlg .rub-x{border:0;background:none;color:inherit;font-size:1.6rem;cursor:pointer;line-height:1}
+.rubdlg textarea,.rubdlg select{width:100%;margin-top:.3rem;font:inherit;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);padding:.35rem}
+.rubdlg .rub-t{display:flex;justify-content:space-between;align-items:center;margin:.8rem 0;padding:.6rem .8rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.rubdlg .rub-t b{font-size:1.4rem}
+.rubdlg .row-btn{display:flex;justify-content:flex-end}
+@media print{.rubfab{display:none}}
+.ayuda{position:static;display:inline-block;margin-left:.35rem;vertical-align:middle;font-weight:400}
+.ayuda .info{width:1.25rem;height:1.25rem;border-radius:50%;border:1.5px solid var(--navy);background:var(--surface);color:var(--navy);font:700 .8rem/1 Georgia,serif;font-style:italic;cursor:pointer;padding:0;display:inline-grid;place-items:center}
+.ayuda .info[aria-expanded="true"]{background:var(--navy);color:var(--navy-ink)}
+.ayuda .tip{position:absolute;left:0;top:calc(100% + .35rem);z-index:40;width:min(20rem,calc(100vw - 48px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:var(--radius);padding:.6rem .75rem;box-shadow:0 6px 18px rgba(0,0,0,.18);font-size:.88rem;line-height:1.4;text-transform:none;letter-spacing:0;white-space:normal;text-align:left}
+th .ayuda .tip{font-weight:400}
+.ayuda-row{display:inline-flex;align-items:center;gap:0;position:relative}
+[hidden]{display:none!important}.top{position:relative}.doc{position:absolute;top:.75rem;right:max(16px,env(safe-area-inset-right,0px));border:1px solid currentColor;border-radius:4px;padding:.35rem .8rem;color:inherit;font-weight:600;text-decoration:none}.top:has(.doc) .top-in>div:first-child{padding-right:6.5rem}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:1rem}.card{display:grid;gap:.35rem;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:var(--radius);padding:1rem;color:inherit;text-decoration:none}.card:hover{border-color:var(--navy)}.card b{font:600 1.25rem var(--f-display)}.card.off{opacity:.6;border-left-color:var(--line)}
+kbd{font-family:var(--f-mono);font-size:.85rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:.02rem .35rem;background:var(--surface)}
+.grid-sec{display:grid;gap:1.2rem}
+.grid-b{display:grid;gap:1rem}
+.bloque{gap:.6rem}
+.bloque textarea{min-height:5rem}
+.pasos{margin:0;padding-left:1.3rem;display:grid;gap:.35rem}
+.ia summary{cursor:pointer;font-weight:600;color:var(--navy)}
+.ia pre{background:var(--sunk);padding:.6rem;border-radius:4px;margin:.5rem 0}
+.tbl table td,.tbl table th{vertical-align:top}
+.tbl input[type=number]{width:auto}
+#panelDoc .panel{margin-bottom:1rem}
+@media print{header.top,.seg,.btns,#bloques .ia,#vDoc,.chips,#msg{display:none!important}.panel{break-inside:avoid;border:0}}
+</style></head><body><header class="top"><div class="top-in"><div><b>AEV 4.1 · VIB 1679</b><span>Vigilancia de Explosivos y Sustancias Peligrosas · RD 989/2015 · Curso 2026-2027</span></div><div class="chips"><a href="../seguridad/vib/index.html" style="color:inherit">← Módulo VIB</a></div></div></header>
+<main>
+<div class="seg" role="group" aria-label="Vista"><button type="button" id="tAlu" aria-pressed="true">Alumnado</button><button type="button" id="tDoc" aria-pressed="false">Docente</button></div>
+
+<section id="vAlu" class="grid-sec">
+ <div class="panel">
+  <p class="eyebrow">Actividad · RA8, RA9 y RA10</p>
+  <h2>Vigilancia de Explosivos y Sustancias Peligrosas</h2>
+  <p>Vas a buscar la información en el texto oficial del <strong>Real Decreto 989/2015, de 30 de octubre</strong>, por el que se aprueba el Reglamento de artículos pirotécnicos y cartuchería. Hay siete bloques; cada uno tiene una búsqueda con Ctrl+F y una o dos preguntas.</p>
+  <div class="note"><strong>Supuesto.</strong> [EDITABLE: nombre de la empresa] tiene un depósito de productos pirotécnicos y cartuchería en un polígono. Como técnico de seguridad debes revisar cómo se clasifica y envasa el producto, qué marcado y etiquetado lleva, qué frases y medidas se aplican en uso y transporte, y qué vigilancia exige el reglamento. Cada bloque aporta una parte de tu informe.</div>
+ </div>
+
+ <div class="panel">
+  <h3>Cómo trabajar</h3>
+  <ol class="pasos">
+   <li>Abre el <a href="https://www.boe.es/eli/es/rd/2015/10/30/989/con" target="_blank" rel="noopener">texto consolidado del BOE (BOE-A-2015-12054)</a> en otra pestaña.</li>
+   <li>En cada bloque pulsa <kbd>Ctrl</kbd>+<kbd>F</kbd> (o <kbd>⌘</kbd>+<kbd>F</kbd> en Mac) y escribe el término indicado.</li>
+   <li>Lee el artículo, anota su número y apartado y responde con tus palabras.</li>
+   <li>Si usas una IA, copia el prompt del bloque, comprueba en el BOE cada artículo que te cite y corrige lo que no encuentres. Un artículo inventado resta puntos.</li>
+   <li>Tus respuestas se guardan en este dispositivo. Al final, usa «Imprimir / guardar PDF».</li>
+  </ol>
+  <p class="small muted">Puedes cambiar el tamaño del texto (A− / A+) y el modo claro u oscuro desde la barra superior.</p>
+ </div>
+
+ <div id="bloques" class="grid-b"></div>
+
+ <div class="panel">
+  <h3>Rúbrica de evaluación (10 puntos)</h3>
+  <p class="small muted">Cada bloque se puntúa de 0 a 10 con estos criterios. La nota final es la media de los siete bloques. Los niveles dan el 0 %, 50 %, 75 % o 100 % del máximo de cada criterio.</p>
+  <div class="tbl"><table>
+   <thead><tr><th>Criterio</th><th class="num">Puntos</th><th>Insuficiente (0 %)</th><th>Básico (50 %)</th><th>Competente (75 %)</th><th>Excelente (100 %)</th></tr></thead>
+   <tbody>
+    <tr><td><b>Localización en el BOE</b></td><td class="num">2</td><td>No encuentra el artículo.</td><td>Lo encuentra tras varias búsquedas.</td><td>Lo encuentra con Ctrl+F en uno o dos intentos.</td><td>Lo encuentra y localiza también los apartados relacionados.</td></tr>
+    <tr><td><b>Exactitud de la respuesta</b></td><td class="num">4</td><td>Errónea o sin responder.</td><td>Parcialmente correcta; falta un dato.</td><td>Correcta, con un matiz menor.</td><td>Correcta y completa, con los términos del reglamento.</td></tr>
+    <tr><td><b>Cita de artículo y apartado</b></td><td class="num">2</td><td>Sin cita.</td><td>Cita el artículo sin apartado.</td><td>Artículo y apartado correctos.</td><td>Artículo, apartado y frase literal breve (máx. 15 palabras).</td></tr>
+    <tr><td><b>Contraste con la IA o fuentes</b></td><td class="num">2</td><td>Acepta la respuesta de la IA sin comprobarla o cita artículos que no existen.</td><td>Comprueba una parte.</td><td>Comprueba todo y corrige.</td><td>Comprueba, corrige y explica la diferencia. Sin IA: usa el BOE como única fuente citada.</td></tr>
+   </tbody>
+  </table></div>
+ </div>
+
+ <div class="btns"><button class="btn" id="bPrint" type="button">Imprimir / guardar PDF</button><button class="btn ghost" id="bBorrar" type="button">Borrar mis respuestas</button><span id="msg" class="small muted" aria-live="polite"></span></div>
+</section>
+
+<section id="vDoc" hidden>
+ <div id="gate" class="panel">
+  <h3>Acceso docente</h3>
+  <p class="muted">Introduce el código docente.</p>
+  <div class="btns"><input id="cod" type="password" inputmode="numeric" autocomplete="off" placeholder="Código" style="max-width:14rem"><button class="btn" id="bCod" type="button">Entrar</button></div>
+  <p id="msgD" class="small muted" aria-live="polite"></p>
+ </div>
+ <div id="panelDoc" hidden>
+  <div class="panel">
+   <h3>Clave de corrección</h3>
+   <p class="note">Verificación: solo se ha comprobado el texto de los arts. 1 a 9 del reglamento y el índice del BOE. Lo marcado como «Pendiente» o «EDITABLE» debe confirmarse en el BOE antes de puntuar.</p>
+   <div class="tbl" id="clave"></div>
+  </div>
+  <div class="panel">
+   <h3>Puntuación por bloque (0 a 10)</h3>
+   <p class="small muted">Las notas se guardan en este navegador (solo para el profesorado).</p>
+   <div class="tbl" id="notas"></div>
+   <p class="big" id="media" aria-live="polite">—</p>
+   <div class="btns"><button class="btn ghost" id="bSalir" type="button">Cerrar sesión docente</button></div>
+  </div>
+ </div>
+</section>
+</main>
+
+<script>
+const PIN='6c8f4c40e57cfdb9e934b46b9b1b54ec714fd36841e273e170f027766ccda77a';
+const $=id=>document.getElementById(id);
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+async function hash(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('artefactos-26-27:'+t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+
+const BLOQUES=[
+{id:1,ra:'RA8 · RA9',t:'Clasificación',term:'edificios residenciales',
+ cons:'Clasifica los artificios de pirotecnia y la cartuchería del supuesto según el reglamento.',
+ preg:['¿Qué categoría de artificio de pirotecnia se destina a usarse dentro de edificios residenciales? Indica el artículo donde se define.','Según el mismo reglamento, ¿por qué criterios se clasifica la cartuchería? Nombra al menos dos.'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica la clasificación de los artificios de pirotecnia por categorías y la de la cartuchería. Indica el número de artículo y apartado de cada afirmación. Si no estás seguro de un número, dilo. No inventes cifras.'},
+{id:2,ra:'RA9',t:'Envases y embalajes',term:'Envases y embalajes',
+ cons:'Identifica qué regula el reglamento sobre los envases y embalajes de los productos del depósito.',
+ preg:['¿Qué artículo regula los envases y embalajes, y cuál regula su homologación?','¿Qué artículo se ocupa de los envases y embalajes vacíos?'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué regula sobre envases y embalajes, su homologación y los envases vacíos. Cita artículo y apartado. Si un dato no aparece en el texto, dilo.'},
+{id:3,ra:'RA9',t:'Frases obligatorias',term:'Frases obligatorias',
+ cons:'Localiza la exigencia de frases obligatorias que deben acompañar a los productos.',
+ preg:['Indica el artículo que recoge las frases obligatorias y copia como máximo 15 palabras de la frase que exige.'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica en qué artículo se recogen las frases obligatorias y qué frase exige, con el apartado correspondiente. Copia como máximo 15 palabras del texto. No inventes frases; si no lo sabes, dilo.'},
+{id:4,ra:'RA8',t:'Marcado CE',term:'Marcado CE',
+ cons:'Define el marcado CE según el reglamento y comprueba quién debe colocarlo.',
+ preg:['Según la definición del reglamento, ¿qué indica el marcado CE? Indica el artículo.','¿Quién debe colocar el marcado CE y tras qué procedimiento? Indica el apartado.'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica la definición de marcado CE, quién debe colocarlo y tras qué procedimiento. Cita artículo y apartado de cada dato. Si no estás seguro, dilo.'},
+{id:5,ra:'RA8 · RA9',t:'Etiquetado',term:'Datos que deben figurar',
+ cons:'Comprueba qué datos debe llevar el fabricante y en qué idioma mínimo deben figurar las instrucciones.',
+ preg:['¿Qué datos de contacto del fabricante deben figurar y en qué idioma mínimo deben estar las instrucciones? Indica el apartado.','¿Qué artículo regula los datos que deben figurar en el artículo, envase y embalaje?'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué datos debe llevar el fabricante, en qué artículo se regula el etiquetado del artículo, el envase y el embalaje, y en qué idioma mínimo deben figurar las instrucciones. Cita artículo y apartado.'},
+{id:6,ra:'RA9 · RA10',t:'Medidas de seguridad en uso y transporte',term:'Artículos pirotécnicos de las categorías F4',
+ cons:'Identifica quién puede manipular los artificios de mayor peligrosidad y dónde se regula el transporte.',
+ preg:['¿Quién puede manipular o utilizar artificios de categoría F4? Indica el artículo de definiciones y el apartado de categorías.','¿Qué título del reglamento regula el transporte y qué artículo recoge sus normas generales?'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica quién puede manipular o utilizar artificios de categoría F4, T2 y P2, y en qué títulos y artículos se regula el transporte. Cita artículo y apartado. Si no estás seguro, dilo.'},
+{id:7,ra:'RA8',t:'Medidas de vigilancia',term:'Cerramiento y vigilancia',
+ cons:'Supuesto: el depósito del caso debe cumplir las medidas de cerramiento y vigilancia. Comprueba qué exige el reglamento.',
+ preg:['¿Qué artículos regulan el cerramiento y la vigilancia de los depósitos y de los talleres? Indica los números.','Localiza en la ITC 11 la exigencia de vigilantes o medios de vigilancia. Anota el apartado y la cifra literal. Si no aparece una cifra, escríbelo.'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué artículos regulan el cerramiento y la vigilancia de talleres y depósitos y qué exige la ITC 11 sobre vigilancia. Si el reglamento fija un número de vigilantes o de medios, cita el apartado y la cifra literal; si no lo fija, dilo.'}
+];
+
+const CLAVE={
+1:{arts:'8 (texto verificado) y 9 (texto verificado)',esp:'F1: artificios de uso en el interior de edificios residenciales (art. 8.3.a.i). Cartuchería: por uso (deportiva, laboral, para dispositivos de seguridad u otros), por componentes y por tipo de arma o aparato (art. 9).',est:'Verificado'},
+2:{arts:'107, 108 y 110 (títulos verificados; texto pendiente)',esp:'Art. 107: envases y embalajes. Art. 108: homologación. Art. 110: envases y embalajes vacíos.',est:'Parcial'},
+3:{arts:'109 (título verificado; texto pendiente)',esp:'[EDITABLE: frase literal que exige el art. 109].',est:'Pendiente'},
+4:{arts:'4.20 y 5.1.b (texto verificado); 19 e ITC 7 (títulos)',esp:'Indica que el artículo cumple los requisitos aplicables de la legislación de armonización (art. 4.20). Lo coloca el fabricante tras la evaluación de la conformidad (art. 5.1.b).',est:'Verificado'},
+5:{arts:'5.1.f y 5.1.g (texto verificado); 113 a 117 (títulos)',esp:'Nombre o marca registrada y dirección postal de contacto del fabricante (5.1.f). Instrucciones e información de seguridad al menos en castellano, claras y comprensibles (5.1.g). Datos del artículo, envase y embalaje: art. 114.',est:'Parcial'},
+6:{arts:'4.15 y 8.3 (texto verificado); 142 y Título IX, arts. 166 a 194 (títulos)',esp:'F4, T2 y P2 solo pueden ser manipulados o utilizados por expertos (art. 4.15 y art. 8.3). Transporte: Título IX; normas generales en el art. 167 y documentación en el art. 170.',est:'Parcial'},
+7:{arts:'50, 59, 93 y 100 (títulos); ITC 11 (título; modificada por la Orden PJC/342/2025)',esp:'[EDITABLE: apartado de la ITC 11 y cifra literal de vigilantes o medios exigidos. Pendiente: no se ha leído el texto].',est:'Pendiente'}
+};
+
+let resp=load('aev41_resp',{});
+let notas=load('aev41_notas_docente',{});
+
+function render(){
+  $('bloques').innerHTML=BLOQUES.map(b=>`
+   <article class="panel bloque" aria-labelledby="h${b.id}">
+    <div><span class="eyebrow">Bloque ${b.id} · ${b.ra}</span><h3 id="h${b.id}">${b.t}</h3></div>
+    <p>${b.cons}</p>
+    <p class="note">Ctrl+F en el BOE: <kbd>${b.term}</kbd></p>
+    ${b.preg.map((q,i)=>`
+     <label class="f">${q}<textarea data-k="r${b.id}_${i}" id="r${b.id}_${i}"></textarea></label>
+     <label class="f">Artículo y apartado donde lo encuentras<input type="text" data-k="a${b.id}_${i}" id="a${b.id}_${i}"></label>`).join('')}
+    <details class="ia"><summary>Prompt para IA (opcional)</summary>
+     <pre id="p${b.id}" style="white-space:pre-wrap;font-size:.9rem">${b.prompt}</pre>
+     <button type="button" class="btn ghost sm" data-copy="p${b.id}">Copiar prompt</button>
+    </details>
+   </article>`).join('');
+  document.querySelectorAll('[data-k]').forEach(el=>{el.value=resp[el.dataset.k]||''});
+}
+
+$('bloques').addEventListener('input',e=>{
+  const k=e.target.dataset.k; if(!k)return;
+  resp[k]=e.target.value; save('aev41_resp',resp);
+});
+
+$('bloques').addEventListener('click',async e=>{
+  const id=e.target.dataset.copy; if(!id)return;
+  const txt=$(id).textContent;
+  try{await navigator.clipboard.writeText(txt);$('msg').textContent='Prompt copiado.'}
+  catch(err){const r=document.createRange();r.selectNodeContents($(id));const s=getSelection();s.removeAllRanges();s.addRange(r);$('msg').textContent='Selecciónalo y cópialo con Ctrl+C.'}
+});
+
+$('bBorrar').onclick=()=>{
+  if(!confirm('¿Borrar todas tus respuestas de este dispositivo?'))return;
+  resp={};save('aev41_resp',resp);document.querySelectorAll('[data-k]').forEach(el=>el.value='');$('msg').textContent='Respuestas borradas.';
+};
+$('bPrint').onclick=()=>window.print();
+
+// Docente
+function verDoc(on){
+  $('tAlu').setAttribute('aria-pressed',on?'false':'true');
+  $('tDoc').setAttribute('aria-pressed',on?'true':'false');
+  $('vAlu').hidden=on; $('vDoc').hidden=!on;
+}
+$('tAlu').onclick=()=>verDoc(false);
+$('tDoc').onclick=()=>verDoc(true);
+
+function pintarDoc(){
+  $('clave').innerHTML=`<table><thead><tr><th>Bloque</th><th>Artículos (verificación)</th><th>Respuesta esperada</th><th>Estado</th></tr></thead><tbody>${BLOQUES.map(b=>{const c=CLAVE[b.id];return `<tr><td><b>${b.id}. ${b.t}</b><br><span class="small muted">Ctrl+F: ${b.term}</span></td><td>${c.arts}</td><td>${c.esp}</td><td><span class="pill ${c.est==='Verificado'?'ok':c.est==='Parcial'?'warn':'ko'}">${c.est}</span></td></tr>`}).join('')}</tbody></table>`;
+  $('notas').innerHTML=`<table><thead><tr><th>Bloque</th><th class="num">Nota (0-10)</th></tr></thead><tbody>${BLOQUES.map(b=>`<tr><td>${b.id}. ${b.t}</td><td class="num"><input type="number" min="0" max="10" step="0.5" data-n="${b.id}" value="${notas[b.id]??''}" style="max-width:6rem" aria-label="Nota bloque ${b.id}"></td></tr>`).join('')}</tbody></table>`;
+  calcMedia();
+}
+function calcMedia(){
+  const v=[...document.querySelectorAll('[data-n]')].map(i=>parseFloat(i.value)).filter(x=>!isNaN(x));
+  $('media').textContent=v.length?('Media: '+(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2)+' / 10 ('+v.length+'/7 bloques)'):'—';
+}
+$('notas').addEventListener('input',e=>{
+  const n=e.target.dataset.n; if(!n)return;
+  notas[n]=e.target.value===''?null:Math.min(10,Math.max(0,parseFloat(e.target.value)));
+  save('aev41_notas_docente',notas); calcMedia();
+});
+
+async function entrar(){
+  if(await hash($('cod').value.trim())!==PIN){$('msgD').textContent='Código incorrecto.';return}
+  $('msgD').textContent='';
+  $('gate').hidden=true; $('panelDoc').hidden=false;
+  try{sessionStorage.setItem('aev41_doc_ok','1')}catch(e){}
+  pintarDoc();
+}
+$('bCod').onclick=entrar;
+$('cod').onkeydown=e=>{if(e.key==='Enter')entrar()};
+$('bSalir').onclick=()=>{try{sessionStorage.removeItem('aev41_doc_ok')}catch(e){};$('panelDoc').hidden=true;$('gate').hidden=false;$('cod').value='';verDoc(false)};
+
+render();
+</script>
+</body></html>
