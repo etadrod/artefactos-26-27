@@ -11,7 +11,7 @@
     "¿Qué categoría de artificio de pirotecnia se destina a usarse dentro de edificios residenciales? Indica el artículo donde se define.",
     "Según el mismo reglamento, ¿por qué criterios se clasifica la cartuchería? Nombra al menos dos."
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica la clasificación de los artificios de pirotecnia por categorías y la de la cartuchería. Indica el número de artículo y apartado de cada afirmación. Si no estás seguro de un número, dilo. No inventes cifras.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica la clasificación de los artificios de pirotecnia por categorías y la de la cartuchería. Indica el número de artículo y apartado de cada afirmación. Si no estás seguro de un número, dilo. No inventes cifras.",
    "clave": {
     "arts": "8 y 9 (texto verificado)",
     "esp": "F1: artificios de uso en el interior de edificios residenciales (art. 8.3.a.i). Cartuchería: por uso (deportiva, laboral, para dispositivos de seguridad u otros), por componentes y por tipo de arma o aparato (art. 9).",
@@ -27,7 +27,7 @@
     "¿Qué artículo regula los envases y embalajes, y cuál regula su homologación?",
     "¿Qué artículo se ocupa de los envases y embalajes vacíos?"
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué regula sobre envases y embalajes, su homologación y los envases vacíos. Cita artículo y apartado. Si un dato no aparece en el texto, dilo.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué regula sobre envases y embalajes, su homologación y los envases vacíos. Cita artículo y apartado. Si un dato no aparece en el texto, dilo.",
    "clave": {
     "arts": "107, 108 y 110 (texto verificado)",
     "esp": "Art. 107: envase (recipiente de retención) y embalaje (protección externa), exteriores o interiores. Art. 108: envases y embalajes homologados según la reglamentación del transporte de mercancías peligrosas, con marcas duraderas y visibles. Art. 110: envases vacíos con residuos peligrosos, bien cerrados y con las mismas etiquetas de peligro.",
@@ -42,7 +42,7 @@
    "preg": [
     "Indica el artículo que recoge las frases obligatorias y copia como máximo 15 palabras de la frase que exige."
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica en qué artículo se recogen las frases obligatorias y qué frase exige, con el apartado correspondiente. Copia como máximo 15 palabras del texto. No inventes frases; si no lo sabes, dilo.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica en qué artículo se recogen las frases obligatorias y qué frase exige, con el apartado correspondiente. Copia como máximo 15 palabras del texto. No inventes frases; si no lo sabes, dilo.",
    "clave": {
     "arts": "109 (texto verificado)",
     "esp": "En cada envase exterior o embalaje, redactadas al menos en castellano: «Riesgo de explosión por choque, fricción o fuego» y «Protéjase de fuentes de calor. No fumar».",
@@ -58,7 +58,7 @@
     "Según la definición del reglamento, ¿qué indica el marcado CE? Indica el artículo.",
     "¿Quién debe colocar el marcado CE y tras qué procedimiento? Indica el apartado."
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica la definición de marcado CE, quién debe colocarlo y tras qué procedimiento. Cita artículo y apartado de cada dato. Si no estás seguro, dilo.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica la definición de marcado CE, quién debe colocarlo y tras qué procedimiento. Cita artículo y apartado de cada dato. Si no estás seguro, dilo.",
    "clave": {
     "arts": "4.20, 5.1.b y 19 (texto verificado)",
     "esp": "Marcado CE: indica que el artículo cumple los requisitos aplicables de la legislación de armonización (art. 4.20). Lo coloca el fabricante tras la evaluación de la conformidad (art. 5.1.b). Debe ir visible, legible e indeleble sobre el artículo o, si no es posible, sobre la etiqueta del envase o embalaje (art. 19.4).",
@@ -74,7 +74,7 @@
     "¿Qué datos de contacto del fabricante deben figurar y en qué idioma mínimo deben estar las instrucciones? Indica el apartado.",
     "¿Qué artículo regula los datos que deben figurar en el artículo, envase y embalaje?"
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué datos debe llevar el fabricante, en qué artículo se regula el etiquetado del artículo, el envase y el embalaje, y en qué idioma mínimo deben figurar las instrucciones. Cita artículo y apartado.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué datos debe llevar el fabricante, en qué artículo se regula el etiquetado del artículo, el envase y el embalaje, y en qué idioma mínimo deben figurar las instrucciones. Cita artículo y apartado.",
    "clave": {
     "arts": "5.1.f, 5.1.g y 114 (texto verificado)",
     "esp": "Fabricante: nombre o marca registrada y dirección postal de contacto (5.1.f). Instrucciones e información de seguridad al menos en castellano, claras y comprensibles (5.1.g). Embalaje: art. 114.1.A (fabricante, tipo de artículo, categoría, número de registro, NEC y marcado de transporte). Artículo y envase: art. 114.1.B.",
@@ -90,7 +90,7 @@
     "¿Quién puede manipular o utilizar artificios de categoría F4? Indica el artículo de definiciones y el apartado de categorías.",
     "¿Qué título del reglamento regula el transporte y qué artículo recoge sus normas generales?"
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica quién puede manipular o utilizar artificios de categoría F4, T2 y P2, y en qué títulos y artículos se regula el transporte. Cita artículo y apartado. Si no estás seguro, dilo.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica quién puede manipular o utilizar artificios de categoría F4, T2 y P2, y en qué títulos y artículos se regula el transporte. Cita artículo y apartado. Si no estás seguro, dilo.",
    "clave": {
     "arts": "4.15, 8.3, 142, 166, 167 y 170 (texto verificado)",
     "esp": "F4, T2 y P2 solo pueden ser manipulados o utilizados por expertos (art. 4.15 y art. 8.3), con carné o certificado de experto (art. 142.3, ITC 25). Transporte: Título IX; el art. 166 remite a la reglamentación del medio de transporte; normas generales en el art. 167 y documentación en el art. 170.",
@@ -106,7 +106,7 @@
     "Según los artículos 50, 59 y 93, ¿qué vigilancia exige el reglamento a talleres y depósitos y con qué medios puede sustituirse? Indica los artículos.",
     "Según la ITC 11 (transporte por carretera), ¿cuántos vigilantes como mínimo lleva un vehículo y cuántos un convoy? Indica el apartado y la cifra."
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué artículos regulan la vigilancia de talleres y depósitos, con qué medios puede sustituirse y qué número mínimo de vigilantes exige la ITC 11 en el transporte por carretera, para vehículo y convoy. Cita artículo y apartado. Si un dato depende del plan de seguridad de la instalación, dilo.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué artículos regulan la vigilancia de talleres y depósitos, con qué medios puede sustituirse y qué número mínimo de vigilantes exige la ITC 11 en el transporte por carretera, para vehículo y convoy. Cita artículo y apartado. Si un dato depende del plan de seguridad de la instalación, dilo.",
    "clave": {
     "arts": "50, 59 y 93 (texto verificado); ITC 11, apartado 1 y transporte por carretera (texto verificado)",
     "esp": "Talleres y depósitos (arts. 50, 59 y 93): vigilancia humana suficiente según el Plan de Seguridad Ciudadana aprobado por la Intervención Central de Armas y Explosivos; puede sustituirse por medios físicos y electrónicos (ITC 11). ITC 11, apartado 1: el plan indica el número de vigilantes por turno, turnos y puestos, sin cifra fija. Transporte por carretera (ITC 11): al menos un vigilante por vehículo; en convoy, el número de vehículos más uno, con un coordinador. Aplicable a las materias que la ITC 11 regula en transporte (cartuchería metálica y mecha de seguridad, según su ámbito).",
@@ -122,7 +122,7 @@
     "¿Qué documentos deben aprobarse antes de transportar por carretera estas materias y con cuántas horas de antelación se presenta la adenda de actualización? Indica el apartado.",
     "Los vigilantes viajan en cada vehículo: ¿qué funciones no pueden realizar y con qué deben estar comunicados los vehículos del convoy?"
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué documentos deben aprobarse antes del transporte por carretera según la ITC 11, con qué antelación se presenta la adenda, qué funciones no pueden realizar los vigilantes y cómo deben estar comunicados los vehículos del convoy. Cita apartado. Si no estás seguro, dilo.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué documentos deben aprobarse antes del transporte por carretera según la ITC 11, con qué antelación se presenta la adenda, qué funciones no pueden realizar los vigilantes y cómo deben estar comunicados los vehículos del convoy. Cita apartado. Si no estás seguro, dilo.",
    "clave": {
     "arts": "ITC 11, transporte por carretera (texto verificado)",
     "esp": "Plan de Seguridad de Transporte (documento base) y Adenda de Actualización, según modelo aprobado por la Intervención Central. La adenda se presenta con 48 horas de antelación ante la Intervención de Armas y Explosivos de origen o de entrada. Los vigilantes viajan en cada vehículo, solo atienden la seguridad de la materia y no conducen, cargan ni descargan. Los vehículos van enlazados entre sí y con un centro de la empresa de seguridad mediante teléfono móvil, y con los centros operativos de la Guardia Civil.",
@@ -138,7 +138,7 @@
     "¿Quién puede entrar a las zonas de almacenamiento del depósito y qué señalización debe haber en su acceso? Indica el artículo.",
     "Si una persona ajena al taller debe acceder, ¿qué requisitos exige el reglamento? Indica el artículo y apartado."
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica quién puede entrar a las zonas de almacenamiento de un depósito, qué señalización debe haber, y qué requisitos exige el reglamento a las visitas en talleres (libro, identificación, acompañamiento). Cita artículo y apartado. Si no estás seguro, dilo.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica quién puede entrar a las zonas de almacenamiento de un depósito, qué señalización debe haber, y qué requisitos exige el reglamento a las visitas en talleres (libro, identificación, acompañamiento). Cita artículo y apartado. Si no estás seguro, dilo.",
    "clave": {
     "arts": "94.1 y 51 (texto verificado)",
     "esp": "Art. 94.1 (depósitos): solo entran personas autorizadas, previas verificaciones o controles; la entrada a zonas de almacenamiento se señala con prohibido el paso a toda persona no autorizada. Art. 51 (talleres): permiso de la dirección o del encargado, libro de visitas con identificación, advertencia de entrar bajo su propio riesgo y acompañamiento por un empleado.",
@@ -154,7 +154,7 @@
     "Según el artículo 52 (talleres), ¿qué plan debe autorizar la Intervención Central y con qué periodicidad se envía el parte de actuaciones? Indica apartado.",
     "Según la ITC 11, ¿cuándo puede sustituirse la vigilancia humana y con qué centros debe conectarse la instalación?"
    ],
-   "prompt": "Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué plan debe autorizar la Intervención Central para los servicios de vigilancia de un taller (art. 52), con qué periodicidad se envía el parte de actuaciones, cuándo puede sustituirse la vigilancia humana según la ITC 11 y con qué centros debe conectarse la instalación. Cita artículo y apartado. Si no estás seguro, dilo.",
+   "prompt": "Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué plan debe autorizar la Intervención Central para los servicios de vigilancia de un taller (art. 52), con qué periodicidad se envía el parte de actuaciones, cuándo puede sustituirse la vigilancia humana según la ITC 11 y con qué centros debe conectarse la instalación. Cita artículo y apartado. Si no estás seguro, dilo.",
    "clave": {
     "arts": "52.2 (texto verificado); ITC 11, apartado 1 (texto verificado)",
     "esp": "Art. 52.2 (talleres): los servicios de vigilancia efectúan registros periódicos según un plan de actuación dentro del Plan de Seguridad Ciudadana autorizado, y envían un parte resumen mensual a la Intervención de Armas y Explosivos de la Guardia Civil de su demarcación. ITC 11: la vigilancia humana puede sustituirse si hay seguridad física suficiente y un sistema electrónico contra robo e intrusión conectado con central receptora de alarmas; la conexión con la Guardia Civil es con la Unidad de la Comandancia designada.",
