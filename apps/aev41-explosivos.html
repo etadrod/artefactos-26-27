@@ -118,7 +118,7 @@ kbd{font-family:var(--f-mono);font-size:.85rem;border:1px solid var(--line);bord
  <div class="panel">
   <p class="eyebrow">Actividad · RA8, RA9 y RA10</p>
   <h2>Vigilancia de Explosivos y Sustancias Peligrosas</h2>
-  <p>Vas a buscar la información en el texto oficial del <strong>Real Decreto 989/2015, de 30 de octubre</strong>, por el que se aprueba el Reglamento de artículos pirotécnicos y cartuchería. Hay siete bloques; cada uno tiene una búsqueda con Ctrl+F y una o dos preguntas.</p>
+  <p>Vas a buscar la información en el texto oficial del <strong>Real Decreto 989/2015, de 30 de octubre</strong>, por el que se aprueba el Reglamento de artículos pirotécnicos y cartuchería. Hay diez bloques; cada uno tiene una búsqueda con Ctrl+F y una o dos preguntas.</p>
   <div class="note"><strong>Supuesto.</strong> [EDITABLE: nombre de la empresa] tiene un depósito de productos pirotécnicos y cartuchería en un polígono. Como técnico de seguridad debes revisar cómo se clasifica y envasa el producto, qué marcado y etiquetado lleva, qué frases y medidas se aplican en uso y transporte, y qué vigilancia exige el reglamento. Cada bloque aporta una parte de tu informe.</div>
  </div>
 
@@ -138,14 +138,14 @@ kbd{font-family:var(--f-mono);font-size:.85rem;border:1px solid var(--line);bord
 
  <div class="panel">
   <h3>Rúbrica de evaluación (10 puntos)</h3>
-  <p class="small muted">Cada bloque se puntúa de 0 a 10 con estos criterios. La nota final es la media de los siete bloques. Los niveles dan el 0 %, 50 %, 75 % o 100 % del máximo de cada criterio.</p>
+  <p class="small muted">Cada bloque vale 1 punto: diez bloques suman 10. Cada criterio aporta el porcentaje de su máximo según el nivel alcanzado (0 %, 50 %, 75 % o 100 %).</p>
   <div class="tbl"><table>
-   <thead><tr><th>Criterio</th><th class="num">Puntos</th><th>Insuficiente (0 %)</th><th>Básico (50 %)</th><th>Competente (75 %)</th><th>Excelente (100 %)</th></tr></thead>
+   <thead><tr><th>Criterio</th><th class="num">Puntos (de 1)</th><th>Insuficiente (0 %)</th><th>Básico (50 %)</th><th>Competente (75 %)</th><th>Excelente (100 %)</th></tr></thead>
    <tbody>
-    <tr><td><b>Localización en el BOE</b></td><td class="num">2</td><td>No encuentra el artículo.</td><td>Lo encuentra tras varias búsquedas.</td><td>Lo encuentra con Ctrl+F en uno o dos intentos.</td><td>Lo encuentra y localiza también los apartados relacionados.</td></tr>
-    <tr><td><b>Exactitud de la respuesta</b></td><td class="num">4</td><td>Errónea o sin responder.</td><td>Parcialmente correcta; falta un dato.</td><td>Correcta, con un matiz menor.</td><td>Correcta y completa, con los términos del reglamento.</td></tr>
-    <tr><td><b>Cita de artículo y apartado</b></td><td class="num">2</td><td>Sin cita.</td><td>Cita el artículo sin apartado.</td><td>Artículo y apartado correctos.</td><td>Artículo, apartado y frase literal breve (máx. 15 palabras).</td></tr>
-    <tr><td><b>Contraste con la IA o fuentes</b></td><td class="num">2</td><td>Acepta la respuesta de la IA sin comprobarla o cita artículos que no existen.</td><td>Comprueba una parte.</td><td>Comprueba todo y corrige.</td><td>Comprueba, corrige y explica la diferencia. Sin IA: usa el BOE como única fuente citada.</td></tr>
+    <tr><td><b>Localización en el BOE</b></td><td class="num">0,1</td><td>No encuentra el artículo.</td><td>Lo encuentra tras varias búsquedas.</td><td>Lo encuentra con Ctrl+F en uno o dos intentos.</td><td>Lo encuentra y localiza también los apartados relacionados.</td></tr>
+    <tr><td><b>Exactitud de la respuesta</b></td><td class="num">0,5</td><td>Errónea o sin responder.</td><td>Parcialmente correcta; falta un dato.</td><td>Correcta, con un matiz menor.</td><td>Correcta y completa, con los términos del reglamento.</td></tr>
+    <tr><td><b>Cita de artículo y apartado</b></td><td class="num">0,3</td><td>Sin cita.</td><td>Cita el artículo sin apartado.</td><td>Artículo y apartado correctos.</td><td>Artículo, apartado y frase literal breve (máx. 15 palabras).</td></tr>
+    <tr><td><b>Contraste con la IA o fuentes</b></td><td class="num">0,1</td><td>Acepta la respuesta de la IA sin comprobarla o cita artículos que no existen.</td><td>Comprueba una parte.</td><td>Comprueba todo y corrige.</td><td>Comprueba, corrige y explica la diferencia. Sin IA: usa el BOE como única fuente citada.</td></tr>
    </tbody>
   </table></div>
  </div>
@@ -167,10 +167,6 @@ kbd{font-family:var(--f-mono);font-size:.85rem;border:1px solid var(--line);bord
    <div class="tbl" id="clave"></div>
   </div>
   <div class="panel">
-   <h3>Puntuación por bloque (0 a 10)</h3>
-   <p class="small muted">Las notas se guardan en este navegador (solo para el profesorado).</p>
-   <div class="tbl" id="notas"></div>
-   <p class="big" id="media" aria-live="polite">—</p>
    <div class="btns"><button class="btn ghost" id="bSalir" type="button">Cerrar sesión docente</button></div>
   </div>
  </div>
@@ -213,6 +209,18 @@ const BLOQUES=[
  cons:'Supuesto: el depósito del caso debe cumplir las medidas de cerramiento y vigilancia, y parte de su producto se transporta por carretera. Comprueba qué exige el reglamento.',
  preg:['Según los artículos 50, 59 y 93, ¿qué vigilancia exige el reglamento a talleres y depósitos y con qué medios puede sustituirse? Indica los artículos.','Según la ITC 11 (transporte por carretera), ¿cuántos vigilantes como mínimo lleva un vehículo y cuántos un convoy? Indica el apartado y la cifra.'],
  prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué artículos regulan la vigilancia de talleres y depósitos, con qué medios puede sustituirse y qué número mínimo de vigilantes exige la ITC 11 en el transporte por carretera, para vehículo y convoy. Cita artículo y apartado. Si un dato depende del plan de seguridad de la instalación, dilo.'}
+,{id:8,ra:'RA9 · RA8',t:'Vigilancia en el transporte por carretera',term:'Adenda de Actualización',
+ cons:'Supuesto: parte de la mercancía sale del depósito en camión hacia un cliente. Comprueba qué debe aprobarse antes y cómo viajan los vigilantes.',
+ preg:['¿Qué documentos deben aprobarse antes de transportar por carretera estas materias y con cuántas horas de antelación se presenta la adenda de actualización? Indica el apartado.','Los vigilantes viajan en cada vehículo: ¿qué funciones no pueden realizar y con qué deben estar comunicados los vehículos del convoy?'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué documentos deben aprobarse antes del transporte por carretera según la ITC 11, con qué antelación se presenta la adenda, qué funciones no pueden realizar los vigilantes y cómo deben estar comunicados los vehículos del convoy. Cita apartado. Si no estás seguro, dilo.'},
+{id:9,ra:'RA8',t:'Control de accesos al depósito',term:'Controles de entrada y salida',
+ cons:'Supuesto: una persona ajena a la plantilla debe entrar en una zona de almacenamiento. Comprueba qué control aplica el reglamento.',
+ preg:['¿Quién puede entrar a las zonas de almacenamiento del depósito y qué señalización debe haber en su acceso? Indica el artículo.','Si una persona ajena al taller debe acceder, ¿qué requisitos exige el reglamento? Indica el artículo y apartado.'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica quién puede entrar a las zonas de almacenamiento de un depósito, qué señalización debe haber, y qué requisitos exige el reglamento a las visitas en talleres (libro, identificación, acompañamiento). Cita artículo y apartado. Si no estás seguro, dilo.'},
+{id:10,ra:'RA8 · RA4',t:'Registros, alarma y comunicación con la Guardia Civil',term:'parte resumen',
+ cons:'Supuesto: la instalación tiene servicio de vigilancia propio. Comprueba qué registros y comunicaciones deben cumplirse.',
+ preg:['Según el artículo 52 (talleres), ¿qué plan debe autorizar la Intervención Central y con qué periodicidad se envía el parte de actuaciones? Indica apartado.','Según la ITC 11, ¿cuándo puede sustituirse la vigilancia humana y con qué centros debe conectarse la instalación?'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), explica qué plan debe autorizar la Intervención Central para los servicios de vigilancia de un taller (art. 52), con qué periodicidad se envía el parte de actuaciones, cuándo puede sustituirse la vigilancia humana según la ITC 11 y con qué centros debe conectarse la instalación. Cita artículo y apartado. Si no estás seguro, dilo.'}
 ];
 
 const CLAVE={
@@ -221,12 +229,14 @@ const CLAVE={
 3:{arts:'109 (texto verificado)',esp:'En cada envase exterior o embalaje, redactadas al menos en castellano: «Riesgo de explosión por choque, fricción o fuego» y «Protéjase de fuentes de calor. No fumar».',est:'Verificado'},
 4:{arts:'4.20, 5.1.b y 19 (texto verificado)',esp:'Marcado CE: indica que el artículo cumple los requisitos aplicables de la legislación de armonización (art. 4.20). Lo coloca el fabricante tras la evaluación de la conformidad (art. 5.1.b). Debe ir visible, legible e indeleble sobre el artículo o, si no es posible, sobre la etiqueta del envase o embalaje (art. 19.4).',est:'Verificado'},
 5:{arts:'5.1.f, 5.1.g y 114 (texto verificado)',esp:'Fabricante: nombre o marca registrada y dirección postal de contacto (5.1.f). Instrucciones e información de seguridad al menos en castellano, claras y comprensibles (5.1.g). Embalaje: art. 114.1.A (fabricante, tipo de artículo, categoría, número de registro, NEC y marcado de transporte). Artículo y envase: art. 114.1.B.',est:'Verificado'},
-6:{arts:'4.15 y 8.3 (texto verificado); 142 y Título IX, arts. 166 a 194 (títulos)',esp:'F4, T2 y P2 solo pueden ser manipulados o utilizados por expertos (art. 4.15 y art. 8.3). Transporte: Título IX; normas generales en el art. 167 y documentación en el art. 170.',est:'Parcial'},
-7:{arts:'50, 59 y 93 (texto verificado); ITC 11, apartado 1 y transporte por carretera (texto verificado)',esp:'Talleres y depósitos (arts. 50, 59 y 93): vigilancia humana suficiente según el Plan de Seguridad Ciudadana aprobado por la Intervención Central de Armas y Explosivos; puede sustituirse por medios físicos y electrónicos (ITC 11). ITC 11, apartado 1: el plan indica el número de vigilantes por turno, turnos y puestos, sin cifra fija. Transporte por carretera (ITC 11): al menos un vigilante por vehículo; en convoy, el número de vehículos más uno, con un coordinador. Aplicable a las materias que la ITC 11 regula en transporte (cartuchería metálica y mecha de seguridad, según su ámbito).',est:'Verificado'}
+6:{arts:'4.15, 8.3, 142, 166, 167 y 170 (texto verificado)',esp:'F4, T2 y P2 solo pueden ser manipulados o utilizados por expertos (art. 4.15 y art. 8.3), con carné o certificado de experto (art. 142.3, ITC 25). Transporte: Título IX; el art. 166 remite a la reglamentación del medio de transporte; normas generales en el art. 167 y documentación en el art. 170.',est:'Verificado'},
+7:{arts:'50, 59 y 93 (texto verificado); ITC 11, apartado 1 y transporte por carretera (texto verificado)',esp:'Talleres y depósitos (arts. 50, 59 y 93): vigilancia humana suficiente según el Plan de Seguridad Ciudadana aprobado por la Intervención Central de Armas y Explosivos; puede sustituirse por medios físicos y electrónicos (ITC 11). ITC 11, apartado 1: el plan indica el número de vigilantes por turno, turnos y puestos, sin cifra fija. Transporte por carretera (ITC 11): al menos un vigilante por vehículo; en convoy, el número de vehículos más uno, con un coordinador. Aplicable a las materias que la ITC 11 regula en transporte (cartuchería metálica y mecha de seguridad, según su ámbito).',est:'Verificado'},
+8:{arts:'ITC 11, transporte por carretera (texto verificado)',esp:'Plan de Seguridad de Transporte (documento base) y Adenda de Actualización, según modelo aprobado por la Intervención Central. La adenda se presenta con 48 horas de antelación ante la Intervención de Armas y Explosivos de origen o de entrada. Los vigilantes viajan en cada vehículo, solo atienden la seguridad de la materia y no conducen, cargan ni descargan. Los vehículos van enlazados entre sí y con un centro de la empresa de seguridad mediante teléfono móvil, y con los centros operativos de la Guardia Civil.',est:'Verificado'},
+9:{arts:'94.1 y 51 (texto verificado)',esp:'Art. 94.1 (depósitos): solo entran personas autorizadas, previas verificaciones o controles; la entrada a zonas de almacenamiento se señala con prohibido el paso a toda persona no autorizada. Art. 51 (talleres): permiso de la dirección o del encargado, libro de visitas con identificación, advertencia de entrar bajo su propio riesgo y acompañamiento por un empleado.',est:'Verificado'},
+10:{arts:'52.2 (texto verificado); ITC 11, apartado 1 (texto verificado)',esp:'Art. 52.2 (talleres): los servicios de vigilancia efectúan registros periódicos según un plan de actuación dentro del Plan de Seguridad Ciudadana autorizado, y envían un parte resumen mensual a la Intervención de Armas y Explosivos de la Guardia Civil de su demarcación. ITC 11: la vigilancia humana puede sustituirse si hay seguridad física suficiente y un sistema electrónico contra robo e intrusión conectado con central receptora de alarmas; la conexión con la Guardia Civil es con la Unidad de la Comandancia designada.',est:'Verificado'}
 };
 
 let resp=load('aev41_resp',{});
-let notas=load('aev41_notas_docente',{});
 
 function render(){
   $('bloques').innerHTML=BLOQUES.map(b=>`
@@ -274,18 +284,7 @@ $('tDoc').onclick=()=>verDoc(true);
 
 function pintarDoc(){
   $('clave').innerHTML=`<table><thead><tr><th>Bloque</th><th>Artículos (verificación)</th><th>Respuesta esperada</th><th>Estado</th></tr></thead><tbody>${BLOQUES.map(b=>{const c=CLAVE[b.id];return `<tr><td><b>${b.id}. ${b.t}</b><br><span class="small muted">Ctrl+F: ${b.term}</span></td><td>${c.arts}</td><td>${c.esp}</td><td><span class="pill ${c.est==='Verificado'?'ok':c.est==='Parcial'?'warn':'ko'}">${c.est}</span></td></tr>`}).join('')}</tbody></table>`;
-  $('notas').innerHTML=`<table><thead><tr><th>Bloque</th><th class="num">Nota (0-10)</th></tr></thead><tbody>${BLOQUES.map(b=>`<tr><td>${b.id}. ${b.t}</td><td class="num"><input type="number" min="0" max="10" step="0.5" data-n="${b.id}" value="${notas[b.id]??''}" style="max-width:6rem" aria-label="Nota bloque ${b.id}"></td></tr>`).join('')}</tbody></table>`;
-  calcMedia();
 }
-function calcMedia(){
-  const v=[...document.querySelectorAll('[data-n]')].map(i=>parseFloat(i.value)).filter(x=>!isNaN(x));
-  $('media').textContent=v.length?('Media: '+(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2)+' / 10 ('+v.length+'/7 bloques)'):'—';
-}
-$('notas').addEventListener('input',e=>{
-  const n=e.target.dataset.n; if(!n)return;
-  notas[n]=e.target.value===''?null:Math.min(10,Math.max(0,parseFloat(e.target.value)));
-  save('aev41_notas_docente',notas); calcMedia();
-});
 
 async function entrar(){
   if(await hash($('cod').value.trim())!==PIN){$('msgD').textContent='Código incorrecto.';return}
