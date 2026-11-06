@@ -163,7 +163,7 @@ kbd{font-family:var(--f-mono);font-size:.85rem;border:1px solid var(--line);bord
  <div id="panelDoc" hidden>
   <div class="panel">
    <h3>Clave de corrección</h3>
-   <p class="note">Verificación: solo se ha comprobado el texto de los arts. 1 a 9 del reglamento y el índice del BOE. Lo marcado como «Pendiente» o «EDITABLE» debe confirmarse en el BOE antes de puntuar.</p>
+   <p class="note">Verificación: textos comprobados en el RD 989/2015 consolidado (PDF adjunto). Las cifras de talleres y depósitos dependen del plan de seguridad de cada instalación. La cifra de transporte rige para las materias de la ITC 11 (cartuchería metálica y mecha, según su ámbito).</p>
    <div class="tbl" id="clave"></div>
   </div>
   <div class="panel">
@@ -209,20 +209,20 @@ const BLOQUES=[
  cons:'Identifica quién puede manipular los artificios de mayor peligrosidad y dónde se regula el transporte.',
  preg:['¿Quién puede manipular o utilizar artificios de categoría F4? Indica el artículo de definiciones y el apartado de categorías.','¿Qué título del reglamento regula el transporte y qué artículo recoge sus normas generales?'],
  prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica quién puede manipular o utilizar artificios de categoría F4, T2 y P2, y en qué títulos y artículos se regula el transporte. Cita artículo y apartado. Si no estás seguro, dilo.'},
-{id:7,ra:'RA8',t:'Medidas de vigilancia',term:'Cerramiento y vigilancia',
- cons:'Supuesto: el depósito del caso debe cumplir las medidas de cerramiento y vigilancia. Comprueba qué exige el reglamento.',
- preg:['¿Qué artículos regulan el cerramiento y la vigilancia de los depósitos y de los talleres? Indica los números.','Localiza en la ITC 11 la exigencia de vigilantes o medios de vigilancia. Anota el apartado y la cifra literal. Si no aparece una cifra, escríbelo.'],
- prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué artículos regulan el cerramiento y la vigilancia de talleres y depósitos y qué exige la ITC 11 sobre vigilancia. Si el reglamento fija un número de vigilantes o de medios, cita el apartado y la cifra literal; si no lo fija, dilo.'}
+{id:7,ra:'RA8 · RA9',t:'Medidas de vigilancia',term:'Cerramiento y vigilancia',
+ cons:'Supuesto: el depósito del caso debe cumplir las medidas de cerramiento y vigilancia, y parte de su producto se transporta por carretera. Comprueba qué exige el reglamento.',
+ preg:['Según los artículos 50, 59 y 93, ¿qué vigilancia exige el reglamento a talleres y depósitos y con qué medios puede sustituirse? Indica los artículos.','Según la ITC 11 (transporte por carretera), ¿cuántos vigilantes como mínimo lleva un vehículo y cuántos un convoy? Indica el apartado y la cifra.'],
+ prompt:'Actúa como docente de FP de Seguridad. Según el Real Decreto 989/2015 (Reglamento de artículos pirotécnicos y cartuchería), indica qué artículos regulan la vigilancia de talleres y depósitos, con qué medios puede sustituirse y qué número mínimo de vigilantes exige la ITC 11 en el transporte por carretera, para vehículo y convoy. Cita artículo y apartado. Si un dato depende del plan de seguridad de la instalación, dilo.'}
 ];
 
 const CLAVE={
-1:{arts:'8 (texto verificado) y 9 (texto verificado)',esp:'F1: artificios de uso en el interior de edificios residenciales (art. 8.3.a.i). Cartuchería: por uso (deportiva, laboral, para dispositivos de seguridad u otros), por componentes y por tipo de arma o aparato (art. 9).',est:'Verificado'},
-2:{arts:'107, 108 y 110 (títulos verificados; texto pendiente)',esp:'Art. 107: envases y embalajes. Art. 108: homologación. Art. 110: envases y embalajes vacíos.',est:'Parcial'},
-3:{arts:'109 (título verificado; texto pendiente)',esp:'[EDITABLE: frase literal que exige el art. 109].',est:'Pendiente'},
-4:{arts:'4.20 y 5.1.b (texto verificado); 19 e ITC 7 (títulos)',esp:'Indica que el artículo cumple los requisitos aplicables de la legislación de armonización (art. 4.20). Lo coloca el fabricante tras la evaluación de la conformidad (art. 5.1.b).',est:'Verificado'},
-5:{arts:'5.1.f y 5.1.g (texto verificado); 113 a 117 (títulos)',esp:'Nombre o marca registrada y dirección postal de contacto del fabricante (5.1.f). Instrucciones e información de seguridad al menos en castellano, claras y comprensibles (5.1.g). Datos del artículo, envase y embalaje: art. 114.',est:'Parcial'},
+1:{arts:'8 y 9 (texto verificado)',esp:'F1: artificios de uso en el interior de edificios residenciales (art. 8.3.a.i). Cartuchería: por uso (deportiva, laboral, para dispositivos de seguridad u otros), por componentes y por tipo de arma o aparato (art. 9).',est:'Verificado'},
+2:{arts:'107, 108 y 110 (texto verificado)',esp:'Art. 107: envase (recipiente de retención) y embalaje (protección externa), exteriores o interiores. Art. 108: envases y embalajes homologados según la reglamentación del transporte de mercancías peligrosas, con marcas duraderas y visibles. Art. 110: envases vacíos con residuos peligrosos, bien cerrados y con las mismas etiquetas de peligro.',est:'Verificado'},
+3:{arts:'109 (texto verificado)',esp:'En cada envase exterior o embalaje, redactadas al menos en castellano: «Riesgo de explosión por choque, fricción o fuego» y «Protéjase de fuentes de calor. No fumar».',est:'Verificado'},
+4:{arts:'4.20, 5.1.b y 19 (texto verificado)',esp:'Marcado CE: indica que el artículo cumple los requisitos aplicables de la legislación de armonización (art. 4.20). Lo coloca el fabricante tras la evaluación de la conformidad (art. 5.1.b). Debe ir visible, legible e indeleble sobre el artículo o, si no es posible, sobre la etiqueta del envase o embalaje (art. 19.4).',est:'Verificado'},
+5:{arts:'5.1.f, 5.1.g y 114 (texto verificado)',esp:'Fabricante: nombre o marca registrada y dirección postal de contacto (5.1.f). Instrucciones e información de seguridad al menos en castellano, claras y comprensibles (5.1.g). Embalaje: art. 114.1.A (fabricante, tipo de artículo, categoría, número de registro, NEC y marcado de transporte). Artículo y envase: art. 114.1.B.',est:'Verificado'},
 6:{arts:'4.15 y 8.3 (texto verificado); 142 y Título IX, arts. 166 a 194 (títulos)',esp:'F4, T2 y P2 solo pueden ser manipulados o utilizados por expertos (art. 4.15 y art. 8.3). Transporte: Título IX; normas generales en el art. 167 y documentación en el art. 170.',est:'Parcial'},
-7:{arts:'50, 59, 93 y 100 (títulos); ITC 11 (título; modificada por la Orden PJC/342/2025)',esp:'[EDITABLE: apartado de la ITC 11 y cifra literal de vigilantes o medios exigidos. Pendiente: no se ha leído el texto].',est:'Pendiente'}
+7:{arts:'50, 59 y 93 (texto verificado); ITC 11, apartado 1 y transporte por carretera (texto verificado)',esp:'Talleres y depósitos (arts. 50, 59 y 93): vigilancia humana suficiente según el Plan de Seguridad Ciudadana aprobado por la Intervención Central de Armas y Explosivos; puede sustituirse por medios físicos y electrónicos (ITC 11). ITC 11, apartado 1: el plan indica el número de vigilantes por turno, turnos y puestos, sin cifra fija. Transporte por carretera (ITC 11): al menos un vigilante por vehículo; en convoy, el número de vehículos más uno, con un coordinador. Aplicable a las materias que la ITC 11 regula en transporte (cartuchería metálica y mecha de seguridad, según su ámbito).',est:'Verificado'}
 };
 
 let resp=load('aev41_resp',{});
