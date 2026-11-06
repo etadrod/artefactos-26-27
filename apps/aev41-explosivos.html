@@ -189,7 +189,6 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--sunk);padding:.05
     <button class="btn ghost" id="bSalir" type="button">Cerrar sesión docente</button>
    </div>
    <p id="msgPub" class="small" aria-live="polite"></p>
-   <p class="small muted">La clave de GitHub se guarda solo en este navegador. <button class="btn ghost sm" id="bOlv" type="button">Olvidar la clave en este dispositivo</button></p>
   </div>
  </div>
 </section>
@@ -445,7 +444,6 @@ $('bTok').onclick=()=>{
   $('dlgTok').close();$('tok').value='';publicar();
 };
 $('dlgX').onclick=()=>$('dlgTok').close();
-$('bOlv').onclick=()=>{tok='';try{localStorage.removeItem('gh_tok')}catch(e){};$('msgPub').textContent='Clave de GitHub borrada de este navegador.';$('msgPub').className='small muted';$('msgPub').style.color=''};
 
 // ---------- Acceso ----------
 async function entrar(){
