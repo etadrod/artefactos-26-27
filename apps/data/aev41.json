@@ -1,5 +1,5 @@
 {
- "supuesto": "[EDITABLE: nombre de la empresa] tiene un depósito de productos pirotécnicos y cartuchería en un polígono. Como técnico de seguridad debes revisar cómo se clasifica y envasa el producto, qué marcado y etiquetado lleva, qué frases y medidas se aplican en uso y transporte, y qué vigilancia exige el reglamento. Cada bloque aporta una parte de tu informe.",
+ "supuesto": "PIROTECAN tiene un depósito de productos pirotécnicos y cartuchería en un polígono. Como técnico de seguridad debes revisar cómo se clasifica y envasa el producto, qué marcado y etiquetado lleva, qué frases y medidas se aplican en uso y transporte, y qué vigilancia exige el reglamento. Cada bloque aporta una parte de tu informe.",
  "nota": "Verificación: textos comprobados en el RD 989/2015 consolidado. Las cifras de talleres y depósitos dependen del plan de seguridad de cada instalación. La cifra de transporte rige para las materias de la ITC 11 (cartuchería metálica y mecha, según su ámbito).",
  "bloques": [
   {
